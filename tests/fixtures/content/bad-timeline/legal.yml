@@ -1,0 +1,58 @@
+privacy:
+  visible: true
+  title:
+    en: Privacy policy
+    de: Datenschutzerklärung
+  body:
+    en: |
+      This is a personal CV website. It collects as little data as possible.
+
+      ## Hosting
+
+      The site is hosted on Cloudflare Pages (Cloudflare, Inc.). When you open a page, Cloudflare processes technical data such as your IP address, the requested page and the time of the request in server logs, so that the site can be delivered and kept secure.
+
+      ## Analytics
+
+      I use Umami Cloud to count visits. Umami works without cookies and does not build personal profiles or follow you across websites. It records anonymous usage data such as the pages viewed, the referring site, the browser and device type, and the approximate country. It also counts clicks on the CV download, email and LinkedIn links. The data is kept for a limited period and then deleted.
+
+      ## Cookies
+
+      This site sets no cookies and shows no cookie banner. Your choice of language and light or dark mode may be remembered in your own browser, and is never sent to a server.
+
+      ## Your rights
+
+      Under the GDPR you have the right to access, correct and delete your personal data, to restrict or object to its processing, and to lodge a complaint with a data protection authority.
+
+      ## Contact
+
+      For any privacy question, write to me by email. The address is shown on the contact section of the home page.
+    de: |
+      Dies ist eine persönliche Lebenslauf-Website. Sie erhebt so wenige Daten wie möglich.
+
+      ## Hosting
+
+      Die Website wird bei Cloudflare Pages (Cloudflare, Inc.) gehostet. Beim Aufruf einer Seite verarbeitet Cloudflare technische Daten wie Ihre IP-Adresse, die angeforderte Seite und den Zeitpunkt der Anfrage in Server-Logs, damit die Website ausgeliefert und abgesichert werden kann.
+
+      ## Analyse
+
+      Ich nutze Umami Cloud, um Besuche zu zählen. Umami arbeitet ohne Cookies und erstellt keine persönlichen Profile und verfolgt Sie nicht über Websites hinweg. Erfasst werden anonyme Nutzungsdaten wie die aufgerufenen Seiten, die verweisende Website, Browser- und Gerätetyp sowie das ungefähre Herkunftsland. Außerdem werden Klicks auf den Lebenslauf-Download, die E-Mail- und die LinkedIn-Links gezählt. Die Daten werden nur begrenzte Zeit gespeichert und danach gelöscht.
+
+      ## Cookies
+
+      Diese Website setzt keine Cookies und zeigt kein Cookie-Banner. Ihre Wahl von Sprache und hellem oder dunklem Modus kann in Ihrem eigenen Browser gespeichert werden und wird nie an einen Server gesendet.
+
+      ## Ihre Rechte
+
+      Nach der DSGVO haben Sie das Recht auf Auskunft, Berichtigung und Löschung Ihrer personenbezogenen Daten, auf Einschränkung der Verarbeitung und Widerspruch sowie auf Beschwerde bei einer Datenschutzaufsichtsbehörde.
+
+      ## Kontakt
+
+      Bei Fragen zum Datenschutz schreiben Sie mir per E-Mail. Die Adresse steht im Kontaktbereich der Startseite.
+impressum:
+  visible: false
+  title:
+    en: Impressum
+    de: Impressum
+  body:
+    en: This page is intentionally not published.
+    de: Diese Seite wird bewusst nicht veröffentlicht.

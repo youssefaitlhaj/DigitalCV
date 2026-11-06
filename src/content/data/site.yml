@@ -1,0 +1,43 @@
+name: Youssef Ait Lhaj
+logoText: youssef.dev
+meta:
+  title:
+    en: Youssef Ait Lhaj — Software Developer
+    de: Youssef Ait Lhaj — Softwareentwickler
+  description:
+    en: Software developer at Imbus AG in Bavaria, working on the TestBench test management platform. Computer science degree from the University of Bamberg; career started in Casablanca.
+    de: Softwareentwickler bei Imbus AG in Bayern, tätig an der Testmanagement-Plattform TestBench. Informatikstudium an der Universität Bamberg, Berufsstart in Casablanca.
+email:
+  user: youssefaitlhaj01
+  domain: gmail.com
+linkedin: https://www.linkedin.com/in/youssefaitlhaj/
+location:
+  en: Bamberg, Bavaria, Germany
+  de: Bamberg, Bayern, Deutschland
+siteUrl: https://youssefaitlhaj.pages.dev
+palette:
+  accent: whisky
+  background: oat
+pdf:
+  includePortrait: true
+  fileBaseName: youssef-ait-lhaj-cv
+analytics: {}
+labels:
+  present: { en: Present, de: Heute }
+  year: { en: yr, de: Jahr }
+  years: { en: yrs, de: Jahre }
+  month: { en: mo, de: Mon. }
+  months: { en: mos, de: Mon. }
+  employment:
+    full-time: { en: Full-time, de: Vollzeit }
+    part-time: { en: Part-time, de: Teilzeit }
+    internship: { en: Internship, de: Praktikum }
+  downloadCv: { en: Download CV (PDF), de: Lebenslauf herunterladen (PDF) }
+  skipToContent: { en: Skip to content, de: Zum Inhalt springen }
+  themeToggle: { en: Toggle night mode, de: Nachtmodus umschalten }
+  language: { en: Language, de: Sprache }
+  privacy: { en: Privacy, de: Datenschutz }
+  impressum: { en: Impressum, de: Impressum }
+  codeLink: { en: Code, de: Code }
+  liveLink: { en: Live, de: Live }
+  confidential: { en: Confidential, de: Vertraulich }

@@ -1,0 +1,43 @@
+import { z } from "zod";
+import { localized, slugId } from "./primitives";
+
+const employmentLabels = z.object({
+  "full-time": localized(),
+  "part-time": localized(),
+  internship: localized(),
+});
+
+export const siteSchema = z.object({
+  name: z.string().trim().min(1),
+  logoText: z.string().trim().min(1),
+  meta: z.object({ title: localized(), description: localized() }),
+  email: z.object({ user: z.string().trim().min(1), domain: z.string().trim().min(1) }),
+  linkedin: z.url(),
+  location: localized(),
+  siteUrl: z.url(),
+  palette: z.object({
+    accent: z.enum(["whisky", "bourbon", "singleMalt", "green"]),
+    background: z.enum(["oat", "paper", "stone", "white"]),
+  }),
+  pdf: z.object({ includePortrait: z.boolean(), fileBaseName: slugId }),
+  analytics: z.object({ umamiWebsiteId: z.string().trim().min(1).optional(), dashboardUrl: z.url().optional() }),
+  labels: z.object({
+    present: localized(),
+    year: localized(),
+    years: localized(),
+    month: localized(),
+    months: localized(),
+    employment: employmentLabels,
+    downloadCv: localized(),
+    skipToContent: localized(),
+    themeToggle: localized(),
+    language: localized(),
+    privacy: localized(),
+    impressum: localized(),
+    codeLink: localized(),
+    liveLink: localized(),
+    confidential: localized(),
+  }),
+});
+
+export type Site = z.infer<typeof siteSchema>;
