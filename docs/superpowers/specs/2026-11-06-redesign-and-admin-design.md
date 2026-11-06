@@ -69,7 +69,7 @@ Base is "Option A — clean and structured", with "Option B — developer" touch
   | `--accent` | `#9A5B13` | `#E0A14A` |
   | `--accent-ink` (text on accent fills) | `#FFFFFF` | `#17130F` |
 
-  The other vetted palettes the admin may offer (§7.5) are in `palette-explorer.html`: accents Whisky, Bourbon, Single malt, Green; backgrounds Paper, Oat, Stone, White, each with light and dark values. Youssef's old champagne gold `#C9A227` fails contrast as text on light backgrounds and must not be offered as a light-mode text accent.
+  The other vetted palettes the admin may offer (§7.6) are in `palette-explorer.html`: accents Whisky, Bourbon, Single malt, Green; backgrounds Paper, Oat, Stone, White, each with light and dark values. Youssef's old champagne gold `#C9A227` fails contrast as text on light backgrounds and must not be offered as a light-mode text accent.
 - **Dark mode:** a visitor toggle; default follows the OS preference; the choice is remembered (localStorage, wrapped in try/catch). No flash of the wrong theme on load. **(design call; the existing `theme.ts` already does this and can be adapted)**
 - **Languages:** English at `/`, German at `/de/`, with a switcher (as today).
 
@@ -135,7 +135,7 @@ All content lives in the Git repository as data files (format is the builder's c
 - **Site settings:** name, logo text, page title + meta description (EN/DE, used for Google/LinkedIn previews), social links, email (two halves), location, site URL (one setting — switching to the bought domain later must be a one-line change), palette choice, PDF settings (§8).
 - **Fixed sections** (designed pieces with their own content shape, can be reordered/hidden but not turned into another layout):
   - Hero: prompt text, role, subtitle, button labels, JSON card entries (key → list of strings), portrait.
-  - Statement: sentence (rich text, §7.6; highlighting a phrase is done with the formatting tools).
+  - Statement: sentence (rich text, §7.5; highlighting a phrase is done with the formatting tools).
   - Stats: up to 4 items, each a label + value, where value is either a number or **computed** — "years since <date>" or "count of items in <section>" — with optional manual override. **(design call: counters calculate themselves so they never go stale)**
   - Journey: title + stops (year label, heading, text, small mono caption, optional "head" marker).
   - Contact: heading line, lead text, button labels.
@@ -183,7 +183,7 @@ All content in §6, including: section order, visibility, menu inclusion, per-se
 - `/admin` requires GitHub login with write access to the repo. Additionally putting `/admin` behind Cloudflare Access is encouraged if it doesn't break the editor's OAuth flow. **(builder's call)**
 - No secrets in the client bundle or the repo. OAuth client secrets etc. live in the host's secret store.
 
-### 7.6 Text formatting **(Youssef)**
+### 7.5 Text formatting **(Youssef)**
 
 Youssef wants to style text himself: **bold, italic, underline, links, custom colour**, and similar.
 
@@ -199,7 +199,7 @@ Youssef wants to style text himself: **bold, italic, underline, links, custom co
 - Formatting must render identically on the site, in the preview, and in the PDF (links printed as readable text).
 - Scroll animations that split text into words (the statement) must preserve the formatting.
 
-### 7.5 Palette setting
+### 7.6 Palette setting
 
 Offer the combinations from `palette-explorer.html` that pass AA in both modes. Default: Whisky on Oat.
 
