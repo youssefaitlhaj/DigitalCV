@@ -37,9 +37,10 @@ function splitName(nameEl: HTMLElement, cursor: HTMLElement) {
 }
 
 /**
- * ① Hero intro (prototype timings): `whoami` types, the name types letter by
- * letter with the cursor following, the rest fades up, the JSON lines appear
- * then `✓ valid`, the portrait reveals with a clip. The first scroll (or a page
+ * ① Hero intro: `whoami` types, the name types letter by letter with the
+ * cursor following (prototype speed), the rest fades up, the JSON lines appear
+ * then `✓ valid`, the portrait reveals with a clip. The prototype's tail is
+ * compressed so everything is done by ~1.1 s. The first scroll (or a page
  * that loads already scrolled) completes it at once.
  */
 export const effect: Effect = {
@@ -85,11 +86,13 @@ export const effect: Effect = {
         "+=.08",
       );
     }
-    if (fades.length) tl.fromTo(fades, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.07 }, "-=.35");
-    if (lines.length) tl.fromTo(lines, { x: -8, opacity: 0 }, { x: 0, opacity: 1, duration: 0.25, stagger: 0.05 }, "-=.3");
+    // The tail overlaps the name typing so the whole intro ends with it (~1.1 s, spec §5.3).
+    tl.addLabel("named");
+    if (fades.length) tl.fromTo(fades, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, stagger: 0.05 }, "named-=.5");
+    if (lines.length) tl.fromTo(lines, { x: -8, opacity: 0 }, { x: 0, opacity: 1, duration: 0.2, stagger: 0.03 }, "named-=.4");
     if (ok) {
       gsap.set(ok, { visibility: "hidden" });
-      tl.set(ok, { visibility: "visible" });
+      tl.set(ok, { visibility: "visible" }, ">");
     }
     if (photo) {
       tl.fromTo(
@@ -102,6 +105,9 @@ export const effect: Effect = {
 
     // GSAP now owns every intro state, so the pre-paint CSS can step aside.
     hero.classList.add("intro-ready");
+    // Timing contract, checked by tests/e2e/motion.spec.ts.
+    hero.setAttribute("data-intro-duration", tl.duration().toFixed(3));
+    hero.setAttribute("data-intro-letter", String(LETTER_S));
 
     const finish = () => tl.progress(1);
     if (window.scrollY > 0) finish();

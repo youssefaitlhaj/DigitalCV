@@ -3,45 +3,90 @@
    anything is scoped to `html.motion`, which Base.astro sets before first
    paint only when reduced motion is off, and only within sections whose
    animations are on. Without the class (no JavaScript, reduced motion, or the
-   3 s failsafe) the page shows its server-rendered final state.
+   3 s failsafe) the page shows its server-rendered final state. The hiding
+   rules apply on screen only; print gets the final state (bottom of file).
 --------------------------------------------------------------------------- */
 
-/* ① Hero intro, until the intro effect takes over (`.intro-ready`). */
-.motion [data-section="hero"][data-animate="true"]:not(.intro-ready)
-  :is([data-intro="cmd"], [data-intro="name"] [data-name], [data-intro="name"] .cur, [data-intro="ok"]) {
-  visibility: hidden;
+@media screen {
+  /* ① Hero intro, until the intro effect takes over (`.intro-ready`). */
+  .motion [data-section="hero"][data-animate="true"]:not(.intro-ready)
+    :is([data-intro="cmd"], [data-intro="name"] .cur, [data-intro="ok"]) {
+    visibility: hidden;
+  }
+  /* Opacity, not visibility: the h1 keeps its accessible name before the script runs. */
+  .motion [data-section="hero"][data-animate="true"]:not(.intro-ready)
+    :is([data-intro="name"] [data-name], [data-intro="fade"], [data-intro="json"] .ln) {
+    opacity: 0;
+  }
+  .motion [data-section="hero"][data-animate="true"]:not(.intro-ready) [data-intro="photo"] {
+    clip-path: inset(100% 0 0 0);
+  }
+  /* The name's letters: unrevealed letters keep their space. */
+  .motion [data-intro="name"] .ch.off {
+    visibility: hidden;
+  }
+  .motion [data-intro="name"] .cur.typing {
+    animation: none;
+  }
+
+  /* ④ Journey: the rail fills as the pinned track scrubs; the wrapper stops scrolling itself. */
+  .motion [data-animate="true"] [data-journey-rail] {
+    transform: scaleX(0);
+  }
+  .motion [data-animate="true"] .track-wrap.pinned {
+    overflow: hidden;
+  }
+
+  /* ⑤ Timeline: the rail draws and nodes light as they are reached. Text is untouched. */
+  .motion [data-animate="true"] [data-rail-fill] {
+    transform: scaleY(0);
+  }
+  .motion [data-animate="true"] [data-commit]:not(.lit)::before {
+    border-color: var(--line);
+    background: var(--bg);
+    transform: none;
+  }
 }
-.motion [data-section="hero"][data-animate="true"]:not(.intro-ready) :is([data-intro="fade"], [data-intro="json"] .ln) {
-  opacity: 0;
-}
-.motion [data-section="hero"][data-animate="true"]:not(.intro-ready) [data-intro="photo"] {
-  clip-path: inset(100% 0 0 0);
-}
-/* The name's letters: words never break, unrevealed letters keep their space. */
+
+/* Words of the typed name never break across lines. */
 .motion [data-intro="name"] .wd {
   white-space: nowrap;
 }
-.motion [data-intro="name"] .ch.off {
-  visibility: hidden;
-}
-.motion [data-intro="name"] .cur.typing {
-  animation: none;
-}
 
-/* ④ Journey: the rail fills as the pinned track scrubs; the wrapper stops scrolling itself. */
-.motion [data-animate="true"] [data-journey-rail] {
-  transform: scaleX(0);
-}
-.motion [data-animate="true"] .track-wrap.pinned {
-  overflow: hidden;
-}
-
-/* ⑤ Timeline: the rail draws and nodes light as they are reached. Text is untouched. */
-.motion [data-animate="true"] [data-rail-fill] {
-  transform: scaleY(0);
-}
-.motion [data-animate="true"] [data-commit]:not(.lit)::before {
-  border-color: var(--line);
-  background: var(--bg);
-  transform: none;
+/* Printing mid-animation: override GSAP's inline start states with the final state. */
+@media print {
+  .motion :is(
+      [data-intro],
+      [data-intro="json"] .ln,
+      [data-intro="photo"] img,
+      [data-statement] .w,
+      [data-chips] > *,
+      [data-journey] .stop,
+      [data-journey-track],
+      [data-journey-rail],
+      [data-rail-fill],
+      [data-scale-in]
+    ) {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+  /* Typed section labels: print the full title, not the typing copy. */
+  .motion [data-typer] .visually-hidden {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+  .motion [data-typer] .typed {
+    display: none;
+  }
+  .motion [data-progress] {
+    display: none !important;
+  }
 }

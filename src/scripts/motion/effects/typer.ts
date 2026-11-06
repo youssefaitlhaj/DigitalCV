@@ -17,7 +17,7 @@ export const effect: Effect = {
       .trim();
     if (!text) return;
     const whole = Object.assign(document.createElement("span"), { className: "visually-hidden", textContent: text });
-    const typed = document.createElement("span");
+    const typed = Object.assign(document.createElement("span"), { className: "typed" });
     typed.setAttribute("aria-hidden", "true");
     texts.forEach((n) => n.remove());
     label.append(" ", whole, typed);

@@ -190,6 +190,41 @@ test.describe("motion on", () => {
     expect(await active()).toEqual(["/#experience"]);
   });
 
+  test("intro finishes within about a second", async ({ page }) => {
+    await page.goto("/");
+    const hero = page.locator('section[data-section="hero"]');
+    await expect(hero).toHaveAttribute("data-intro-duration", /^\d/);
+    expect(Number(await hero.getAttribute("data-intro-duration"))).toBeLessThanOrEqual(1.15);
+    // Name typing keeps its speed: about 40 ms per letter.
+    expect(Number(await hero.getAttribute("data-intro-letter"))).toBeCloseTo(0.04, 3);
+  });
+
+  test("name is read whole before the motion script runs", async ({ page }) => {
+    await page.route(/\/_astro\/.*\.js$/, (route) => route.abort());
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveClass(/\bmotion\b/);
+    // Short timeout: the 3 s failsafe would otherwise reveal the name anyway.
+    await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(NAME, { timeout: 1_000 });
+    await expect(page.locator("html")).toHaveClass(/\bmotion\b/);
+  });
+
+  test("printing before scrolling shows everything in its final state", async ({ page }) => {
+    await page.goto("/");
+    await typedState(page);
+    await page.emulateMedia({ media: "print" });
+    const styles = (sel: string, prop: string) =>
+      page.locator(sel).evaluateAll((els, prop) => els.map((e) => getComputedStyle(e).getPropertyValue(prop)), prop);
+    for (const sel of ["[data-chips] > *", "[data-statement] .w", "[data-scale-in]", "[data-intro]", '[data-intro="json"] .ln']) {
+      expect(new Set(await styles(sel, "opacity")), sel).toEqual(new Set(["1"]));
+    }
+    for (const sel of ["[data-journey-track]", "[data-journey-rail]", "[data-rail-fill]", "[data-chips] > *"]) {
+      for (const t of await styles(sel, "transform")) expect(t, sel).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);
+    }
+    // Section labels print their title, not the empty typing copy.
+    const label = page.locator("#experience h2.label .visually-hidden");
+    expect(await label.evaluate((e) => e.getBoundingClientRect().width)).toBeGreaterThan(20);
+  });
+
   test("content shows within 3 s if the motion script never loads", async ({ page }) => {
     await page.route(/\/_astro\/.*\.js$/, (route) => route.abort());
     await page.goto("/");
@@ -257,6 +292,7 @@ test.describe("motion fixture", () => {
       de: "Sieben Jahre an **einem Produkt**, und <u>immer noch</u> <span class=\"c-accent\">dabei</span>.",
     };
     byId("experience").animate = false;
+    byId("stats").items[3].value = { kind: "number", n: 2.5 };
   });
 
   test.beforeEach(({}, info) => {
@@ -273,6 +309,15 @@ test.describe("motion fixture", () => {
     await expect(statement.locator("span.c-accent")).toHaveText("building it");
     await expect(statement.locator("span.c-accent .w")).toHaveCount(2);
     await expect(statement).toHaveText("Seven years on one product, and still building it.");
+  });
+
+  test("counters end on the exact server-rendered value", async ({ page }) => {
+    await page.goto(fixture.url("/"));
+    const counter = page.locator("[data-count]").nth(3);
+    await expect(counter).toHaveAttribute("data-count", "2.5");
+    await counter.evaluate((el) => window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 200, behavior: "instant" }));
+    await page.waitForTimeout(1_500);
+    await expect(counter).toHaveText("2.5");
   });
 
   test("animate:false section has no ScrollTrigger", async ({ page }) => {
