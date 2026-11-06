@@ -445,7 +445,7 @@ test("pick returns the locale's value", () => {
   - `intro completes on first scroll`: load the page, scroll 10 px immediately, then on the next frame assert that no name letter is hidden and the cursor follows the last letter.
   - `name types left to right`: about 150 ms into typing, the revealed letters are a non-empty prefix of the name shorter than the full name, and the cursor sits right after the last revealed letter.
   - `name typing causes no layout shift`: the `<h1>` bounding box is the same mid-typing and after typing, at 1280 px and 320 px.
-  - `name is read whole`: the `<h1>` accessible name equals the full name from `site.yaml`.
+  - `name is read whole`: the `<h1>` accessible name equals the full name from `site.yml`.
   - `statement keeps formatting while split`: a fixture statement with `**bold**` must still contain a `strong` element after initialisation.
   - `animate:false section has no ScrollTrigger`: in a fixture, disable animation on experience and assert that the rail fill already has its final transform.
   - `no JS: content visible`: with JavaScript disabled, `[data-intro]` elements are visible.
