@@ -135,7 +135,7 @@ All content lives in the Git repository as data files (format is the builder's c
 - **Site settings:** name, logo text, page title + meta description (EN/DE, used for Google/LinkedIn previews), social links, email (two halves), location, site URL (one setting — switching to the bought domain later must be a one-line change), palette choice, PDF settings (§8).
 - **Fixed sections** (designed pieces with their own content shape, can be reordered/hidden but not turned into another layout):
   - Hero: prompt text, role, subtitle, button labels, JSON card entries (key → list of strings), portrait.
-  - Statement: sentence, with an optional highlighted phrase.
+  - Statement: sentence (rich text, §7.6; highlighting a phrase is done with the formatting tools).
   - Stats: up to 4 items, each a label + value, where value is either a number or **computed** — "years since <date>" or "count of items in <section>" — with optional manual override. **(design call: counters calculate themselves so they never go stale)**
   - Journey: title + stops (year label, heading, text, small mono caption, optional "head" marker).
   - Contact: heading line, lead text, button labels.
@@ -161,7 +161,7 @@ A ready-made, open-source, **Git-based** editor that commits content to the GitH
 6. Can commit to a non-default branch (needed for §7.2), or otherwise support a draft/publish workflow.
 7. A way to add a "Statistics" link/button (custom link, menu item, or a small page beside the editor).
 
-**Recommended: Sveltia CMS** (free, open source, Decap-compatible config). It has built-in i18n, mobile support, an editorial workflow, and deploy previews. GitHub login goes through its small auth Worker on Cloudflare. **Fallback: Keystatic.** Image cropping isn't confirmed in any free candidate, so plan for a custom crop step. Verify Sveltia against the checklist above with a short spike before committing; switch to the fallback if it fails a must-have. **(design call; Youssef asked for the best free editor and was given this recommendation)**
+**Decided: Sveltia CMS** **(Youssef)** (free, open source, Decap-compatible config). It has built-in i18n, mobile support, an editorial workflow, and deploy previews. GitHub login goes through its small auth Worker on Cloudflare. **Fallback: Keystatic.** Image cropping isn't confirmed in any free candidate, so plan for a custom crop step. Verify Sveltia against the checklist above with a short spike before committing; switch to the fallback if it fails a must-have. **(Youssef chose Sveltia from a comparison of free editors.)**
 
 ### 7.2 Preview → Publish **(Youssef: exact preview over instant preview)**
 
@@ -182,6 +182,22 @@ All content in §6, including: section order, visibility, menu inclusion, per-se
 
 - `/admin` requires GitHub login with write access to the repo. Additionally putting `/admin` behind Cloudflare Access is encouraged if it doesn't break the editor's OAuth flow. **(builder's call)**
 - No secrets in the client bundle or the repo. OAuth client secrets etc. live in the host's secret store.
+
+### 7.6 Text formatting **(Youssef)**
+
+Youssef wants to style text himself: **bold, italic, underline, links, custom colour**, and similar.
+
+- **Which fields (design call):** longer text gets rich formatting:
+  - about paragraphs, the statement, and the contact lead
+  - descriptions in timeline items, project cards, and journey stops
+  - quotes, and the legal pages
+
+  Short structural fields stay plain so the layout stays consistent: names, titles, roles, dates, tags, labels, and button texts.
+- **Tools:** bold, italic, underline, strikethrough, links (internal and external, with an option to open in a new tab), bulleted and numbered lists, inline code, and text colour.
+- **Colour comes from a fixed swatch set, not a free picker (design call, consistent with §4 and §7.3).** Offer the accent plus a few extra named colours. Each one is defined per palette and per light/dark mode, and each must pass AA contrast on its background. Stored content references the swatch *name* (for example "accent" or "highlight"), not a hex value, so a palette change or dark mode keeps it readable. Underlined non-link text is allowed. Links stay visually distinct from it, for example through the accent colour and hover state.
+- Sveltia's rich-text (Markdown) editor covers most of this natively. Underline and colour need custom editor components or a constrained inline-HTML or shortcode syntax. How to add them is the builder's choice, but the output must be sanitised: only the allowed tags, classes, and attributes; no scripts and no inline styles.
+- Formatting must render identically on the site, in the preview, and in the PDF (links printed as readable text).
+- Scroll animations that split text into words (the statement) must preserve the formatting.
 
 ### 7.5 Palette setting
 
