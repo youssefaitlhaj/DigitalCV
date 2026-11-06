@@ -1,0 +1,18 @@
+---
+import { formatMonth, isoFor } from "../../lib/dates";
+import type { Site } from "../../content/schemas/site";
+import type { Locale } from "../../i18n/locales";
+
+/** `Aug 2019 – Jan 2026` as two machine-readable `<time>` elements. Either end may be missing. */
+interface Props {
+  start?: string;
+  end?: string;
+  locale: Locale;
+  labels: Pick<Site["labels"], "present">;
+  now: Date;
+}
+
+const { start, end, locale, labels, now } = Astro.props;
+---
+
+{start && <time datetime={isoFor(start, now)}>{formatMonth(start, locale, labels)}</time>}{start && end && " – "}{end && <time datetime={isoFor(end, now)}>{formatMonth(end, locale, labels)}</time>}

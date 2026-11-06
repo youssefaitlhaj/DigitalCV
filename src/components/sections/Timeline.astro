@@ -1,0 +1,222 @@
+---
+import SectionFrame from "../layout/SectionFrame.astro";
+import DateRange from "../layout/DateRange.astro";
+import RichText from "../layout/RichText.astro";
+import { pick } from "../../lib/localize";
+import { formatDuration, monthsBetween } from "../../lib/dates";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"timeline">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale, content } = Astro.props;
+const { labels } = content.site;
+const now = new Date();
+---
+
+{/*
+  Full timelines draw a commit rail (`data-rail`, one `data-commit` per item);
+  the first item is HEAD. Compact timelines (education) are date rows without
+  descriptions, as in the prototype. Server-rendered in the final state: the
+  rail is filled and every node lit; the motion layer may rewind and scrub them.
+*/}
+<SectionFrame section={section} locale={locale}>
+  {
+    section.compact ? (
+      <ol class="rows">
+        {section.items.map((item) => (
+          <li class="row">
+            <div class="d">
+              <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} />
+            </div>
+            <div>
+              <h3>
+                {pick(item.title, locale)}
+                {item.employment && <span class="tag">{pick(labels.employment[item.employment], locale)}</span>}
+                {item.badge && <span class="ref">{item.badge}</span>}
+              </h3>
+              <div class="org">
+                {item.orgUrl ? (
+                  <a href={item.orgUrl} target="_blank" rel="noopener noreferrer">{item.org}</a>
+                ) : (
+                  item.org
+                )}{" "}
+                · {item.location}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    ) : (
+      <div class="log" data-rail>
+        <div class="rail-v" aria-hidden="true"><i data-rail-fill></i></div>
+        <ol class="commits">
+          {section.items.map((item, i) => (
+            <li class:list={["commit", i === 0 && "head"]} data-commit>
+              <div class="h">
+                <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} /> ·{" "}
+                <span class="dur">{formatDuration(monthsBetween(item.start, item.end, now), locale, labels)}</span>
+                {item.badge && <span class="ref">{item.badge}</span>}
+              </div>
+              <h3>
+                {pick(item.title, locale)}
+                {item.employment && <span class="tag">{pick(labels.employment[item.employment], locale)}</span>}
+              </h3>
+              <div class="org">
+                {item.orgUrl ? (
+                  <a href={item.orgUrl} target="_blank" rel="noopener noreferrer">{item.org}</a>
+                ) : (
+                  item.org
+                )}{" "}
+                · {item.location}
+              </div>
+              {item.description && (
+                <div class="desc">
+                  <RichText value={item.description} locale={locale} />
+                </div>
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
+    )
+  }
+</SectionFrame>
+
+<style>
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  h3 {
+    margin: 4px 0 0;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .org {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .org a {
+    color: var(--accent-text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .org a:hover {
+    text-decoration: underline;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1.5;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 7px;
+    margin-inline-start: 6px;
+    color: var(--muted);
+    vertical-align: 2px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Commit rail */
+  .log {
+    position: relative;
+    padding-inline-start: 34px;
+  }
+  .rail-v {
+    position: absolute;
+    inset-inline-start: 6px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--line);
+  }
+  .rail-v i {
+    position: absolute;
+    inset: 0;
+    display: block;
+    background: var(--accent);
+    transform-origin: 50% 0;
+  }
+  .commit {
+    position: relative;
+    padding-bottom: 36px;
+  }
+  .commit:last-child {
+    padding-bottom: 0;
+  }
+  .commit::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: -34px;
+    top: 6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    transform: scale(1.15);
+    transition: border-color 0.3s, background 0.3s, transform 0.3s;
+  }
+  .commit.head::before {
+    background: var(--accent);
+  }
+  .h {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  /* Wrap between the parts of the line, never inside a date or a duration. */
+  .h :global(time),
+  .dur {
+    white-space: nowrap;
+  }
+  .desc {
+    margin-top: 8px;
+    font-size: 16px;
+    max-width: 640px;
+  }
+  .desc :global(p) {
+    margin: 0;
+  }
+  .desc :global(p + p) {
+    margin-top: 8px;
+  }
+
+  /* Compact rows */
+  .row {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 20px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+  }
+  .row:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .row h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+  .d {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted);
+    padding-top: 3px;
+  }
+  @media (max-width: 560px) {
+    .row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
+    }
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+import SectionFrame from "../layout/SectionFrame.astro";
+import RichText from "../layout/RichText.astro";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"text">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale } = Astro.props;
+---
+
+<SectionFrame section={section} locale={locale}>
+  <div class="prose">
+    {section.paragraphs.map((paragraph) => <RichText value={paragraph} locale={locale} />)}
+  </div>
+</SectionFrame>
+
+<style>
+  .prose {
+    max-width: 680px;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+  .prose :global(p) {
+    margin: 0 0 18px;
+  }
+  .prose :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .prose :global(a) {
+    color: var(--accent-text);
+  }
+</style>

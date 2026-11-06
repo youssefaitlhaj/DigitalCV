@@ -2,6 +2,10 @@ import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 4329;
 
+// One id per run, inherited by every worker: fixture sites (tests/e2e/helpers/fixture-site.ts)
+// are built once per run and shared between workers through it.
+process.env.FIXTURE_RUN_ID ??= `${Date.now()}-${process.pid}`;
+
 export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: true,

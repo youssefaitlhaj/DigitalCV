@@ -1,0 +1,63 @@
+---
+import { anchorFor } from "../../lib/sections";
+import { pick } from "../../lib/localize";
+import type { Section } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+/**
+ * The shared frame of every layout section (timeline, cards, tags, text,
+ * quotes): the section root with its data hooks, the `// title` label in a
+ * narrow left column, and the content on the right. One column on phones.
+ */
+interface Props {
+  section: Section;
+  locale: Locale;
+}
+
+const { section, locale } = Astro.props;
+const id = anchorFor(section.id);
+const titleId = `${id}-title`;
+---
+
+<section
+  id={id}
+  data-section={section.type}
+  data-animate={String(section.animate)}
+  class="sec-wrap"
+  aria-labelledby={titleId}
+>
+  <div class="shell sec">
+    <h2 class="label" id={titleId} data-typer><span aria-hidden="true">//</span> {pick(section.title, locale)}</h2>
+    <div class="content"><slot /></div>
+  </div>
+</section>
+
+<style>
+  .sec-wrap {
+    padding: 96px 0;
+    border-top: 1px solid var(--line);
+  }
+  .sec {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 40px;
+  }
+  .label {
+    margin-top: 6px;
+    min-height: 1.6em;
+  }
+  /* Long German compounds and URLs wrap instead of widening the page. */
+  .content {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 760px) {
+    .sec-wrap {
+      padding: 72px 0;
+    }
+    .sec {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+  }
+</style>

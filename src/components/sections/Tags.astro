@@ -1,0 +1,54 @@
+---
+import SectionFrame from "../layout/SectionFrame.astro";
+import { pick, pickText } from "../../lib/localize";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"tags">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale } = Astro.props;
+---
+
+{/* Each group's chips carry `data-chips`, the hook the motion layer snaps in. */}
+<SectionFrame section={section} locale={locale}>
+  <div class="groups">
+    {
+      section.groups
+        .filter((group) => group.items.length > 0)
+        .map((group) => (
+          <div class="group">
+            <h3>{pick(group.title, locale)}</h3>
+            <ul class="chips" data-chips>
+              {group.items.map((item) => (
+                <li class="chip">
+                  {pickText(item.label, locale)}
+                  {item.level && <i class="lvl">{pickText(item.level, locale)}</i>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+    }
+  </div>
+</SectionFrame>
+
+<style>
+  .groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+    gap: 28px;
+  }
+  .group {
+    min-width: 0;
+  }
+  h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 10px;
+  }
+</style>

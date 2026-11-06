@@ -150,7 +150,8 @@ test.describe("fixed sections, JavaScript disabled", () => {
 
   test("fixed sections render in page order with root attributes", async ({ page }) => {
     await page.goto("/");
-    const roots = page.locator("main > section[data-section]");
+    const fixed = ["hero", "statement", "stats", "journey", "contact"];
+    const roots = page.locator(fixed.map((t) => `main > section[data-section="${t}"]`).join(", "));
     await expect(roots).toHaveCount(5);
     expect(await roots.evaluateAll((els) => els.map((e) => e.getAttribute("data-section")))).toEqual([
       "hero",

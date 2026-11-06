@@ -1,0 +1,175 @@
+---
+import SectionFrame from "../layout/SectionFrame.astro";
+import DateRange from "../layout/DateRange.astro";
+import RichText from "../layout/RichText.astro";
+import Img from "../layout/Img.astro";
+import { pick } from "../../lib/localize";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"cards">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale, content } = Astro.props;
+const { labels } = content.site;
+const now = new Date();
+---
+
+{/* A confidential card is description-only: no links, no image, and a `confidential` badge. */}
+<SectionFrame section={section} locale={locale}>
+  <ul class="cards">
+    {
+      section.items.map((item) => {
+        const links = item.confidential ? undefined : item.links;
+        const image = item.confidential ? undefined : item.image;
+        return (
+          <li class="card" data-card>
+            {image && (
+              <div class="shot">
+                <Img image={image} locale={locale} widths={[480, 960]} sizes="(max-width: 760px) 100vw, 420px" />
+              </div>
+            )}
+            <div class="body">
+              {(item.start || item.end || item.confidential) && (
+                <div class="meta">
+                  <span class="d">
+                    <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} />
+                  </span>
+                  {item.confidential && <span class="ref">{pick(labels.confidential, locale)}</span>}
+                </div>
+              )}
+              <h3>{pick(item.name, locale)}</h3>
+              <div class="role">{pick(item.role, locale)}</div>
+              <div class="desc">
+                <RichText value={item.description} locale={locale} />
+              </div>
+              {item.tech.length > 0 && (
+                <ul class="chips">
+                  {item.tech.map((t) => (
+                    <li class="chip">{t}</li>
+                  ))}
+                </ul>
+              )}
+              {(links?.code || links?.live) && (
+                <div class="links">
+                  {links.code && (
+                    <a href={links.code} target="_blank" rel="noopener noreferrer" data-umami-event="project-link" data-umami-event-kind="code">
+                      {pick(labels.codeLink, locale)} <span aria-hidden="true">↗</span>
+                    </a>
+                  )}
+                  {links.live && (
+                    <a href={links.live} target="_blank" rel="noopener noreferrer" data-umami-event="project-link" data-umami-event-kind="live">
+                      {pick(labels.liveLink, locale)} <span aria-hidden="true">↗</span>
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </li>
+        );
+      })
+    }
+  </ul>
+</SectionFrame>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card:hover {
+    border-color: var(--accent);
+  }
+  .shot {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    background: var(--soft);
+  }
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 20px 22px 22px;
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .d {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .role {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .desc {
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  .desc :global(p) {
+    margin: 0;
+  }
+  .desc :global(p + p) {
+    margin-top: 8px;
+  }
+  .chips {
+    margin-top: 14px;
+  }
+  .chip {
+    font-size: 13px;
+    padding: 2px 8px;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: auto;
+    padding-top: 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .links a {
+    color: var(--accent-text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .links a:hover {
+    text-decoration: underline;
+  }
+</style>

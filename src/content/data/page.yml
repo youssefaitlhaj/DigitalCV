@@ -214,7 +214,7 @@ sections:
           - label: { en: Software Development, de: Softwareentwicklung }
           - label: { en: Web Development, de: Webentwicklung }
           - label: { en: Vibe Coding, de: Vibe Coding }
-          - label: { en: Building tools that simplify IT work, de: Werkzeuge bauen, die IT-Arbeit erleichtern }
+          - label: { en: Building tools that simplify IT work, de: "Werkzeuge bauen, die IT-Arbeit erleichtern" }
       - title: { en: Languages, de: Sprachen }
         items:
           - label: { en: Arabic, de: Arabisch }

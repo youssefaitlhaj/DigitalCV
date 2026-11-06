@@ -1,0 +1,12 @@
+---
+import { componentFor, type SectionProps } from "./index";
+
+interface Props extends SectionProps {
+  mode?: "web" | "print";
+}
+
+const { section, locale, content, mode = "web" } = Astro.props;
+const Component = componentFor(section.type, mode);
+---
+
+{Component && <Component section={section} locale={locale} content={content} />}

@@ -168,3 +168,51 @@ a {
 .btn.s:hover {
   background: var(--soft);
 }
+
+/* Pill badge: `HEAD`, `first commit`, `confidential`. */
+.ref {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--accent-text);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 0 7px;
+  margin-inline-start: 6px;
+  vertical-align: 1px;
+  white-space: nowrap;
+}
+
+/* Chips: skills (tags layout) and project technologies (cards layout). */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.chip {
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  padding: 4px 10px;
+  border-radius: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.chip:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.chip .lvl {
+  font-style: normal;
+  color: var(--accent-text);
+  font-weight: 600;
+  margin-inline-start: 4px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
