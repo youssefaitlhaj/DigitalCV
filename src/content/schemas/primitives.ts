@@ -56,6 +56,9 @@ export const imageRef = z.object({
     .startsWith("/src/assets/uploads/")
     .refine((v) => !v.includes("\\") && !v.split("/").includes(".."), {
       message: "Path must not contain '..' segments or backslashes",
+    })
+    .refine((v) => !v.slice("/src/assets/uploads/".length).includes("/"), {
+      message: "Image must sit directly in src/assets/uploads (no subfolders)",
     }),
   alt: localized(),
   crop: crop.optional(),

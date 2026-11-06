@@ -129,3 +129,28 @@ describe("collectImageRefs", () => {
     ]);
   });
 });
+
+describe("extension case", () => {
+  test("uncropped .JPG is accepted and matched by the resolver glob", async () => {
+    const { readFileSync, copyFileSync } = await import("node:fs");
+    copyFileSync(join(FIX, "small.jpg"), join(root, "src/assets/uploads/IMG_1.JPG"));
+    const r = ref("IMG_1.JPG");
+    await expect(cropAll([r], root)).resolves.toBeUndefined();
+    const src = readFileSync(join(__dirname, "../../../src/lib/image-resolver.ts"), "utf8");
+    const list = /\.\{([^}]+)\}"/.exec(src)![1].split(",");
+    for (const e of ["jpg", "jpeg", "png", "webp", "avif"]) {
+      expect(list).toContain(e);
+      expect(list).toContain(e.toUpperCase());
+    }
+    expect(list).toContain(r.src.split(".").pop());
+  });
+  test("cropped output of an uppercase source has a lowercase extension", async () => {
+    const r = ref("IMG_1.JPG", { x: 0, y: 0, width: 50, height: 50 });
+    await cropAll([r], root);
+    expect(generatedPathFor(r)).toMatch(/\.jpg$/);
+  });
+  test("generated path depends on src", () => {
+    const c = { x: 1, y: 1, width: 5, height: 5 };
+    expect(generatedPathFor(ref("a.jpg", c))).not.toBe(generatedPathFor(ref("a.JPG", c)));
+  });
+});

@@ -4,7 +4,7 @@ import type { ImageRef } from "../content/schemas/primitives";
 import { generatedPathFor, ImageError } from "./image-path";
 
 const assets = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/{uploads,generated}/*.{jpg,jpeg,png,webp,avif}",
+  "/src/assets/{uploads,generated}/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}",
   { eager: true },
 );
 
