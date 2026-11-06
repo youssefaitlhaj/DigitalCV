@@ -1,6 +1,7 @@
 ---
 import type { Role } from "../content/schema";
-import { formatDuration, formatRange, isoFor } from "../lib/dates";
+import { formatDuration, formatMonth, isoFor, monthsBetween } from "../lib/dates";
+import { getContent } from "../content/repository";
 import { useTranslations, type Locale } from "../i18n";
 
 interface Props {
@@ -13,8 +14,10 @@ const t = useTranslations(locale);
 
 const title = t.experience.titles[role.id];
 const description = t.experience.descriptions[role.id];
-const range = formatRange(role, locale, t);
-const duration = formatDuration(role, t);
+const { labels } = getContent().site;
+const startLabel = formatMonth(role.start, locale, labels);
+const endLabel = formatMonth(role.end, locale, labels);
+const duration = formatDuration(monthsBetween(role.start, role.end, new Date()), locale, labels);
 const isCurrent = role.end === "present";
 ---
 
@@ -23,9 +26,9 @@ const isCurrent = role.end === "present";
 
   <div class="body">
     <p class="dates">
-      <time datetime={isoFor(role.start)}>{range.split(" — ")[0]}</time>
+      <time datetime={isoFor(role.start)}>{startLabel}</time>
       <span aria-hidden="true">—</span>
-      <time datetime={isoFor(role.end)}>{range.split(" — ")[1]}</time>
+      <time datetime={isoFor(role.end)}>{endLabel}</time>
       <span class="duration">{duration}</span>
     </p>
 
