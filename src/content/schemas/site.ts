@@ -7,6 +7,9 @@ const employmentLabels = z.object({
   internship: localized(),
 });
 
+export const accentIdSchema = z.enum(["whisky", "bourbon", "singleMalt", "green"]);
+export const backgroundIdSchema = z.enum(["oat", "paper", "stone", "white"]);
+
 export const siteSchema = z.object({
   name: z.string().trim().min(1),
   logoText: z.string().trim().min(1),
@@ -16,8 +19,8 @@ export const siteSchema = z.object({
   location: localized(),
   siteUrl: z.url(),
   palette: z.object({
-    accent: z.enum(["whisky", "bourbon", "singleMalt", "green"]),
-    background: z.enum(["oat", "paper", "stone", "white"]),
+    accent: accentIdSchema,
+    background: backgroundIdSchema,
   }),
   pdf: z.object({ includePortrait: z.boolean(), fileBaseName: slugId }),
   analytics: z.object({ umamiWebsiteId: z.string().trim().min(1).optional(), dashboardUrl: z.url().optional() }),
