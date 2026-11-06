@@ -42,7 +42,9 @@
   .prompt { font-family:"JetBrains Mono", monospace; font-size:14px; color:var(--muted); margin-bottom:14px; min-height:1.6em; }
   .prompt b { color:var(--accent); font-weight:500; }
   .hero h1 { font-size:clamp(46px,7.4vw,84px); line-height:1; letter-spacing:-.035em; margin:0; }
-  .hero h1 .ch { display:inline-block; }
+  .hero h1 .wd { white-space:nowrap; }
+  .hero h1 .ch.off { visibility:hidden; }
+  .cur.typing { animation:none; margin-right:calc(-.42em - 6px); }
   .cur { display:inline-block; width:.42em; height:.82em; background:var(--accent); vertical-align:-.04em; margin-left:6px; animation:blink 1.1s steps(1) infinite; }
   @keyframes blink { 50% { opacity:0; } }
   .role { font-size:22px; font-weight:600; color:var(--accent); margin-top:18px; }
@@ -165,9 +167,9 @@
 
 <div class="hero"><div class="shell grid">
   <div>
-    <span class="note">① types itself in about 1 second, and you can scroll straight past it</span>
+    <span class="note">① types itself, name included, letter by letter in about 1 second, and you can scroll straight past it</span>
     <div class="prompt" id="prompt"><b>~/bamberg</b> $ <span id="cmd"></span></div>
-    <h1 id="name">Youssef Ait Lhaj<span class="cur"></span></h1>
+    <h1 id="name" aria-label="Youssef Ait Lhaj"><span id="nameText" aria-hidden="true">Youssef Ait Lhaj</span><span class="cur"></span></h1>
     <div class="role fade-up">Software Developer at Imbus AG</div>
     <p class="sub fade-up">Seven years building TestBench, a test management platform, first alongside my computer science degree, now full time.</p>
     <div class="btns fade-up"><a class="btn p" href="#">↓ Download CV (PDF)</a><a class="btn s" href="#contact">Contact me</a></div>
@@ -290,8 +292,19 @@
     // ① hero intro: fast, never blocks
     const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
     const cmd = document.getElementById('cmd'), word = 'whoami';
+    // split the name into letters (words stay unbreakable), hide them, then reveal left to right with the cursor following
+    const nameText = document.getElementById('nameText'), cur = document.querySelector('#name .cur'), nameChars = [];
+    const frag = document.createDocumentFragment();
+    nameText.textContent.split(/(\s+)/).forEach(t => {
+      if (!t) return;
+      const host = /^\s+$/.test(t) ? frag : frag.appendChild(Object.assign(document.createElement('span'), { className:'wd' }));
+      [...t].forEach(c => nameChars.push(host.appendChild(Object.assign(document.createElement('span'), { className:'ch off', textContent:c }))));
+    });
+    nameText.replaceChildren(frag);
+    nameText.prepend(cur);
+    const typeName = n => { nameChars.forEach((c, i) => c.classList.toggle('off', i >= n)); n ? nameChars[n - 1].after(cur) : nameText.prepend(cur); };
     tl.to({}, { duration:.35, onUpdate(){ cmd.textContent = word.slice(0, Math.ceil(this.progress() * word.length)); } })
-      .from('#name', { yPercent:40, opacity:0, duration:.6 }, '+=.05')
+      .to({}, { duration:nameChars.length * .04, ease:'none', onStart(){ cur.classList.add('typing'); }, onUpdate(){ typeName(Math.ceil(this.progress() * nameChars.length)); }, onComplete(){ cur.classList.remove('typing'); } }, '+=.08')
       .from('.fade-up', { y:16, opacity:0, duration:.5, stagger:.07 }, '-=.35')
       .from('#json .ln', { opacity:0, x:-8, duration:.25, stagger:.05 }, '-=.3')
       .add(() => document.getElementById('ok').textContent = '✓ valid')

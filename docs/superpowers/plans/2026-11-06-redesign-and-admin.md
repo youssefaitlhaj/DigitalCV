@@ -435,18 +435,22 @@ test("pick returns the locale's value", () => {
 - Produces: each effect file exports `const effect: { selector: string; init(el: Element, ctx: { gsap; ScrollTrigger }): void }`. `index.ts` holds a list of effects (open/closed principle: adding an effect means adding one file and one list entry). It skips every element inside `[data-animate="false"]` and does nothing at all under reduced motion.
 - **Behaviour:** each effect matches its row in the spec §5.3 table, and timing values come from `motion-prototype.html`.
   - The intro timeline is forced to completion on the first `scroll` event.
+  - The intro types the name letter by letter, left to right (about 40 ms per letter, matching the prototype). Letters are wrapped per word in `white-space: nowrap` spans so a word never breaks mid-line; unrevealed letters use `visibility: hidden` so nothing shifts; the block cursor moves after the last revealed letter and doesn't blink while typing. The `<h1>` keeps the full name for assistive tech (visually hidden text, letter spans `aria-hidden`).
   - The journey effect pins and scrubs horizontally only at `min-width: 761px`.
   - The statement effect splits words across text nodes while keeping the parent `<strong>`, `<u>` and `<span class>` elements.
 - **CSS rule:** elements are hidden for the intro only under `.motion [data-intro] …`, and never through CSS that applies without the `motion` class.
 
 - [ ] **Step 1: Write failing e2e tests.**
   - `reduced motion: all text fully opaque, counters at final value, no pinned spacer`: in the `reducedMotion` project, assert that every `[data-statement] .w` element (or the paragraph itself) has a computed opacity of 1, and that there is no `.pin-spacer` element.
-  - `intro completes on first scroll`: load the page, scroll 10 px immediately, then on the next frame assert the name's opacity is 1.
+  - `intro completes on first scroll`: load the page, scroll 10 px immediately, then on the next frame assert that no name letter is hidden and the cursor follows the last letter.
+  - `name types left to right`: about 150 ms into typing, the revealed letters are a non-empty prefix of the name shorter than the full name, and the cursor sits right after the last revealed letter.
+  - `name typing causes no layout shift`: the `<h1>` bounding box is the same mid-typing and after typing, at 1280 px and 320 px.
+  - `name is read whole`: the `<h1>` accessible name equals the full name from `site.yaml`.
   - `statement keeps formatting while split`: a fixture statement with `**bold**` must still contain a `strong` element after initialisation.
   - `animate:false section has no ScrollTrigger`: in a fixture, disable animation on experience and assert that the rail fill already has its final transform.
   - `no JS: content visible`: with JavaScript disabled, `[data-intro]` elements are visible.
 - [ ] **Step 2: Run the tests and confirm they fail. Step 3: Implement. Step 4: Run the tests and confirm they pass.**
-- [ ] **Step 5: Check by hand in a desktop browser and at a 375 px width.** Compare against the prototype: the intro takes about 1 s, the statement scrubs with scrolling, and the journey pins. Note the result in the commit body.
+- [ ] **Step 5: Check by hand in a desktop browser and at a 375 px width.** Compare against the prototype: the intro takes about 1 s and the name types letter by letter, the statement scrubs with scrolling, and the journey pins. Note the result in the commit body.
 - [ ] **Step 6: Commit with the message `feat: scroll-linked motion layer`, then push.**
 
 ### Task 11: Legal pages, SEO and analytics

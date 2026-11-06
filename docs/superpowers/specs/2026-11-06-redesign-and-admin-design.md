@@ -94,7 +94,7 @@ Principle: **scroll-linked (scrubbed) animation wherever possible**, so motion r
 
 | # | Effect | Behaviour |
 |---|---|---|
-| 1 | Hero intro | `whoami` types, name rises, buttons/card fade up, JSON lines appear then `✓ valid`, portrait reveals with a clip. ~1 s total. **Any scroll completes it instantly.** Subtle portrait parallax on scroll. |
+| 1 | Hero intro | `whoami` types, then **the name types itself letter by letter, left to right, with the block cursor following the last letter (Youssef)**; buttons/card fade up, JSON lines appear then `✓ valid`, portrait reveals with a clip. ~1 s total. **Any scroll completes it instantly.** Subtle portrait parallax on scroll. Typing never shifts the layout (hidden letters keep their space), never breaks a word across lines, and screen readers hear the whole name once. |
 | 2 | Statement | Words go from ~14% to 100% opacity, scrubbed to scroll. |
 | 3 | Stats | Count up once on entering, < 1 s. |
 | 4 | Journey | Pinned horizontal scroll with an accent rail filling, scrubbed. Vertical list with simple reveals on ≤ 760 px. |
