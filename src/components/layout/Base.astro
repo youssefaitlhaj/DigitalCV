@@ -1,5 +1,6 @@
 ---
 import "../../styles/global.css";
+import "../../styles/motion.css";
 import { LOCALES, dirFor, pathFor, DEFAULT_LOCALE, type Locale } from "../../i18n/locales";
 import { getContent } from "../../content/repository";
 import { paletteCss } from "../../lib/palettes";
@@ -58,6 +59,23 @@ const css = paletteCss(site.palette.accent, site.palette.background);
       })();
     </script>
 
+    {/*
+      Motion: the `motion` class (set before first paint, only without reduced
+      motion) is what lets src/styles/motion.css hide intro elements. If the
+      motion layer has not marked itself ready within 3 s, drop the class so
+      nothing stays hidden waiting for it.
+    */}
+    <script is:inline>
+      (function () {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        var root = document.documentElement;
+        root.classList.add("motion");
+        setTimeout(function () {
+          if (!root.classList.contains("motion-ready")) root.classList.remove("motion");
+        }, 3000);
+      })();
+    </script>
+
     <slot name="head" />
   </head>
   <body>
@@ -66,6 +84,10 @@ const css = paletteCss(site.palette.accent, site.palette.background);
     <script>
       import { initTheme } from "../../scripts/theme";
       initTheme();
+    </script>
+    <script>
+      import { initMotion } from "../../scripts/motion/index";
+      initMotion();
     </script>
   </body>
 </html>

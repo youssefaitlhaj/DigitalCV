@@ -91,7 +91,8 @@ test.describe("layout sections on the real content", () => {
 
   test("page renders every visible section in order", async ({ page }) => {
     await page.goto("/");
-    const roots = page.locator("main > section[data-section]");
+    // Not `main > section`: on wide screens the motion layer wraps the pinned journey in a `.pin-spacer`.
+    const roots = page.locator("main section[data-section]");
     expect(await roots.evaluateAll((els) => els.map((e) => e.id))).toEqual([
       "hero",
       "statement",
