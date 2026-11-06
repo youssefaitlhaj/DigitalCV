@@ -87,3 +87,15 @@ describe("slugId", () => {
     expect(slugId.safeParse("über").success).toBe(false);
   });
 });
+
+describe("imageRef path safety", () => {
+  const ok = (s: string) => imageRef.safeParse({ src: s, alt, }).success;
+  test("rejects .. segments and backslashes", () => {
+    expect(ok("/src/assets/uploads/../../x.jpg")).toBe(false);
+    expect(ok("/src/assets/uploads/a/../b.jpg")).toBe(false);
+    expect(ok("/src/assets/uploads/..\\x.jpg")).toBe(false);
+  });
+  test("accepts normal names including dots", () => {
+    expect(ok("/src/assets/uploads/my..photo.jpg")).toBe(true);
+  });
+});

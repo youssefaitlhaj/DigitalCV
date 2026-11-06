@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# generated image crops
+src/assets/generated/

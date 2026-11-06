@@ -51,7 +51,12 @@ const crop = z
   });
 
 export const imageRef = z.object({
-  src: z.string().startsWith("/src/assets/uploads/"),
+  src: z
+    .string()
+    .startsWith("/src/assets/uploads/")
+    .refine((v) => !v.includes("\\") && !v.split("/").includes(".."), {
+      message: "Path must not contain '..' segments or backslashes",
+    }),
   alt: localized(),
   crop: crop.optional(),
 });
