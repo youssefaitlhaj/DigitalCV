@@ -247,6 +247,18 @@ Claude can't create accounts or log in for Youssef. The plan includes a short, s
 
 All code and configuration are committed to the repo. Youssef already has GitHub. Cloudflare and Umami accounts are free to create. Cloudflare Zero Trust may ask for a payment card at signup even on the free plan. If Youssef declines, protect the preview another way, for example by putting the preview behind the editor's GitHub login or using an unguessable preview URL plus `noindex`. The builder decides.
 
+## 10.3 Code quality: SOLID **(Youssef)**
+
+Development follows the SOLID principles, applied as they fit TypeScript and Astro:
+
+- **Single responsibility:** content loading, validation, derived data (durations, computed stats), rendering, motion, PDF generation, and rich-text sanitising each live in separate modules. Components render; they don't fetch, parse, or compute.
+- **Open/closed:** section layouts are registered in one place. Adding a new layout means adding its schema, component, and print variant, and registering them, without editing a growing `switch` in shared code. The same applies to palettes, rich-text marks, and motion effects.
+- **Liskov substitution:** every layout satisfies one common section contract: id, title, visibility, menu, animation, and PDF flags, plus its items. The page, menu, and PDF can then treat any section the same way.
+- **Interface segregation:** components receive small, specific props, not the whole content tree. Motion attaches through narrow data attributes, as it does today.
+- **Dependency inversion:** pages and components depend on a content-access abstraction (typed domain objects), not on the CMS's file format or on Sveltia. Swapping the editor for the fallback, or changing file formats, should only touch the content-loading layer.
+
+Apply these pragmatically. Small, readable code beats abstraction for its own sake (YAGNI still holds).
+
 ## 11. Left to the builder
 
 - Which Git-based editor (against §7.1's checklist, verified by spike), and how crop is achieved if not built in.
