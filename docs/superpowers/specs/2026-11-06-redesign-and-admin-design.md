@@ -161,7 +161,7 @@ A ready-made, open-source, **Git-based** editor that commits content to the GitH
 6. Can commit to a non-default branch (needed for §7.2), or otherwise support a draft/publish workflow.
 7. A way to add a "Statistics" link/button (custom link, menu item, or a small page beside the editor).
 
-Candidates seen during research (none confirmed to tick every box): Sveltia CMS, Decap CMS, Keystatic, Pages CMS. Verify against the list with a short spike before committing.
+**Recommended: Sveltia CMS** (free, open source, Decap-compatible config). It has built-in i18n, mobile support, an editorial workflow, and deploy previews. GitHub login goes through its small auth Worker on Cloudflare. **Fallback: Keystatic.** Image cropping isn't confirmed in any free candidate, so plan for a custom crop step. Verify Sveltia against the checklist above with a short spike before committing; switch to the fallback if it fails a must-have. **(design call; Youssef asked for the best free editor and was given this recommendation)**
 
 ### 7.2 Preview → Publish **(Youssef: exact preview over instant preview)**
 
