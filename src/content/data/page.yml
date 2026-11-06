@@ -48,8 +48,8 @@ sections:
     title: { en: Statement, de: Leitgedanke }
     inMenu: false
     text:
-      en: Seven years on one product. I joined Imbus as a student, **stayed through my whole degree**, and never left. Today I build it full time.
-      de: Sieben Jahre an einem Produkt. Ich bin bei Imbus als Student eingestiegen, **bin während meines ganzen Studiums geblieben** und nie gegangen. Heute entwickle ich es in Vollzeit.
+      en: Seven years on one product. I joined Imbus as a student, <span class="c-accent">stayed through my whole degree</span>, and never left. Today I build it full time.
+      de: Sieben Jahre an einem Produkt. Ich bin bei Imbus als Student eingestiegen, <span class="c-accent">bin während meines ganzen Studiums geblieben</span> und nie gegangen. Heute entwickle ich es in Vollzeit.
 
   - type: stats
     id: stats

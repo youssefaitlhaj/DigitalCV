@@ -22,7 +22,7 @@ Hero:
 - `hero.jsonCard[*].key` and `hero.prompt` stay in English by design (code-like)
 
 Statement:
-- `statement.text.de`: "Sieben Jahre an einem Produkt. Ich bin bei Imbus als Student eingestiegen, **bin während meines ganzen Studiums geblieben** und nie gegangen. Heute entwickle ich es in Vollzeit."
+- `statement.text.de`: "Sieben Jahre an einem Produkt. Ich bin bei Imbus als Student eingestiegen, <span class="c-accent">bin während meines ganzen Studiums geblieben</span> und nie gegangen. Heute entwickle ich es in Vollzeit."
 
 Stats labels:
 - `stats.items[0].label.de`: "Jahre an TestBench"
@@ -69,4 +69,4 @@ Other label strings (`present`, `year`, `years`, `month`, `months`, `employment.
 
 ## Notes
 
-- The statement highlight uses Markdown bold (`**...**`) as the stand-in for the prototype's accent-coloured phrase; swap it for the colour swatch syntax from the rich-text task if that is different.
+- The statement highlight uses `<span class="c-accent">...</span>` inside the Markdown, as the rich-text allowlist permits.
