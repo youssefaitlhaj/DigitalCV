@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion prototype · Whisky on Oat</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F4EEE4; --soft:#EBE3D6; --panel:#EFE8DC; --line:#DDD2C1; --muted:#5E5446; --ink:#1C1813;
+    --accent:#9A5B13; --accent-ink:#FFFFFF;
+  }
+  [data-theme="dark"] {
+    --bg:#17130F; --soft:#201B16; --panel:#201B16; --line:#342D25; --muted:#A89B89; --ink:#F0E8DC;
+    --accent:#E0A14A; --accent-ink:#17130F;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans", system-ui, sans-serif; font-size:17px; line-height:1.6; transition:background .3s, color .3s; overflow-x:hidden; }
+  a { color:inherit; }
+  .mono { font-family:"JetBrains Mono", monospace; }
+  .shell { max-width:1080px; margin:0 auto; padding:0 24px; }
+  .mock-badge { position:fixed; bottom:16px; right:16px; background:var(--ink); color:var(--bg); font-size:12px; padding:6px 12px; border-radius:999px; z-index:30; }
+
+  /* scroll progress: a thin "build progress" bar */
+  .progress { position:fixed; top:0; left:0; height:2px; width:100%; background:var(--accent); transform-origin:0 50%; transform:scaleX(0); z-index:40; }
+
+  header { position:sticky; top:0; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); z-index:20; }
+  header .shell { display:flex; justify-content:space-between; align-items:center; height:60px; }
+  .logo { font-family:"JetBrains Mono", monospace; font-weight:700; font-size:15px; text-decoration:none; }
+  .logo span { color:var(--accent); }
+  header nav { display:flex; gap:22px; align-items:center; font-size:14px; color:var(--muted); }
+  header nav a { text-decoration:none; position:relative; }
+  header nav a.active { color:var(--ink); }
+  header nav a.active::after { content:""; position:absolute; left:0; right:0; bottom:-19px; height:2px; background:var(--accent); }
+  .ctrl { font-family:"JetBrains Mono", monospace; font-size:12px; border:1px solid var(--line); border-radius:6px; padding:4px 9px; background:transparent; color:var(--ink); cursor:pointer; }
+  @media (max-width:760px){ header nav .hide { display:none; } }
+
+  /* ---------- HERO ---------- */
+  .hero { min-height:calc(100svh - 60px); display:flex; align-items:center; padding:48px 0; }
+  .hero .grid { display:grid; grid-template-columns:1fr 300px; gap:56px; align-items:center; width:100%; }
+  @media (max-width:820px){ .hero .grid { grid-template-columns:1fr; } .photo { width:180px !important; order:-1; } }
+  .prompt { font-family:"JetBrains Mono", monospace; font-size:14px; color:var(--muted); margin-bottom:14px; min-height:1.6em; }
+  .prompt b { color:var(--accent); font-weight:500; }
+  .hero h1 { font-size:clamp(46px,7.4vw,84px); line-height:1; letter-spacing:-.035em; margin:0; }
+  .hero h1 .ch { display:inline-block; }
+  .cur { display:inline-block; width:.42em; height:.82em; background:var(--accent); vertical-align:-.04em; margin-left:6px; animation:blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  .role { font-size:22px; font-weight:600; color:var(--accent); margin-top:18px; }
+  .hero p.sub { color:var(--muted); max-width:560px; margin:12px 0 0; font-size:18px; }
+  .btns { display:flex; gap:10px; margin-top:28px; flex-wrap:wrap; }
+  .btn { font-size:15px; font-weight:600; padding:12px 20px; border-radius:8px; text-decoration:none; display:inline-flex; gap:8px; align-items:center; transition:transform .2s, background .2s; }
+  .btn.p { background:var(--accent); color:var(--accent-ink); }
+  .btn.p:hover { transform:translateY(-2px); }
+  .btn.s { border:1px solid var(--line); }
+  .btn.s:hover { background:var(--soft); }
+  .photo { width:300px; aspect-ratio:4/5; border-radius:14px; overflow:hidden; position:relative; }
+  .photo img { width:100%; height:115%; object-fit:cover; display:block; will-change:transform; }
+  .scroll-hint { position:absolute; left:50%; bottom:22px; transform:translateX(-50%); font-family:"JetBrains Mono", monospace; font-size:12px; color:var(--muted); }
+
+  .code { margin-top:30px; max-width:560px; background:var(--panel); border:1px solid var(--line); border-radius:10px; font-family:"JetBrains Mono", monospace; font-size:13.5px; overflow:hidden; }
+  .code .bar { padding:8px 14px; border-bottom:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; justify-content:space-between; }
+  .code .bar .ok { color:var(--accent); }
+  .code pre { margin:0; padding:14px 16px; line-height:1.75; overflow-x:auto; }
+  .code .ln { display:block; }
+  .s { color:var(--accent); } .c { color:var(--muted); }
+
+  /* ---------- STATEMENT (Apple-style word reveal, scrubbed) ---------- */
+  .statement { padding:18vh 0; }
+  .statement p { font-size:clamp(30px,4.6vw,58px); line-height:1.15; letter-spacing:-.025em; font-weight:700; margin:0; max-width:980px; }
+  .statement .w { opacity:.14; transition:none; }
+  .statement .hl { color:var(--accent); }
+
+  /* ---------- STATS ---------- */
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  @media (max-width:760px){ .stats { grid-template-columns:repeat(2,1fr); } }
+  .stat { padding:36px 24px; border-left:1px solid var(--line); }
+  .stat:first-child { border-left:0; }
+  .stat .n { font-family:"JetBrains Mono", monospace; font-size:clamp(40px,5vw,60px); font-weight:800; letter-spacing:-.04em; color:var(--accent); line-height:1; }
+  .stat .l { color:var(--muted); font-size:15px; margin-top:8px; }
+
+  /* ---------- JOURNEY (pinned horizontal, scrubbed) ---------- */
+  .journey { position:relative; overflow:hidden; }
+  .journey .head { padding:96px 0 32px; }
+  .label { font-family:"JetBrains Mono", monospace; font-size:13px; color:var(--muted); }
+  .label span { color:var(--accent); }
+  .journey h2 { font-size:clamp(32px,4.5vw,54px); letter-spacing:-.03em; line-height:1.05; margin:8px 0 0; }
+  .track-wrap { position:relative; padding-bottom:72px; }
+  .track { display:flex; gap:24px; padding:0 max(24px, calc((100vw - 1080px)/2 + 24px)); width:max-content; }
+  .rail { position:absolute; left:0; right:0; top:46px; height:2px; background:var(--line); }
+  .rail i { position:absolute; inset:0; background:var(--accent); transform-origin:0 50%; transform:scaleX(0); display:block; }
+  .stop { width:min(78vw, 380px); flex-shrink:0; position:relative; padding-top:76px; }
+  .stop::before { content:""; position:absolute; top:39px; left:0; width:16px; height:16px; border-radius:50%; background:var(--bg); border:2px solid var(--accent); }
+  .stop.head-commit::before { background:var(--accent); }
+  .stop .yr { font-family:"JetBrains Mono", monospace; font-size:13px; color:var(--accent); position:absolute; top:0; left:0; }
+  .stop h3 { font-size:24px; margin:0; letter-spacing:-.02em; }
+  .stop p { color:var(--muted); margin:8px 0 0; font-size:16px; }
+  .stop .where { font-family:"JetBrains Mono", monospace; font-size:12px; color:var(--muted); margin-top:12px; }
+  @media (max-width:760px) {
+    .track { flex-direction:column; width:auto; padding:0 24px; }
+    .rail { display:none; }
+    .stop { width:auto; padding-top:0; padding-left:30px; padding-bottom:28px; border-left:2px solid var(--line); margin-left:7px; }
+    .stop::before { top:2px; left:-9px; }
+    .stop .yr { position:static; }
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section.sec-wrap { padding:96px 0; border-top:1px solid var(--line); }
+  .sec { display:grid; grid-template-columns:200px 1fr; gap:40px; }
+  @media (max-width:760px){ .sec { grid-template-columns:1fr; gap:16px; } }
+  .sec > .label { margin-top:6px; min-height:1.6em; }
+
+  .log { position:relative; padding-left:34px; }
+  .log .rail-v { position:absolute; left:6px; top:8px; bottom:8px; width:2px; background:var(--line); }
+  .log .rail-v i { position:absolute; inset:0; background:var(--accent); transform-origin:50% 0; transform:scaleY(0); display:block; }
+  .commit { position:relative; padding-bottom:36px; }
+  .commit:last-child { padding-bottom:0; }
+  .commit::before { content:""; position:absolute; left:-34px; top:6px; width:14px; height:14px; border-radius:50%; background:var(--bg); border:2px solid var(--line); transition:border-color .3s, background .3s, transform .3s; }
+  .commit.lit::before { border-color:var(--accent); transform:scale(1.15); }
+  .commit.head.lit::before { background:var(--accent); }
+  .commit .h { font-family:"JetBrains Mono", monospace; font-size:13px; color:var(--muted); }
+  .ref { color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:0 7px; font-size:11px; margin-left:6px; }
+  .commit h3 { margin:4px 0 0; font-size:20px; }
+  .commit .org { color:var(--muted); font-size:15px; }
+  .commit .org a { color:var(--accent); text-decoration:none; font-weight:500; }
+  .tag { font-size:12px; background:var(--soft); border:1px solid var(--line); border-radius:4px; padding:1px 7px; margin-left:6px; color:var(--muted); vertical-align:2px; font-weight:500; }
+  .commit p { margin:8px 0 0; font-size:16px; max-width:640px; }
+
+  .skills { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:28px; }
+  .skills h3 { font-size:15px; margin:0 0 10px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font-size:14px; border:1px solid var(--line); background:var(--soft); padding:4px 10px; border-radius:6px; transition:border-color .2s, transform .2s; }
+  .chip:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .chip i { font-style:normal; color:var(--accent); font-weight:600; margin-left:4px; font-size:12px; font-family:"JetBrains Mono", monospace; }
+
+  .row { display:grid; grid-template-columns:150px 1fr; gap:20px; padding:18px 0; border-top:1px solid var(--line); }
+  .row:first-child { border-top:0; padding-top:0; }
+  @media (max-width:560px){ .row { grid-template-columns:1fr; gap:4px; } }
+  .row .d { font-family:"JetBrains Mono", monospace; font-size:13px; color:var(--muted); padding-top:3px; }
+  .row h3 { margin:0; font-size:18px; }
+  .row .org { color:var(--muted); font-size:15px; }
+
+  .contact { padding:18vh 0; text-align:center; border-top:1px solid var(--line); }
+  .contact .big { font-size:clamp(36px,6vw,76px); font-weight:700; letter-spacing:-.035em; line-height:1.02; margin:12px auto 0; max-width:900px; }
+  .contact .btns { justify-content:center; margin-top:36px; }
+  footer { padding:28px 0; font-size:13px; color:var(--muted); font-family:"JetBrains Mono", monospace; border-top:1px solid var(--line); }
+  footer .shell { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+
+  /* Annotations so you can tell which effect is which */
+  .note { font-family:"JetBrains Mono", monospace; font-size:11px; color:var(--accent); border:1px dashed var(--accent); border-radius:6px; padding:3px 8px; display:inline-block; margin-bottom:14px; opacity:.85; }
+  body.no-notes .note { display:none; }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="mock-badge">Motion prototype · <a href="#" id="toggle-notes" style="color:inherit">hide notes</a></div>
+
+<header><div class="shell">
+  <a class="logo" href="#">youssef<span>.</span>dev</a>
+  <nav>
+    <a class="hide" href="#journey">Journey</a><a class="hide" href="#experience">Experience</a><a class="hide" href="#skills">Skills</a><a class="hide" href="#education">Education</a><a href="#contact">Contact</a>
+    <span class="ctrl">EN · DE</span>
+    <button class="ctrl" id="theme" type="button">◐ dark</button>
+  </nav>
+</div></header>
+
+<div class="hero"><div class="shell grid">
+  <div>
+    <span class="note">① types itself in about 1 second, and you can scroll straight past it</span>
+    <div class="prompt" id="prompt"><b>~/bamberg</b> $ <span id="cmd"></span></div>
+    <h1 id="name">Youssef Ait Lhaj<span class="cur"></span></h1>
+    <div class="role fade-up">Software Developer at Imbus AG</div>
+    <p class="sub fade-up">Seven years building TestBench, a test management platform, first alongside my computer science degree, now full time.</p>
+    <div class="btns fade-up"><a class="btn p" href="#">↓ Download CV (PDF)</a><a class="btn s" href="#contact">Contact me</a></div>
+    <div class="code fade-up">
+      <div class="bar"><span>youssef.json</span><span class="ok" id="ok"></span></div>
+<pre id="json"><span class="ln">{</span><span class="ln">  "location": <span class="s">"Bamberg, Germany"</span>,</span><span class="ln">  "stack": [<span class="s">"Java"</span>, <span class="s">"C#"</span>, <span class="s">".NET"</span>, <span class="s">"SQL"</span>],</span><span class="ln">  "speaks": [<span class="s">"Arabic"</span>, <span class="s">"German"</span>, <span class="s">"French"</span>, <span class="s">"English"</span>],</span><span class="ln">  "traits": [<span class="s">"never gives up"</span>, <span class="s">"learns fast"</span>, <span class="s">"team player"</span>]</span><span class="ln">}</span></pre>
+    </div>
+  </div>
+  <div class="photo" id="photo"><img src="../../../../src/assets/portrait.jpg" alt="Portrait of Youssef Ait Lhaj"></div>
+</div></div>
+
+<div class="statement"><div class="shell">
+  <span class="note">② scroll-linked: words light up as you scroll, at your speed</span>
+  <p id="statement">Seven years on one product. I joined Imbus as a student, <span class="hl">stayed through my whole degree</span>, and never left. Today I build it full time.</p>
+</div></div>
+
+<div class="shell"><span class="note">③ numbers count up once, in under a second</span></div>
+<div class="shell"><div class="stats">
+  <div class="stat"><div class="n" data-count="7">0</div><div class="l">years building TestBench</div></div>
+  <div class="stat"><div class="n" data-count="11">0</div><div class="l">years since my first professional code</div></div>
+  <div class="stat"><div class="n" data-count="3">0</div><div class="l">qualifications in computer science</div></div>
+  <div class="stat"><div class="n" data-count="4">0</div><div class="l">languages spoken</div></div>
+</div></div>
+
+<section class="journey" id="journey">
+  <div class="shell head">
+    <span class="note">④ pinned and horizontal: the page holds still while the path slides sideways (stacked on phones)</span>
+    <div class="label"><span>//</span> journey</div>
+    <h2>From Casablanca to Bamberg.</h2>
+  </div>
+  <div class="track-wrap">
+    <div class="rail"><i id="hrail"></i></div>
+    <div class="track" id="track">
+      <div class="stop"><div class="yr">2013</div><h3>Casablanca</h3><p>Technician Diploma in Computer Science at OFPPT.</p><div class="where">git init</div></div>
+      <div class="stop"><div class="yr">2015</div><h3>First commit</h3><p>Internship at NT SOFT: built a store management application in C# and MS SQL Server.</p><div class="where">NT SOFT · Casablanca</div></div>
+      <div class="stop"><div class="yr">2015 – 2017</div><h3>Bachelor's and two more internships</h3><p>Computer Science at Université Hassan II. Moved an insurance application to the web, then brought a non-profit's programme online.</p><div class="where">Casablanca</div></div>
+      <div class="stop"><div class="yr">2019</div><h3>Bamberg</h3><p>Moved to Germany and joined Imbus AG part time, working on TestBench.</p><div class="where">Imbus AG · Bavaria</div></div>
+      <div class="stop"><div class="yr">2020 – 2025</div><h3>Second degree, still building</h3><p>B.Sc. Software Systems Science at the University of Bamberg, while working at Imbus the whole way through.</p><div class="where">Uni Bamberg + Imbus AG</div></div>
+      <div class="stop head-commit"><div class="yr">2026 · HEAD</div><h3>Full time</h3><p>Software Developer at Imbus AG: features, bug fixing, and extending the database behind TestBench.</p><div class="where">Imbus AG · Bavaria</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-wrap" id="experience"><div class="shell sec">
+  <div class="label typer" data-text="experience"><span>//</span> experience</div>
+  <div>
+    <span class="note">⑤ the line draws down with your scroll and each point lights up as you reach it. The text is always visible.</span>
+    <div class="log" id="log">
+      <div class="rail-v"><i id="vrail"></i></div>
+      <div class="commit head"><div class="h">Feb 2026 – now · 10 mos <span class="ref">HEAD</span></div><h3>Software Developer <span class="tag">Full-time</span></h3><div class="org"><a href="#">Imbus AG</a> · Bavaria, Germany</div><p>Full time on TestBench since finishing my degree: feature development, bug fixing, and extending the underlying database.</p></div>
+      <div class="commit"><div class="h">Aug 2019 – Jan 2026 · 6 yrs 6 mos</div><h3>Software Developer <span class="tag">Part-time</span></h3><div class="org"><a href="#">Imbus AG</a> · Bavaria, Germany</div><p>Six and a half years part time on the same product, spanning my entire degree. I joined while I started studying and never left.</p></div>
+      <div class="commit"><div class="h">Mar – Jun 2017 · 4 mos</div><h3>Web Developer <span class="tag">Internship</span></h3><div class="org">AESVT Maroc · Casablanca, Morocco</div><p>Rebuilt and extended the association's WordPress site, and brought their programme online, including public voting for the best environmental artwork and ideas.</p></div>
+      <div class="commit"><div class="h">Jun – Sep 2016 · 4 mos</div><h3>Software Developer <span class="tag">Internship</span></h3><div class="org">Compagnie d'Assurance Transport · Casablanca</div><p>Part of the team that migrated a desktop insurance application to the web, in C# and MS SQL Server.</p></div>
+      <div class="commit"><div class="h">Mar – May 2015 · 3 mos <span class="ref">first commit</span></div><h3>Software Developer <span class="tag">Internship</span></h3><div class="org">NT SOFT · Casablanca</div><p>Built a store management application in C# and MS SQL Server. My first professional work.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="sec-wrap" id="skills"><div class="shell sec">
+  <div class="label typer" data-text="skills"><span>//</span> skills</div>
+  <div>
+    <span class="note">⑥ chips snap in quickly, group by group</span>
+    <div class="skills">
+      <div><h3>Languages &amp; Frameworks</h3><div class="chips"><span class="chip">Java</span><span class="chip">Spring Boot</span><span class="chip">Swing</span><span class="chip">C#</span><span class="chip">.NET Framework</span></div></div>
+      <div><h3>Databases</h3><div class="chips"><span class="chip">SQL</span><span class="chip">Oracle Database</span><span class="chip">MS SQL Server</span></div></div>
+      <div><h3>Tools &amp; Collaboration</h3><div class="chips"><span class="chip">Git</span><span class="chip">Mercurial</span><span class="chip">Jira</span><span class="chip">Sprint Management</span></div></div>
+      <div><h3>Practice</h3><div class="chips"><span class="chip">Software Development</span><span class="chip">Web Development</span><span class="chip">Vibe Coding</span><span class="chip">Developer tooling</span></div></div>
+      <div><h3>Languages</h3><div class="chips"><span class="chip">Arabic<i>Native</i></span><span class="chip">German<i>C1</i></span><span class="chip">French<i>C1</i></span><span class="chip">English<i>C1</i></span></div></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="sec-wrap" id="education"><div class="shell sec">
+  <div class="label typer" data-text="education"><span>//</span> education</div>
+  <div>
+    <div class="row"><div class="d">2020 – 2025</div><div><h3>B.Sc. Software Systems Science</h3><div class="org">Otto-Friedrich-Universität Bamberg · Germany</div></div></div>
+    <div class="row"><div class="d">2015 – 2016</div><div><h3>Bachelor's Degree in Computer Science</h3><div class="org">Université Hassan II · Casablanca</div></div></div>
+    <div class="row"><div class="d">2013 – 2015</div><div><h3>Technician Diploma in Computer Science</h3><div class="org">OFPPT · Casablanca</div></div></div>
+  </div>
+</div></section>
+
+<section class="contact" id="contact"><div class="shell">
+  <span class="note">⑦ big closing line, scales up as it enters</span>
+  <div class="label"><span>//</span> contact</div>
+  <p class="big" id="bigline">Let's build something worth building.</p>
+  <div class="btns"><a class="btn p" href="#">Email me</a><a class="btn s" href="#">LinkedIn</a><a class="btn s" href="#">↓ CV (PDF)</a></div>
+</div></section>
+
+<footer><div class="shell"><span>© 2026 Youssef Ait Lhaj</span><span>Bamberg, Germany</span></div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+  // theme + notes toggles
+  const root = document.documentElement, tb = document.getElementById('theme');
+  tb.onclick = () => { const d = root.dataset.theme !== 'dark'; root.dataset.theme = d ? 'dark' : 'light'; tb.textContent = d ? '◑ light' : '◐ dark'; };
+  document.getElementById('toggle-notes').onclick = e => { e.preventDefault(); document.body.classList.toggle('no-notes'); e.target.textContent = document.body.classList.contains('no-notes') ? 'show notes' : 'hide notes'; ScrollTrigger.refresh(); };
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  gsap.registerPlugin(ScrollTrigger);
+
+  // statement: wrap words
+  const st = document.getElementById('statement');
+  (function wrap(node){ [...node.childNodes].forEach(n => {
+    if (n.nodeType === 3) { const f = document.createDocumentFragment();
+      n.textContent.split(/(\s+)/).forEach(t => { if (!t) return; if (/^\s+$/.test(t)) f.appendChild(document.createTextNode(t)); else { const s = document.createElement('span'); s.className='w'; s.textContent=t; f.appendChild(s); } });
+      n.replaceWith(f);
+    } else if (n.nodeType === 1) wrap(n); }); })(st);
+
+  if (reduce) {
+    document.getElementById('cmd').textContent = 'whoami';
+    document.querySelectorAll('.w').forEach(w => w.style.opacity = 1);
+    document.querySelectorAll('[data-count]').forEach(n => n.textContent = n.dataset.count);
+    document.querySelectorAll('.commit').forEach(c => c.classList.add('lit'));
+    document.getElementById('ok').textContent = '✓ valid';
+  } else {
+    // progress bar
+    gsap.to('#progress', { scaleX:1, ease:'none', scrollTrigger:{ start:0, end:'max', scrub:true } });
+
+    // ① hero intro: fast, never blocks
+    const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
+    const cmd = document.getElementById('cmd'), word = 'whoami';
+    tl.to({}, { duration:.35, onUpdate(){ cmd.textContent = word.slice(0, Math.ceil(this.progress() * word.length)); } })
+      .from('#name', { yPercent:40, opacity:0, duration:.6 }, '+=.05')
+      .from('.fade-up', { y:16, opacity:0, duration:.5, stagger:.07 }, '-=.35')
+      .from('#json .ln', { opacity:0, x:-8, duration:.25, stagger:.05 }, '-=.3')
+      .add(() => document.getElementById('ok').textContent = '✓ valid')
+      .from('#photo', { clipPath:'inset(100% 0 0 0)', duration:.9, ease:'power4.inOut' }, .1);
+    // skip intro instantly if the visitor scrolls
+    addEventListener('scroll', () => tl.progress(1), { once:true, passive:true });
+
+    // photo parallax
+    gsap.to('#photo img', { yPercent:-12, ease:'none', scrollTrigger:{ trigger:'.hero', start:'top top', end:'bottom top', scrub:true } });
+
+    // ② statement word reveal
+    gsap.to('#statement .w', { opacity:1, stagger:.1, ease:'none', scrollTrigger:{ trigger:'#statement', start:'top 80%', end:'bottom 45%', scrub:true } });
+
+    // ③ counters
+    document.querySelectorAll('[data-count]').forEach(n => {
+      const o = { v:0 };
+      gsap.to(o, { v:+n.dataset.count, duration:.9, ease:'power2.out', onUpdate(){ n.textContent = Math.round(o.v); },
+        scrollTrigger:{ trigger:n, start:'top 88%', once:true } });
+    });
+
+    // ④ journey: pinned horizontal on wide screens
+    ScrollTrigger.matchMedia({
+      '(min-width: 761px)': function () {
+        const track = document.getElementById('track');
+        const dist = () => track.scrollWidth - innerWidth;
+        gsap.to(track, { x:() => -dist(), ease:'none',
+          scrollTrigger:{ trigger:'#journey', start:'top top', end:() => '+=' + dist(), pin:true, scrub:.6, invalidateOnRefresh:true } });
+        gsap.to('#hrail', { scaleX:1, ease:'none', scrollTrigger:{ trigger:'#journey', start:'top top', end:() => '+=' + dist(), scrub:.6 } });
+      },
+      '(max-width: 760px)': function () {
+        gsap.utils.toArray('.stop').forEach(s => gsap.from(s, { opacity:0, y:20, duration:.5, scrollTrigger:{ trigger:s, start:'top 90%', once:true } }));
+      }
+    });
+
+    // ⑤ experience rail + lit commits
+    gsap.to('#vrail', { scaleY:1, ease:'none', scrollTrigger:{ trigger:'#log', start:'top 70%', end:'bottom 70%', scrub:true } });
+    document.querySelectorAll('.commit').forEach(c => ScrollTrigger.create({ trigger:c, start:'top 70%', onEnter:() => c.classList.add('lit'), onLeaveBack:() => c.classList.remove('lit') }));
+
+    // section labels type themselves
+    document.querySelectorAll('.typer').forEach(l => {
+      const txt = l.dataset.text; l.innerHTML = '<span>//</span> <b style="font-weight:500"></b>'; const b = l.querySelector('b');
+      ScrollTrigger.create({ trigger:l, start:'top 85%', once:true, onEnter(){ gsap.to({}, { duration:.35, onUpdate(){ b.textContent = txt.slice(0, Math.ceil(this.progress() * txt.length)); } }); } });
+    });
+
+    // ⑥ skills chips
+    gsap.utils.toArray('.skills > div').forEach(g => gsap.from(g.querySelectorAll('.chip'), { opacity:0, y:10, scale:.95, duration:.35, stagger:.03, ease:'back.out(2)', scrollTrigger:{ trigger:g, start:'top 88%', once:true } }));
+
+    // ⑦ closing line
+    gsap.from('#bigline', { scale:.86, opacity:.2, ease:'none', scrollTrigger:{ trigger:'.contact', start:'top 85%', end:'center 60%', scrub:true } });
+
+    // nav active state
+    ['journey','experience','skills','education','contact'].forEach(id => ScrollTrigger.create({ trigger:'#'+id, start:'top 50%', end:'bottom 50%',
+      onToggle(s){ const a = document.querySelector('header nav a[href="#'+id+'"]'); if (a) a.classList.toggle('active', s.isActive); } }));
+  }
+</script>
+</body>
+</html>

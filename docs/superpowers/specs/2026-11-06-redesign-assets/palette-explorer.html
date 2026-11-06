@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merged · A + B</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#ffffff; --soft:#f5f6f8; --panel:#fafbfc; --ink:#111418; --muted:#5b6370; --line:#e6e8ec;
+    --accent:#1f4fff; --accent-ink:#ffffff; --code-key:#b54708; --code-str:var(--accent); --code-com:#8a919c; --code-kw:#7a3fd1;
+  }
+  [data-theme="dark"] {
+    --bg:#0d1117; --soft:#151b23; --panel:#151b23; --ink:#e6edf3; --muted:#8b97a5; --line:#262d36;
+    --accent:#7ee787; --accent-ink:#0d1117; --code-key:#ffa657; --code-str:#79c0ff; --code-com:#6e7681; --code-kw:#d2a8ff;
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans", system-ui, sans-serif; font-size:17px; line-height:1.6; transition:background .25s, color .25s; }
+  a { color:inherit; }
+  .mono { font-family:"JetBrains Mono", monospace; }
+  .mock-badge { position:fixed; bottom:16px; right:16px; background:var(--ink); color:var(--bg); font-size:12px; padding:6px 12px; border-radius:999px; z-index:10; }
+  .shell { max-width:1040px; margin:0 auto; padding:0 24px; }
+
+  /* Header: A's calm bar, B's mono logo */
+  header { position:sticky; top:0; background:color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); z-index:5; }
+  header .shell { display:flex; justify-content:space-between; align-items:center; height:60px; }
+  .logo { font-family:"JetBrains Mono", monospace; font-weight:700; font-size:15px; text-decoration:none; }
+  .logo span { color:var(--accent); }
+  header nav { display:flex; gap:22px; align-items:center; font-size:14px; color:var(--muted); }
+  header nav a { text-decoration:none; }
+  header nav a:hover { color:var(--ink); }
+  .ctrl { font-family:"JetBrains Mono", monospace; font-size:12px; border:1px solid var(--line); border-radius:6px; padding:4px 9px; background:transparent; color:var(--ink); cursor:pointer; }
+  @media (max-width:760px){ header nav .hide { display:none; } }
+
+  /* Hero: A's layout, B's prompt + cursor */
+  .hero { padding:80px 0 64px; border-bottom:1px solid var(--line); }
+  .hero .grid { display:grid; grid-template-columns:1fr 220px; gap:48px; align-items:center; }
+  @media (max-width:760px){ .hero .grid { grid-template-columns:1fr; } .hero img { width:140px !important; height:170px !important; order:-1; } }
+  .prompt { font-family:"JetBrains Mono", monospace; font-size:14px; color:var(--muted); margin-bottom:14px; }
+  .prompt b { color:var(--accent); font-weight:500; }
+  .hero h1 { font-size:clamp(44px,7vw,76px); line-height:1; letter-spacing:-.03em; margin:0; }
+  .cur { display:inline-block; width:.42em; height:.82em; background:var(--accent); vertical-align:-.04em; margin-left:6px; animation:blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  @media (prefers-reduced-motion:reduce){ .cur { animation:none; } }
+  .hero .role { font-size:21px; font-weight:600; color:var(--accent); margin-top:18px; }
+  .hero p { color:var(--muted); max-width:560px; margin:12px 0 0; font-size:18px; }
+  .btns { display:flex; gap:10px; margin-top:28px; flex-wrap:wrap; }
+  .btn { font-size:15px; font-weight:600; padding:12px 20px; border-radius:8px; text-decoration:none; display:inline-flex; gap:8px; align-items:center; }
+  .btn.p { background:var(--accent); color:var(--accent-ink); }
+  .btn.s { border:1px solid var(--line); }
+  .btn.s:hover { background:var(--soft); }
+  .hero img { width:220px; height:270px; object-fit:cover; border-radius:10px; }
+
+  /* B's json card, toned down to fit A */
+  .code { margin-top:28px; max-width:560px; background:var(--panel); border:1px solid var(--line); border-radius:10px; font-family:"JetBrains Mono", monospace; font-size:13.5px; overflow:hidden; }
+  .code .bar { padding:8px 14px; border-bottom:1px solid var(--line); color:var(--muted); font-size:12px; }
+  .code pre { margin:0; padding:14px 16px; line-height:1.75; overflow-x:auto; }
+  .k { color:var(--code-key); } .s { color:var(--code-str); } .c { color:var(--code-com); }
+
+  /* Sections: A's left label column, B's mono labels */
+  section { padding:72px 0; border-bottom:1px solid var(--line); }
+  .sec { display:grid; grid-template-columns:200px 1fr; gap:40px; }
+  @media (max-width:760px){ .sec { grid-template-columns:1fr; gap:16px; } }
+  .sec > h2 { font-family:"JetBrains Mono", monospace; font-size:13px; color:var(--muted); margin:6px 0 0; font-weight:500; }
+  .sec > h2 span { color:var(--accent); }
+  .about p { margin:0 0 16px; max-width:640px; }
+  .about p:first-child { font-size:21px; line-height:1.5; }
+
+  /* Experience: A's clean rows on B's commit rail */
+  .log { border-left:2px solid var(--line); margin-left:6px; padding-left:28px; }
+  .commit { position:relative; padding-bottom:32px; }
+  .commit:last-child { padding-bottom:0; }
+  .commit::before { content:""; position:absolute; left:-36px; top:7px; width:12px; height:12px; border-radius:50%; background:var(--bg); border:2px solid var(--accent); }
+  .commit.head::before { background:var(--accent); }
+  .commit .h { font-family:"JetBrains Mono", monospace; font-size:13px; color:var(--muted); }
+  .ref { color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:0 7px; font-size:11px; margin-left:6px; }
+  .commit h3 { margin:4px 0 0; font-size:19px; }
+  .commit .org { color:var(--muted); font-size:15px; }
+  .commit .org a { color:var(--accent); text-decoration:none; font-weight:500; }
+  .tag { font-size:12px; background:var(--soft); border:1px solid var(--line); border-radius:4px; padding:1px 7px; margin-left:6px; color:var(--muted); vertical-align:2px; font-weight:500; }
+  .commit p { margin:8px 0 0; font-size:16px; max-width:640px; }
+
+  .skills { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:28px; }
+  .skills h3 { font-size:15px; margin:0 0 10px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font-size:14px; border:1px solid var(--line); background:var(--soft); padding:4px 10px; border-radius:6px; }
+  .chip i { font-style:normal; color:var(--accent); font-weight:600; margin-left:4px; font-size:12px; font-family:"JetBrains Mono", monospace; }
+
+  .row { display:grid; grid-template-columns:150px 1fr; gap:20px; padding:18px 0; border-top:1px solid var(--line); }
+  .row:first-child { border-top:0; padding-top:0; }
+  @media (max-width:560px){ .row { grid-template-columns:1fr; gap:4px; } }
+  .row .d { font-family:"JetBrains Mono", monospace; font-size:13px; color:var(--muted); padding-top:3px; }
+  .row h3 { margin:0; font-size:18px; }
+  .row .org { color:var(--muted); font-size:15px; }
+  .row .org a { color:var(--accent); text-decoration:none; font-weight:500; }
+
+  .contact { background:var(--soft); }
+  .contact .big { font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-.02em; margin:0 0 10px; }
+  footer { padding:28px 0; font-size:13px; color:var(--muted); font-family:"JetBrains Mono", monospace; }
+  footer .shell { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+</style>
+</head>
+<body>
+<div class="mock-badge">A + B merged · mockup</div>
+
+<header><div class="shell">
+  <a class="logo" href="#">youssef<span>.</span>dev</a>
+  <nav>
+    <a class="hide" href="#about">About</a><a class="hide" href="#experience">Experience</a><a class="hide" href="#skills">Skills</a><a class="hide" href="#education">Education</a><a href="#contact">Contact</a>
+    <span class="ctrl">EN · DE</span>
+    <button class="ctrl" id="theme" type="button">◐ dark</button>
+  </nav>
+</div></header>
+
+<div class="hero"><div class="shell grid">
+  <div>
+    <div class="prompt"><b>~/bamberg</b> $ whoami</div>
+    <h1>Youssef Ait Lhaj<span class="cur"></span></h1>
+    <div class="role">Software Developer at Imbus AG</div>
+    <p>Seven years building TestBench, a test management platform, first alongside my computer science degree, now full time.</p>
+    <div class="btns"><a class="btn p" href="#">↓ Download CV (PDF)</a><a class="btn s" href="#contact">Contact me</a></div>
+    <div class="code">
+      <div class="bar">youssef.json</div>
+<pre>{
+  <span class="k">"location"</span>: <span class="s">"Bamberg, Germany"</span>,
+  <span class="k">"stack"</span>: [<span class="s">"Java"</span>, <span class="s">"C#"</span>, <span class="s">".NET"</span>, <span class="s">"SQL"</span>],
+  <span class="k">"speaks"</span>: [<span class="s">"Arabic"</span>, <span class="s">"German"</span>, <span class="s">"French"</span>, <span class="s">"English"</span>],
+  <span class="k">"traits"</span>: [<span class="s">"never gives up"</span>, <span class="s">"learns fast"</span>, <span class="s">"team player"</span>]
+}</pre>
+    </div>
+  </div>
+  <img src="../../../../src/assets/portrait.jpg" alt="Portrait of Youssef Ait Lhaj">
+</div></div>
+
+<section id="about"><div class="shell sec">
+  <h2><span>//</span> about</h2>
+  <div class="about">
+    <p>I build software at Imbus AG in Bavaria, where I have spent the better part of seven years working on TestBench.</p>
+    <p>The path here started in Casablanca, with a technician diploma, a bachelor's degree, and three internships: a software house, a transport insurer, an environmental association. Then I moved to Germany, took a second bachelor's at the University of Bamberg in Software Systems Science, and kept building the whole way through.</p>
+    <p>I work in Java, C#, and .NET, with SQL underneath and the web on top.</p>
+  </div>
+</div></section>
+
+<section id="experience"><div class="shell sec">
+  <h2><span>//</span> experience</h2>
+  <div class="log">
+    <div class="commit head"><div class="h">Feb 2026 – now · 10 mos <span class="ref">HEAD</span></div><h3>Software Developer <span class="tag">Full-time</span></h3><div class="org"><a href="#">Imbus AG</a> · Bavaria, Germany</div><p>Full time on TestBench since finishing my degree: feature development, bug fixing, and extending the underlying database.</p></div>
+    <div class="commit"><div class="h">Aug 2019 – Jan 2026 · 6 yrs 6 mos</div><h3>Software Developer <span class="tag">Part-time</span></h3><div class="org"><a href="#">Imbus AG</a> · Bavaria, Germany</div><p>Six and a half years part time on the same product, spanning my entire degree. I joined while I started studying and never left.</p></div>
+    <div class="commit"><div class="h">Mar – Jun 2017 · 4 mos</div><h3>Web Developer <span class="tag">Internship</span></h3><div class="org">AESVT Maroc · Casablanca, Morocco</div><p>Rebuilt and extended the association's WordPress site, and brought their programme online, including public voting for the best environmental artwork and ideas.</p></div>
+    <div class="commit"><div class="h">Jun – Sep 2016 · 4 mos</div><h3>Software Developer <span class="tag">Internship</span></h3><div class="org">Compagnie d'Assurance Transport · Casablanca</div><p>Part of the team that migrated a desktop insurance application to the web, in C# and MS SQL Server.</p></div>
+    <div class="commit"><div class="h">Mar – May 2015 · 3 mos <span class="ref">first commit</span></div><h3>Software Developer <span class="tag">Internship</span></h3><div class="org">NT SOFT · Casablanca</div><p>Built a store management application in C# and MS SQL Server. My first professional work.</p></div>
+  </div>
+</div></section>
+
+<section id="skills"><div class="shell sec">
+  <h2><span>//</span> skills</h2>
+  <div class="skills">
+    <div><h3>Languages &amp; Frameworks</h3><div class="chips"><span class="chip">Java</span><span class="chip">Spring Boot</span><span class="chip">Swing</span><span class="chip">C#</span><span class="chip">.NET Framework</span></div></div>
+    <div><h3>Databases</h3><div class="chips"><span class="chip">SQL</span><span class="chip">Oracle Database</span><span class="chip">MS SQL Server</span></div></div>
+    <div><h3>Tools &amp; Collaboration</h3><div class="chips"><span class="chip">Git</span><span class="chip">Mercurial</span><span class="chip">Jira</span><span class="chip">Sprint Management</span></div></div>
+    <div><h3>Practice</h3><div class="chips"><span class="chip">Software Development</span><span class="chip">Web Development</span><span class="chip">Vibe Coding</span><span class="chip">Developer tooling</span></div></div>
+    <div><h3>Languages</h3><div class="chips"><span class="chip">Arabic<i>Native</i></span><span class="chip">German<i>C1</i></span><span class="chip">French<i>C1</i></span><span class="chip">English<i>C1</i></span></div></div>
+  </div>
+</div></section>
+
+<section id="education"><div class="shell sec">
+  <h2><span>//</span> education</h2>
+  <div>
+    <div class="row"><div class="d">2020 – 2025</div><div><h3>B.Sc. Software Systems Science</h3><div class="org"><a href="#">Otto-Friedrich-Universität Bamberg</a> · Germany</div></div></div>
+    <div class="row"><div class="d">2015 – 2016</div><div><h3>Bachelor's Degree in Computer Science</h3><div class="org"><a href="#">Université Hassan II</a> · Casablanca</div></div></div>
+    <div class="row"><div class="d">2013 – 2015</div><div><h3>Technician Diploma in Computer Science</h3><div class="org">OFPPT · Casablanca</div></div></div>
+  </div>
+</div></section>
+
+<section id="contact" class="contact"><div class="shell sec">
+  <h2><span>//</span> contact</h2>
+  <div>
+    <p class="big">Let's talk about work, or anything worth building.</p>
+    <div class="btns"><a class="btn p" href="#">Email me</a><a class="btn s" href="#">LinkedIn</a><a class="btn s" href="#">↓ CV (PDF)</a></div>
+  </div>
+</div></section>
+
+<footer><div class="shell"><span>© 2026 Youssef Ait Lhaj</span><span>Bamberg, Germany</span></div></footer>
+
+<script>
+  const b = document.getElementById('theme');
+  b.addEventListener('click', () => {
+    const d = document.documentElement;
+    const dark = d.dataset.theme !== 'dark';
+    d.dataset.theme = dark ? 'dark' : 'light';
+    b.textContent = dark ? '◑ light' : '◐ dark';
+  });
+</script>
+<style>
+  .picker { position:fixed; left:16px; bottom:16px; z-index:20; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 14px; box-shadow:0 6px 24px rgba(0,0,0,.14); font-size:13px; max-width:340px; }
+  .picker b { display:block; margin:0 0 6px; font-family:"JetBrains Mono", monospace; font-size:12px; color:var(--muted); font-weight:500; }
+  .picker b + .sw { margin-bottom:10px; }
+  .picker .sw { display:flex; flex-wrap:wrap; gap:6px; }
+  .picker button { display:flex; align-items:center; gap:6px; border:1px solid var(--line); background:var(--soft); color:var(--ink); border-radius:999px; padding:4px 10px 4px 5px; font:inherit; font-size:12.5px; cursor:pointer; }
+  .picker button i { width:16px; height:16px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,.12); }
+  .picker button.on { outline:2px solid var(--ink); outline-offset:1px; }
+  .picker .note { color:var(--muted); font-size:12px; line-height:1.4; border-top:1px solid var(--line); padding-top:8px; }
+  .picker .min { position:absolute; top:6px; right:8px; border:0; background:none; padding:2px 6px; color:var(--muted); }
+  .picker.closed .body { display:none; }
+  @media (max-width:600px){ .picker { left:8px; right:8px; max-width:none; } }
+</style>
+<div class="picker" id="picker">
+  <button class="min" type="button" onclick="this.parentNode.classList.toggle('closed')">–</button>
+  <div class="body">
+    <b>// accent</b><div class="sw" id="acc"></div>
+    <b>// background</b><div class="sw" id="bgs"></div>
+    <div class="note" id="note"></div>
+  </div>
+  <div class="closed-label" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)">// colours</div>
+</div>
+<script>
+  const ACC = [
+    { n:"Whisky",      l:"#9A5B13", d:"#E0A14A", t:"Deep amber, like whisky held up to the light." },
+    { n:"Bourbon",     l:"#8A4A14", d:"#E3955A", t:"Darker and redder, closer to brown." },
+    { n:"Single malt", l:"#8A6A12", d:"#E3B341", t:"More golden and less brown. The deep gold from before." },
+    { n:"Your gold",   l:"#C9A227", d:"#D9B85C", t:"Your current site's exact champagne gold, for comparison." },
+    { n:"Green",       l:"#047857", d:"#7EE787", t:"Terminal green, for comparison." },
+  ];
+  const BG = [
+    { n:"White",       sw:"#FFFFFF",
+      l:{bg:"#FFFFFF",soft:"#F5F5F4",panel:"#FAFAF9",line:"#E7E5E4",muted:"#5F5A55",ink:"#141210"},
+      d:{bg:"#0D1117",soft:"#151B23",panel:"#151B23",line:"#262D36",muted:"#8B97A5",ink:"#E6EDF3"},
+      t:"Pure white with a cool, blue-black dark mode. Crisp, but the amber can feel slightly separate." },
+    { n:"Paper",       sw:"#FAF8F5",
+      l:{bg:"#FAF8F5",soft:"#F2EEE8",panel:"#F6F3EE",line:"#E6E0D7",muted:"#625A51",ink:"#1A1612"},
+      d:{bg:"#141210",soft:"#1C1916",panel:"#1C1916",line:"#2E2924",muted:"#A3998C",ink:"#EFE9E1"},
+      t:"White with a drop of warmth. It still reads as white, but it lets the amber settle in. The dark mode is warm charcoal, like a whisky bar." },
+    { n:"Oat",         sw:"#F4EEE4",
+      l:{bg:"#F4EEE4",soft:"#EBE3D6",panel:"#EFE8DC",line:"#DDD2C1",muted:"#5E5446",ink:"#1C1813"},
+      d:{bg:"#17130F",soft:"#201B16",panel:"#201B16",line:"#342D25",muted:"#A89B89",ink:"#F0E8DC"},
+      t:"Noticeably sandy. The most harmonious with amber, but it's close to your current ivory look." },
+    { n:"Stone",       sw:"#F2F2EF",
+      l:{bg:"#F2F2EF",soft:"#E8E8E3",panel:"#ECECE8",line:"#D9D9D2",muted:"#575750",ink:"#161614"},
+      d:{bg:"#141414",soft:"#1C1C1B",panel:"#1C1C1B",line:"#2D2D2B",muted:"#9C9C95",ink:"#EDEDEA"},
+      t:"A neutral light grey. Modern and calm, and it makes the amber the only warm thing on the page." },
+  ];
+  let a = ACC[0], g = BG[1];
+  const root = document.documentElement, note = document.getElementById('note');
+  function apply(){
+    const dark = root.dataset.theme === 'dark', v = dark ? g.d : g.l;
+    root.style.setProperty('--accent', dark ? a.d : a.l);
+    root.style.setProperty('--accent-ink', dark ? v.bg : '#FFFFFF');
+    for (const k of ['bg','soft','panel','line','muted','ink']) root.style.setProperty('--'+k, v[k]);
+    note.innerHTML = '<strong>'+a.n+':</strong> '+a.t+'<br><strong>'+g.n+':</strong> '+g.t;
+    document.querySelectorAll('#acc button').forEach(b => b.classList.toggle('on', b.dataset.n === a.n));
+    document.querySelectorAll('#bgs button').forEach(b => b.classList.toggle('on', b.dataset.n === g.n));
+  }
+  function mk(list, el, swatch, pick){ list.forEach(p => { const b = document.createElement('button'); b.type='button'; b.dataset.n=p.n;
+    b.innerHTML = '<i style="background:'+swatch(p)+'"></i>'+p.n; b.onclick = () => { pick(p); apply(); }; document.getElementById(el).appendChild(b); }); }
+  mk(ACC, 'acc', p => 'linear-gradient(135deg,'+p.l+' 50%,'+p.d+' 50%)', p => a = p);
+  mk(BG,  'bgs', p => 'linear-gradient(135deg,'+p.sw+' 50%,'+p.d.bg+' 50%)', p => g = p);
+  document.getElementById('theme').addEventListener('click', () => setTimeout(apply));
+  apply();
+</script>
+<style>.picker:not(.closed) .closed-label{display:none}</style>
+
+</body>
+</html>
