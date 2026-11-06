@@ -1,0 +1,162 @@
+---
+import RichText from "../layout/RichText.astro";
+import { anchorFor } from "../../lib/sections";
+import { pick } from "../../lib/localize";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"journey">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale } = Astro.props;
+const titleId = `${anchorFor(section.id)}-title`;
+---
+
+{/*
+  Without JavaScript the track scrolls sideways on wide screens and stacks into
+  a vertical list at ≤760px (pure CSS). The motion layer pins and scrubs it.
+  The rail lives inside the track, so it always spans every stop.
+*/}
+<section
+  id={anchorFor(section.id)}
+  data-section={section.type}
+  data-animate={String(section.animate)}
+  data-journey
+  class="journey"
+  aria-labelledby={titleId}
+>
+  <div class="shell head">
+    <h2 class="label" id={titleId} data-typer><span aria-hidden="true">//</span> {pick(section.title, locale)}</h2>
+  </div>
+  <div class="track-wrap">
+    <div class="track" role="list" data-journey-track>
+      <div class="rail" aria-hidden="true"><i data-journey-rail></i></div>
+      {
+        section.stops.map((stop) => (
+          <div class:list={["stop", stop.head && "head-commit"]} role="listitem">
+            <div class="yr">{pick(stop.year, locale)}{stop.head && " · HEAD"}</div>
+            <h3>{pick(stop.heading, locale)}</h3>
+            <p><RichText value={stop.text} locale={locale} inline /></p>
+            <div class="where">{stop.caption}</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .journey {
+    position: relative;
+    overflow: hidden;
+  }
+  .head {
+    padding-top: 96px;
+    padding-bottom: 32px;
+  }
+  .track-wrap {
+    position: relative;
+    padding-bottom: 72px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+  }
+  .track {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    padding: 0 max(24px, calc((100vw - 1080px) / 2 + 24px));
+    width: max-content;
+  }
+  .rail {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 46px;
+    height: 2px;
+    background: var(--line);
+  }
+  .rail i {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    display: block;
+  }
+  .stop {
+    width: min(78vw, 380px);
+    flex-shrink: 0;
+    position: relative;
+    padding-top: 76px;
+  }
+  .stop::before {
+    content: "";
+    position: absolute;
+    top: 39px;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+  }
+  .stop.head-commit::before {
+    background: var(--accent);
+  }
+  .yr {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  p {
+    color: var(--muted);
+    margin: 8px 0 0;
+    font-size: 16px;
+  }
+  .where {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+  @media (max-width: 760px) {
+    .track {
+      flex-direction: column;
+      gap: 0;
+      width: auto;
+      padding: 0 24px;
+    }
+    .rail {
+      display: none;
+    }
+    .stop {
+      width: auto;
+      padding-top: 0;
+      padding-left: 30px;
+      padding-bottom: 28px;
+      border-left: 2px solid var(--line);
+      margin-left: 7px;
+    }
+    .stop::before {
+      top: 2px;
+      left: -9px;
+    }
+    .yr {
+      position: static;
+    }
+  }
+</style>

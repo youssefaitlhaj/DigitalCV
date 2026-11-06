@@ -15,7 +15,7 @@ sections:
     jsonCard:
       - key: location
         values:
-          - { en: Bamberg, Germany, de: Bamberg, Deutschland }
+          - { en: "Bamberg, Germany", de: "Bamberg, Deutschland" }
       - key: stack
         values:
           - { en: Java, de: Java }
@@ -103,7 +103,7 @@ sections:
           en: B.Sc. Software Systems Science at the University of Bamberg, while working at Imbus the whole way through.
           de: B.Sc. Software Systems Science an der Universität Bamberg, die ganze Zeit über neben der Arbeit bei Imbus.
         caption: Uni Bamberg + Imbus AG
-      - year: { en: 2026 · HEAD, de: 2026 · HEAD }
+      - year: { en: "2026", de: "2026" }
         heading: { en: Full time, de: Vollzeit }
         text:
           en: "Software Developer at Imbus AG: features, bug fixing, and extending the database behind TestBench."

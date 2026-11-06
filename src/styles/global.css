@@ -119,3 +119,52 @@ a {
     animation-duration: 0s !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Shared section pieces (motion-prototype.html)
+--------------------------------------------------------------------------- */
+
+/* Section labels styled as code comments: `// experience`. */
+.label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  text-transform: lowercase;
+  margin: 0;
+}
+.label > span {
+  color: var(--accent-text);
+}
+
+.btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+.btn {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  transition: transform 0.2s, background 0.2s;
+}
+.btn.p {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.btn.p:hover {
+  transform: translateY(-2px);
+}
+.btn.s {
+  border: 1px solid var(--line);
+  color: var(--accent-text);
+}
+.btn.s:hover {
+  background: var(--soft);
+}

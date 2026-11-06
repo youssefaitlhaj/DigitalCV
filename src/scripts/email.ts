@@ -19,8 +19,5 @@ export function hydrateEmailLinks(root: ParentNode = document): void {
 
     const target = link.querySelector<HTMLElement>("[data-email-text]");
     if (target) target.textContent = address;
-
-    // Only magnetic once it actually goes somewhere.
-    link.setAttribute("data-magnetic", "");
   }
 }

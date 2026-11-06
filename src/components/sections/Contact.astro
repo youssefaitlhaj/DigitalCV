@@ -1,0 +1,89 @@
+---
+import RichText from "../layout/RichText.astro";
+import { anchorFor } from "../../lib/sections";
+import { pick } from "../../lib/localize";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"contact">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale, content } = Astro.props;
+const { site } = content;
+const cvHref = `/cv/${site.pdf.fileBaseName}-${locale}.pdf`;
+const titleId = `${anchorFor(section.id)}-title`;
+---
+
+<section
+  id={anchorFor(section.id)}
+  data-section={section.type}
+  data-animate={String(section.animate)}
+  class="contact"
+  aria-labelledby={titleId}
+>
+  <div class="shell">
+    <div class="label" data-typer><span aria-hidden="true">//</span> {pick(section.title, locale)}</div>
+    <h2 class="big" id={titleId} data-scale-in>{pick(section.heading, locale)}</h2>
+    <div class="lead"><RichText value={section.lead} locale={locale} /></div>
+    <div class="btns">
+      {/*
+        The address never appears as one string in the HTML: the halves live in
+        separate attributes and src/scripts/email.ts joins them at runtime.
+      */}
+      <a
+        class="btn p"
+        href={`#${anchorFor(section.id)}`}
+        data-email
+        data-email-user={site.email.user}
+        data-email-domain={site.email.domain}
+        data-umami-event="email-click"
+      >
+        {pick(section.emailLabel, locale)}
+      </a>
+      <a class="btn s" href={site.linkedin} target="_blank" rel="noopener noreferrer" data-umami-event="linkedin-click">
+        {pick(section.linkedinLabel, locale)}
+      </a>
+      <a class="btn s" href={cvHref} data-umami-event="cv-download" data-umami-event-lang={locale}>
+        <span aria-hidden="true">↓</span>{pick(section.cvLabel, locale)}
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { hydrateEmailLinks } from "../../scripts/email";
+  hydrateEmailLinks();
+</script>
+
+<style>
+  .contact {
+    padding: 18vh 0;
+    text-align: center;
+    border-top: 1px solid var(--line);
+  }
+  .big {
+    font-size: clamp(36px, 6vw, 76px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    margin: 12px auto 0;
+    max-width: 900px;
+  }
+  .lead {
+    color: var(--muted);
+    font-size: 18px;
+    max-width: 560px;
+    margin: 20px auto 0;
+  }
+  .lead :global(p) {
+    margin: 0;
+  }
+  .btns {
+    justify-content: center;
+    margin-top: 36px;
+  }
+</style>

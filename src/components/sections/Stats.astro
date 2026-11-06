@@ -1,0 +1,84 @@
+---
+import { anchorFor } from "../../lib/sections";
+import { pick } from "../../lib/localize";
+import { resolveStat } from "../../lib/stats";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"stats">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale, content } = Astro.props;
+const now = new Date();
+---
+
+{/* The final number is server-rendered; the motion layer may count up to `data-count`. */}
+<section
+  id={anchorFor(section.id)}
+  data-section={section.type}
+  data-animate={String(section.animate)}
+>
+  <div class="shell">
+    <div class="stats" style={`--cols: ${section.items.length}`}>
+      {
+        section.items.map((item) => {
+          const value = resolveStat(item, content.page, now);
+          return (
+            <div class="stat">
+              <div class="n" data-count={value}>{value}</div>
+              <div class="l">{pick(item.label, locale)}</div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 4), 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat {
+    padding: 36px 24px;
+    border-left: 1px solid var(--line);
+  }
+  .stat:first-child {
+    border-left: 0;
+  }
+  .n {
+    font-family: var(--font-mono);
+    font-size: clamp(40px, 5vw, 60px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .l {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 8px;
+  }
+  @media (max-width: 760px) {
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .stat {
+      padding: 28px 16px;
+    }
+    /* Two per row: the first of each row has no divider, later rows get a top rule. */
+    .stat:nth-child(odd) {
+      border-left: 0;
+    }
+    .stat:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+  }
+</style>

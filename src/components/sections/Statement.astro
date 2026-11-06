@@ -1,0 +1,40 @@
+---
+import RichText from "../layout/RichText.astro";
+import { anchorFor } from "../../lib/sections";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"statement">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale } = Astro.props;
+---
+
+<section
+  id={anchorFor(section.id)}
+  data-section={section.type}
+  data-animate={String(section.animate)}
+  class="statement"
+>
+  <div class="shell">
+    <p data-statement><RichText value={section.text} locale={locale} inline /></p>
+  </div>
+</section>
+
+<style>
+  .statement {
+    padding: 18vh 0;
+  }
+  p {
+    font-size: clamp(30px, 4.6vw, 58px);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    margin: 0;
+    max-width: 980px;
+  }
+</style>

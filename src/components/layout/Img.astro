@@ -11,9 +11,11 @@ interface Props {
   widths: number[];
   sizes: string;
   class?: string;
+  /** Above-the-fold images (the hero portrait) load eagerly with high priority. */
+  eager?: boolean;
 }
 
-const { image, locale, widths, sizes, class: className } = Astro.props;
+const { image, locale, widths, sizes, class: className, eager = false } = Astro.props;
 ---
 
 <Image
@@ -22,4 +24,6 @@ const { image, locale, widths, sizes, class: className } = Astro.props;
   widths={widths}
   sizes={sizes}
   class={className}
+  loading={eager ? "eager" : "lazy"}
+  fetchpriority={eager ? "high" : undefined}
 />
