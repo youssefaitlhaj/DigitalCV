@@ -1,0 +1,17 @@
+---
+import { renderRichText } from "../../lib/rich-text";
+import { pick } from "../../lib/localize";
+import type { Localized, RichText } from "../../content/schemas/primitives";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  value: Localized<RichText>;
+  locale: Locale;
+  inline?: boolean;
+}
+
+const { value, locale, inline = false } = Astro.props;
+const html = renderRichText(pick(value, locale), { inline });
+---
+
+<Fragment set:html={html} />

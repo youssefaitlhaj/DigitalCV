@@ -31,3 +31,7 @@ pnpm-debug.log*
 
 # generated image crops
 src/assets/generated/
+
+# playwright
+test-results/
+playwright-report/

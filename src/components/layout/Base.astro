@@ -1,0 +1,71 @@
+---
+import "../../styles/global.css";
+import { LOCALES, dirFor, pathFor, DEFAULT_LOCALE, type Locale } from "../../i18n/locales";
+import { getContent } from "../../content/repository";
+import { paletteCss } from "../../lib/palettes";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Locale-neutral route path of this page, used for canonical/hreflang. */
+  path?: string;
+}
+
+const { locale, title, description, path = "/" } = Astro.props;
+const { site } = getContent();
+const canonical = new URL(pathFor(locale, path), Astro.site);
+const alternates = LOCALES.map((l) => ({ hreflang: l, href: new URL(pathFor(l, path), Astro.site).href }));
+const css = paletteCss(site.palette.accent, site.palette.background);
+---
+
+<!doctype html>
+<html lang={locale} dir={dirFor(locale)}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(pathFor(DEFAULT_LOCALE, path), Astro.site).href} />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:locale" content={locale === "de" ? "de_DE" : "en_US"} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <style is:inline set:html={css}></style>
+
+    {/* Resolves data-theme before first paint so the page never flashes the wrong palette. */}
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {
+          // Private mode can throw; the prefers-color-scheme CSS block covers it.
+        }
+      })();
+    </script>
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{site.labels.skipToContent[locale]}</a>
+    <slot />
+    <script>
+      import { initTheme } from "../../scripts/theme";
+      initTheme();
+    </script>
+  </body>
+</html>

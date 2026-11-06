@@ -1,0 +1,116 @@
+---
+import { menuEntries, anchorFor } from "../../lib/sections";
+import { pathFor, type Locale } from "../../i18n/locales";
+import type { Content } from "../../content/repository";
+import LocaleSwitcher from "./LocaleSwitcher.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+
+interface Props {
+  content: Content;
+  locale: Locale;
+  path?: string;
+}
+
+const { content, locale, path = "/" } = Astro.props;
+const { site, page } = content;
+const entries = menuEntries(page.sections, locale);
+const logoParts = site.logoText.split(".");
+---
+
+<div class="progress" data-progress aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="shell bar">
+    <a class="logo" href={pathFor(locale)}>
+      {logoParts.map((part, i) => (<>{i > 0 && <span>.</span>}{part}</>))}
+    </a>
+    <nav aria-label="Main">
+      {
+        entries.map((e) => (
+          <a class:list={[e.id !== "contact" && "hide"]} href={`${pathFor(locale)}#${anchorFor(e.id)}`}>
+            {e.label}
+          </a>
+        ))
+      }
+      <LocaleSwitcher site={site} locale={locale} path={path} />
+      <ThemeToggle site={site} locale={locale} />
+    </nav>
+  </div>
+</header>
+
+<style>
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--accent);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    z-index: 40;
+  }
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: var(--header-h);
+    gap: 12px;
+  }
+  .logo {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .logo span {
+    color: var(--accent-text);
+  }
+  nav {
+    display: flex;
+    gap: 22px;
+    align-items: center;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  nav > a {
+    text-decoration: none;
+  }
+  nav > a:hover {
+    color: var(--ink);
+  }
+  @media (max-width: 820px) {
+    nav {
+      gap: 12px;
+    }
+    nav > a.hide {
+      display: none;
+    }
+  }
+  @media (max-width: 400px) {
+    .shell {
+      padding: 0 16px;
+    }
+  }
+</style>
+
+<style is:global>
+  .ctrl {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 4px 9px;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+</style>

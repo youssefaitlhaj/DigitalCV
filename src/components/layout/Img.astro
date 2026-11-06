@@ -1,0 +1,25 @@
+---
+import { Image } from "astro:assets";
+import { resolveImage } from "../../lib/image-resolver";
+import { pick } from "../../lib/localize";
+import type { ImageRef } from "../../content/schemas/primitives";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  image: ImageRef;
+  locale: Locale;
+  widths: number[];
+  sizes: string;
+  class?: string;
+}
+
+const { image, locale, widths, sizes, class: className } = Astro.props;
+---
+
+<Image
+  src={resolveImage(image)}
+  alt={pick(image.alt, locale)}
+  widths={widths}
+  sizes={sizes}
+  class={className}
+/>

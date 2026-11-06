@@ -1,0 +1,49 @@
+---
+import { pathFor, type Locale } from "../../i18n/locales";
+import { pick } from "../../lib/localize";
+import type { Content } from "../../content/repository";
+
+interface Props {
+  content: Content;
+  locale: Locale;
+}
+
+const { content, locale } = Astro.props;
+const { site, legal } = content;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell row">
+    <span>© {year} {site.name} · {pick(site.location, locale)}</span>
+    <span class="links">
+      <a href={pathFor(locale, "/privacy")}>{pick(site.labels.privacy, locale)}</a>
+      {legal.impressum.visible && (
+        <a href={pathFor(locale, "/impressum")}>{pick(site.labels.impressum, locale)}</a>
+      )}
+    </span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding: 28px 0;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    border-top: 1px solid var(--line);
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .links {
+    display: inline-flex;
+    gap: 16px;
+  }
+  .links a:hover {
+    color: var(--ink);
+  }
+</style>

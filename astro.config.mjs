@@ -2,6 +2,11 @@
 import { defineConfig } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
+import { readFileSync } from "node:fs";
+import { parse } from "yaml";
+
+// Single source of truth for the public URL: the content file.
+const { siteUrl } = parse(readFileSync("src/content/data/site.yml", "utf8"));
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,7 +14,7 @@ export default defineConfig({
   // Must match the domain the site is actually served from, including whether
   // it has a www prefix — a mismatch tells search engines to index addresses
   // that do not exist.
-  site: "https://youssefaitlhaj.com",
+  site: siteUrl,
 
   i18n: {
     locales: ["en", "de"],

@@ -1,5 +1,16 @@
 ---
-import Page from "../../components/Page.astro";
+import Base from "../../components/layout/Base.astro";
+import Header from "../../components/layout/Header.astro";
+import Footer from "../../components/layout/Footer.astro";
+import { getContent } from "../../content/repository";
+
+const locale = "de" as const;
+const content = getContent();
+const { site } = content;
 ---
 
-<Page locale="de" />
+<Base locale={locale} title={site.meta.title[locale]} description={site.meta.description[locale]}>
+  <Header content={content} locale={locale} />
+  <main id="main"></main>
+  <Footer content={content} locale={locale} />
+</Base>

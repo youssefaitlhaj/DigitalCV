@@ -1,3 +1,5 @@
+// TEMPORARY: the lenis package was removed in Task 7; this legacy file is deleted in Task 9.
+// @ts-expect-error module no longer installed
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

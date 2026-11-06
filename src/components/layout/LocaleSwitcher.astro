@@ -1,0 +1,58 @@
+---
+import { LOCALES, pathFor, type Locale } from "../../i18n/locales";
+import { pick } from "../../lib/localize";
+import type { Site } from "../../content/repository";
+
+interface Props {
+  site: Site;
+  locale: Locale;
+  /** Locale-neutral route path of the current page, e.g. "/" or "/privacy". */
+  path?: string;
+}
+
+const { site, locale, path = "/" } = Astro.props;
+---
+
+<div class="switcher" role="group" aria-label={pick(site.labels.language, locale)}>
+  {
+    LOCALES.map((l, i) => (
+      <>
+        {i > 0 && <span aria-hidden="true">·</span>}
+        <a
+          href={pathFor(l, path)}
+          hreflang={l}
+          lang={l}
+          class:list={["opt", l === locale && "current"]}
+          aria-current={l === locale ? "true" : undefined}
+        >
+          {l.toUpperCase()}
+        </a>
+      </>
+    ))
+  }
+</div>
+
+<style>
+  .switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 4px 9px;
+    color: var(--muted);
+  }
+  .opt {
+    text-decoration: none;
+    color: var(--muted);
+  }
+  .opt:hover {
+    color: var(--ink);
+  }
+  .current {
+    color: var(--ink);
+    font-weight: 700;
+  }
+</style>

@@ -1,0 +1,17 @@
+---
+import { pick } from "../../lib/localize";
+import type { Site } from "../../content/repository";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  site: Site;
+  locale: Locale;
+}
+
+const { site, locale } = Astro.props;
+const label = pick(site.labels.themeToggle, locale);
+---
+
+<button type="button" class="ctrl" data-theme-toggle aria-pressed="false" aria-label={label} title={label}>
+  <span aria-hidden="true">◐</span>
+</button>

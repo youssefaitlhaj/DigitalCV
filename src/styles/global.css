@@ -1,272 +1,121 @@
 @import "tailwindcss";
 
-@import "@fontsource-variable/fraunces/index.css";
-@import "@fontsource-variable/inter/index.css";
+/* Self-hosted fonts (Fontsource). Only the weights the design uses. */
+@import "@fontsource/ibm-plex-sans/latin-400.css";
+@import "@fontsource/ibm-plex-sans/latin-ext-400.css";
+@import "@fontsource/ibm-plex-sans/latin-500.css";
+@import "@fontsource/ibm-plex-sans/latin-ext-500.css";
+@import "@fontsource/ibm-plex-sans/latin-600.css";
+@import "@fontsource/ibm-plex-sans/latin-ext-600.css";
+@import "@fontsource/ibm-plex-sans/latin-700.css";
+@import "@fontsource/ibm-plex-sans/latin-ext-700.css";
+@import "@fontsource/jetbrains-mono/latin-400.css";
+@import "@fontsource/jetbrains-mono/latin-ext-400.css";
+@import "@fontsource/jetbrains-mono/latin-500.css";
+@import "@fontsource/jetbrains-mono/latin-ext-500.css";
+@import "@fontsource/jetbrains-mono/latin-700.css";
+@import "@fontsource/jetbrains-mono/latin-ext-700.css";
+@import "@fontsource/jetbrains-mono/latin-800.css";
+@import "@fontsource/jetbrains-mono/latin-ext-800.css";
 
 /* ---------------------------------------------------------------------------
-   Design tokens
-   The single source of truth for the palette, type, rhythm, and motion curves.
-   No component may hardcode a colour, duration, or easing — if a value is
-   needed twice, it belongs here.
+   Tokens
+   Colour values come from the palette CSS that Base.astro inlines
+   (src/lib/palettes.ts). Tailwind only maps utility names onto those variables.
+   Normal-size accent text uses --accent-text; --accent is for fills, rails,
+   large text and buttons.
 --------------------------------------------------------------------------- */
-@theme {
-  /* Palette — warm ivory canvas, champagne gold seasoning.
-     Gold is never a surface. Target: under 5% of painted pixels. */
-  --color-bg: #fbf9f5;
-  --color-surface: #f3ede3;
-  --color-surface-alt: #efe8dc;
-  --color-accent: #c9a227;
-  --color-accent-soft: #e4d7a8;
-  --color-ink: #1c1a17;
-  --color-ink-muted: #6b6459;
-  --color-hairline: #e2dacd;
+@theme inline {
+  --color-bg: var(--bg);
+  --color-soft: var(--soft);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
 
-  /* Type */
-  --font-display: "Fraunces Variable", ui-serif, Georgia, serif;
-  --font-body: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  /* Fluid scale. Hero clamps hardest because it carries the page. */
-  --text-hero: clamp(3rem, 11vw, 8rem);
-  --text-display: clamp(2.25rem, 5.5vw, 4rem);
-  --text-heading: clamp(1.5rem, 2.6vw, 2rem);
-  --text-lead: clamp(1.125rem, 1.6vw, 1.375rem);
-  --text-body: clamp(1rem, 1.1vw, 1.0625rem);
-  --text-small: 0.875rem;
-  --text-eyebrow: 0.75rem;
-
-  /* Rhythm */
-  --spacing-section: clamp(6rem, 12vw, 11rem);
-  --spacing-gutter: clamp(1.5rem, 5vw, 4rem);
-  --width-shell: 75rem;
-  --width-prose: 38rem;
-
-  /* Motion. One easing for enters, one for transforms — no ad-hoc curves. */
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out-quart: cubic-bezier(0.65, 0, 0.35, 1);
-  --duration-fast: 240ms;
-  --duration-base: 640ms;
-  --duration-slow: 1100ms;
+  --width-shell: 1080px;
 }
 
-/* ---------------------------------------------------------------------------
-   Night mode
-   Not an inversion — a second warm palette. The ivory becomes a warm near-black
-   rather than a neutral grey, and gold lifts in luminance so it still reads as
-   champagne against a dark ground instead of muddy ochre. Text colours are
-   picked to clear 4.5:1 on `--color-surface`, the lighter of the two grounds.
-
-   `data-theme` is written to <html> by an inline script before first paint, so
-   the media query below only ever applies when scripting is unavailable.
---------------------------------------------------------------------------- */
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --color-bg: #131110;
-  --color-surface: #1b1815;
-  --color-surface-alt: #211d19;
-  --color-accent: #d9b85c;
-  --color-accent-soft: #4a3f1f;
-  --color-ink: #f0eae0;
-  --color-ink-muted: #a79d8d;
-  --color-hairline: #2c2721;
+:root {
+  --header-h: 60px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    color-scheme: dark;
-    --color-bg: #131110;
-    --color-surface: #1b1815;
-    --color-surface-alt: #211d19;
-    --color-accent: #d9b85c;
-    --color-accent-soft: #4a3f1f;
-    --color-ink: #f0eae0;
-    --color-ink-muted: #a79d8d;
-    --color-hairline: #2c2721;
-  }
-}
-
-/* ---------------------------------------------------------------------------
-   Base
---------------------------------------------------------------------------- */
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
 }
 
 html {
-  /* Lenis drives scrolling when motion is allowed; this is the fallback and
-     the reduced-motion path. */
   scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: var(--header-h);
 }
 
 body {
   margin: 0;
-  background-color: var(--color-bg);
-  color: var(--color-ink);
-  /* Eases the switch between palettes without animating every child. Section
-     bands and hairlines are declared on their own elements, so they need the
-     same treatment — see `.theme-transition` below. */
-  transition:
-    background-color var(--duration-fast) var(--ease-in-out-quart),
-    color var(--duration-fast) var(--ease-in-out-quart);
-  font-family: var(--font-body);
-  font-size: var(--text-body);
-  line-height: 1.7;
-  font-synthesis-weight: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  /* Guards against any child that overflows its track on small screens. */
-  overflow-x: clip;
-}
-
-h1,
-h2,
-h3 {
-  font-family: var(--font-display);
-  font-weight: 500;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  font-variation-settings: "SOFT" 0, "WONK" 0;
-  text-wrap: balance;
-  margin: 0;
-}
-
-p {
-  margin: 0;
-  text-wrap: pretty;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
 }
 
 a {
   color: inherit;
-  text-decoration: none;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+.mono {
+  font-family: var(--font-mono);
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 3px;
-  border-radius: 2px;
-}
-
-::selection {
-  background-color: var(--color-accent-soft);
-  color: var(--color-ink);
-}
-
-/* ---------------------------------------------------------------------------
-   Layout primitives
---------------------------------------------------------------------------- */
 .shell {
-  width: 100%;
-  max-width: var(--width-shell);
-  margin-inline: auto;
-  padding-inline: var(--spacing-gutter);
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-.prose-column {
-  max-width: var(--width-prose);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
+/* Rich-text colour utilities (src/lib/rich-text.ts allows exactly these). */
+.c-accent { color: var(--swatch-accent); }
+.c-muted { color: var(--swatch-muted); }
+.c-highlight { color: var(--swatch-highlight); }
+.c-positive { color: var(--swatch-positive); }
 
 .skip-link {
   position: absolute;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  z-index: 100;
-  transform: translateY(-120%);
-  background-color: var(--color-ink);
-  color: var(--color-bg);
-  padding: 0.75rem 1.25rem;
-  font-size: var(--text-small);
+  inset-inline-start: 1rem;
+  inset-block-start: -4rem;
+  z-index: 60;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.skip-link:focus-visible {
-  transform: translateY(0);
+.skip-link:focus {
+  inset-block-start: 0.75rem;
 }
 
-/* ---------------------------------------------------------------------------
-   Motion
-   Elements marked for reveal start hidden ONLY when motion is allowed and
-   JavaScript is running. `js-motion` is set on <html> by an inline script
-   before first paint, so a failed script or a reduced-motion preference can
-   never leave the page permanently blank.
---------------------------------------------------------------------------- */
-.js-motion [data-reveal] {
-  opacity: 0;
-  will-change: transform, opacity;
-}
-
-/* Headings hide as a whole until the line splitter has run, otherwise there is
-   a visible flash of unsplit text before the clips exist. */
-.js-motion [data-reveal-text] {
-  opacity: 0;
-}
-
-/* Produced by split-lines.ts. The outer span clips; the inner one moves.
-   The padding/negative-margin pair widens the clip box just enough to spare
-   descenders (the j in "Lhaj" is cut off without it) while the negative margin
-   keeps the visual rhythm unchanged. motion.ts translates by 130% rather than
-   100% so the text still starts fully outside the enlarged box. */
-.line {
-  display: block;
-  overflow: hidden;
-  padding-block-end: 0.2em;
-  margin-block-end: -0.2em;
-}
-
-.line-inner {
-  display: block;
-  will-change: transform;
-}
-
-/* Applied to <html> only for the duration of a theme switch. Transitioning
-   everything permanently would tax every scroll-driven repaint; doing it in a
-   short window makes the swap feel deliberate rather than abrupt. The
-   reduced-motion block below overrides this — it comes later and also uses
-   !important, so it wins. */
-.theme-changing *,
-.theme-changing *::before,
-.theme-changing *::after {
-  transition:
-    background-color var(--duration-fast) var(--ease-in-out-quart),
-    border-color var(--duration-fast) var(--ease-in-out-quart),
-    color var(--duration-fast) var(--ease-in-out-quart) !important;
+:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-
-  /* Belt and braces: even if the motion layer misbehaves, nothing stays hidden. */
-  .js-motion [data-reveal],
-  .js-motion [data-reveal-text] {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
   }
 }
