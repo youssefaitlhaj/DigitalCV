@@ -43,7 +43,8 @@ Journey (all `text`, `heading` and `year` entries are drafts; the captions are p
 - `journey.stops[4].text.de`: "B.Sc. Software Systems Science an der Universität Bamberg, die ganze Zeit über neben der Arbeit bei Imbus."
 - `journey.stops[5].heading.de`: "Vollzeit"
 - `journey.stops[5].text.de`: "Softwareentwickler bei Imbus AG: neue Funktionen, Fehlerbehebung und die Erweiterung der Datenbank hinter TestBench."
-- `journey.stops[5].year.de`: "2026 · HEAD" (HEAD kept as a git term)
+- `journey.heading.de`: "Von Casablanca nach Bamberg." (EN "From Casablanca to Bamberg.")
+- `journey.stops[5].year.de`: "2026" (the " · HEAD" marker is rendered from `head: true`, kept as a git term)
 
 Contact:
 - `contact.heading.de`: "Lass uns etwas bauen, das es wert ist."

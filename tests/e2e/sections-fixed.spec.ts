@@ -61,6 +61,8 @@ test.describe("fixed sections, JavaScript disabled", () => {
     await page.goto("/");
     const journey = page.locator("section[data-journey]");
     await expect(journey).toHaveAttribute("id", "journey");
+    await expect(journey.locator("h2")).toHaveText("From Casablanca to Bamberg.");
+    await expect(journey.locator(".label")).toContainText("Journey");
     await expect(journey.locator("[data-journey-track]")).toHaveCount(1);
     await expect(journey.locator("[data-journey-rail]")).toHaveCount(1);
     const stops = journey.locator(".stop");
@@ -111,6 +113,30 @@ test.describe("fixed sections, JavaScript disabled", () => {
     expect(html).not.toContain("Enjoy the ride");
     await page.goto("/");
     await expect(page.locator("main")).not.toContainText("Enjoy the ride");
+  });
+
+  test("journey heading is localised on /de/", async ({ page }) => {
+    await page.goto("/de/");
+    await expect(page.locator("section[data-journey] h2")).toHaveText("Von Casablanca nach Bamberg.");
+  });
+
+  test("scroll regions are keyboard-focusable and labelled", async ({ page }) => {
+    await page.goto("/");
+    const wrap = page.locator("section[data-journey] .track-wrap");
+    await expect(wrap).toHaveAttribute("tabindex", "0");
+    await expect(wrap).toHaveAttribute("aria-label", /.+/);
+    // The rail is not a list item, so it sits outside the list.
+    await expect(page.locator("section[data-journey] ol > li")).toHaveCount(6);
+    await expect(page.locator("section[data-journey] ol > :not(li)")).toHaveCount(0);
+    await expect(page.locator("section[data-journey] ol [data-journey-rail]")).toHaveCount(0);
+  });
+
+  test("json card wraps instead of clipping at 375px", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto("/de/");
+    const pre = page.locator('section[data-section="hero"] .code pre');
+    const fits = await pre.evaluate((el) => el.scrollWidth <= el.clientWidth);
+    expect(fits).toBe(true);
   });
 
   test("contact shows the closing line and lead", async ({ page }) => {

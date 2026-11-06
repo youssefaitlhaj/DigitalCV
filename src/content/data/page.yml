@@ -68,6 +68,7 @@ sections:
   - type: journey
     id: journey
     title: { en: Journey, de: Werdegang }
+    heading: { en: From Casablanca to Bamberg., de: Von Casablanca nach Bamberg. }
     stops:
       - year: { en: "2013", de: "2013" }
         heading: { en: Casablanca, de: Casablanca }

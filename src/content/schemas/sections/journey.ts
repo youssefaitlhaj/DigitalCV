@@ -5,6 +5,8 @@ import { sectionBase } from "./base";
 export const journeySchema = z.object({
   ...sectionBase,
   type: z.literal("journey"),
+  /** Large headline above the track, e.g. "From Casablanca to Bamberg." `title` stays the menu label. */
+  heading: localized().optional(),
   stops: z
     .array(
       z.object({

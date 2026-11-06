@@ -162,15 +162,20 @@ const entries = section.jsonCard.map((e) => ({ key: e.key, values: e.values.map(
   .code .s {
     color: var(--accent-text);
   }
+  /* Wraps rather than scrolls: no clipped values on phones, and no scroll region. */
   .code pre {
     margin: 0;
     padding: 14px 16px;
     line-height: 1.75;
-    overflow-x: auto;
     font-family: inherit;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
+  /* Continuation lines hang under the value, past the two-space key indent. */
   .ln {
     display: block;
+    padding-left: 4ch;
+    text-indent: -4ch;
   }
   @media (max-width: 820px) {
     .grid {

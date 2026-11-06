@@ -14,6 +14,7 @@ interface Props {
 
 const { section, locale } = Astro.props;
 const titleId = `${anchorFor(section.id)}-title`;
+const title = pick(section.title, locale);
 ---
 
 {/*
@@ -30,21 +31,33 @@ const titleId = `${anchorFor(section.id)}-title`;
   aria-labelledby={titleId}
 >
   <div class="shell head">
-    <h2 class="label" id={titleId} data-typer><span aria-hidden="true">//</span> {pick(section.title, locale)}</h2>
+    {
+      section.heading ? (
+        <>
+          <div class="label" data-typer><span aria-hidden="true">//</span> {title}</div>
+          <h2 id={titleId}>{pick(section.heading, locale)}</h2>
+        </>
+      ) : (
+        <h2 class="label" id={titleId} data-typer><span aria-hidden="true">//</span> {title}</h2>
+      )
+    }
   </div>
-  <div class="track-wrap">
-    <div class="track" role="list" data-journey-track>
+  {/* A keyboard-focusable scroll region while the track scrolls natively (no JS, wide screens). */}
+  <div class="track-wrap" role="group" tabindex="0" aria-label={title}>
+    <div class="track" data-journey-track>
       <div class="rail" aria-hidden="true"><i data-journey-rail></i></div>
-      {
-        section.stops.map((stop) => (
-          <div class:list={["stop", stop.head && "head-commit"]} role="listitem">
-            <div class="yr">{pick(stop.year, locale)}{stop.head && " · HEAD"}</div>
-            <h3>{pick(stop.heading, locale)}</h3>
-            <p><RichText value={stop.text} locale={locale} inline /></p>
-            <div class="where">{stop.caption}</div>
-          </div>
-        ))
-      }
+      <ol class="stops">
+        {
+          section.stops.map((stop) => (
+            <li class:list={["stop", stop.head && "head-commit"]}>
+              <div class="yr">{pick(stop.year, locale)}{stop.head && " · HEAD"}</div>
+              <h3>{pick(stop.heading, locale)}</h3>
+              <p><RichText value={stop.text} locale={locale} inline /></p>
+              <div class="where">{stop.caption}</div>
+            </li>
+          ))
+        }
+      </ol>
     </div>
   </div>
 </section>
@@ -58,6 +71,13 @@ const titleId = `${anchorFor(section.id)}-title`;
     padding-top: 96px;
     padding-bottom: 32px;
   }
+  .head h2:not(.label) {
+    font-size: clamp(32px, 4.5vw, 54px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 8px 0 0;
+  }
   .track-wrap {
     position: relative;
     padding-bottom: 72px;
@@ -65,12 +85,21 @@ const titleId = `${anchorFor(section.id)}-title`;
     scrollbar-width: thin;
     scrollbar-color: var(--line) transparent;
   }
+  /* The section clips overflow, so draw the focus ring inside the region. */
+  .track-wrap:focus-visible {
+    outline-offset: -2px;
+  }
   .track {
     position: relative;
-    display: flex;
-    gap: 24px;
     padding: 0 max(24px, calc((100vw - 1080px) / 2 + 24px));
     width: max-content;
+  }
+  .stops {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
   .rail {
     position: absolute;
@@ -135,10 +164,12 @@ const titleId = `${anchorFor(section.id)}-title`;
   }
   @media (max-width: 760px) {
     .track {
-      flex-direction: column;
-      gap: 0;
       width: auto;
       padding: 0 24px;
+    }
+    .stops {
+      flex-direction: column;
+      gap: 0;
     }
     .rail {
       display: none;
