@@ -1,0 +1,52 @@
+---
+import Base from "../layout/Base.astro";
+import Header from "../layout/Header.astro";
+import Footer from "../layout/Footer.astro";
+import RichText from "../layout/RichText.astro";
+import { getContent } from "../../content/repository";
+import { pick } from "../../lib/localize";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+  kind: "privacy" | "impressum";
+}
+
+const { locale, kind } = Astro.props;
+const content = getContent();
+const doc = content.legal[kind];
+const path = `/${kind}`;
+const title = `${pick(doc.title, locale)} · ${content.site.name}`;
+---
+
+<Base locale={locale} title={title} description={content.site.meta.description[locale]} path={path}>
+  <Header content={content} locale={locale} path={path} />
+  <main id="main" class="legal">
+    <div class="shell column">
+      <h1>{pick(doc.title, locale)}</h1>
+      <div class="prose"><RichText value={doc.body} locale={locale} /></div>
+    </div>
+  </main>
+  <Footer content={content} locale={locale} />
+</Base>
+
+<style>
+  .legal {
+    padding-block: 64px;
+  }
+  .column {
+    max-width: 68ch;
+  }
+  h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 0 0 24px;
+  }
+  .prose :global(h2) {
+    margin: 32px 0 8px;
+    font-size: 20px;
+  }
+  .prose :global(p) {
+    margin: 0 0 16px;
+    line-height: 1.7;
+  }
+</style>

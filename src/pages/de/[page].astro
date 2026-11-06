@@ -1,0 +1,12 @@
+---
+import LegalPage from "../../components/legal/LegalPage.astro";
+import { getContent } from "../../content/repository";
+
+// Hidden by default: while the impressum is not visible no page is built, so
+// /impressum is a real 404 rather than a redirect.
+export function getStaticPaths() {
+  return getContent().legal.impressum.visible ? [{ params: { page: "impressum" } }] : [];
+}
+---
+
+<LegalPage locale="de" kind="impressum" />

@@ -1,0 +1,25 @@
+---
+import { shouldLoadAnalytics } from "../../lib/analytics";
+import type { Site } from "../../content/repository";
+
+interface Props {
+  site: Site;
+}
+
+const { site } = Astro.props;
+const enabled = shouldLoadAnalytics({ PUBLIC_DEPLOY_ENV: import.meta.env.PUBLIC_DEPLOY_ENV }, site);
+// Restrict tracking to the real host so previews and copies never report.
+const host = new URL(site.siteUrl).host;
+---
+
+{
+  enabled && (
+    <script
+      is:inline
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id={site.analytics.umamiWebsiteId}
+      data-domains={host}
+    />
+  )
+}

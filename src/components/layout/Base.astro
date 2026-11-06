@@ -3,7 +3,8 @@ import "../../styles/global.css";
 import "../../styles/motion.css";
 import { LOCALES, dirFor, pathFor, DEFAULT_LOCALE, type Locale } from "../../i18n/locales";
 import { getContent } from "../../content/repository";
-import { paletteCss } from "../../lib/palettes";
+import { paletteCss, backgrounds } from "../../lib/palettes";
+import Analytics from "./Analytics.astro";
 
 interface Props {
   locale: Locale;
@@ -11,12 +12,15 @@ interface Props {
   description: string;
   /** Locale-neutral route path of this page, used for canonical/hreflang. */
   path?: string;
+  /** Set false for routes that must not report visits (the print route). */
+  analytics?: boolean;
 }
 
-const { locale, title, description, path = "/" } = Astro.props;
+const { locale, title, description, path = "/", analytics = true } = Astro.props;
 const { site } = getContent();
-const canonical = new URL(pathFor(locale, path), Astro.site);
-const alternates = LOCALES.map((l) => ({ hreflang: l, href: new URL(pathFor(l, path), Astro.site).href }));
+const canonical = new URL(pathFor(locale, path), site.siteUrl);
+const alternates = LOCALES.map((l) => ({ hreflang: l, href: new URL(pathFor(l, path), site.siteUrl).href }));
+const bg = backgrounds[site.palette.background];
 const css = paletteCss(site.palette.accent, site.palette.background);
 ---
 
@@ -29,7 +33,7 @@ const css = paletteCss(site.palette.accent, site.palette.background);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.href} />
     {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
-    <link rel="alternate" hreflang="x-default" href={new URL(pathFor(DEFAULT_LOCALE, path), Astro.site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL(pathFor(DEFAULT_LOCALE, path), site.siteUrl).href} />
 
     <meta property="og:type" content="profile" />
     <meta property="og:title" content={title} />
@@ -37,6 +41,8 @@ const css = paletteCss(site.palette.accent, site.palette.background);
     <meta property="og:url" content={canonical.href} />
     <meta property="og:locale" content={locale === "de" ? "de_DE" : "en_US"} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content={bg.light.bg} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={bg.dark.bg} media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <style is:inline set:html={css}></style>
@@ -81,6 +87,7 @@ const css = paletteCss(site.palette.accent, site.palette.background);
   <body>
     <a class="skip-link" href="#main">{site.labels.skipToContent[locale]}</a>
     <slot />
+    {analytics && <Analytics site={site} />}
     <script>
       import { initTheme } from "../../scripts/theme";
       initTheme();
