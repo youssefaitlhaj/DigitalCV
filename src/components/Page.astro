@@ -1,0 +1,62 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "./Nav.astro";
+import Hero from "./Hero.astro";
+import About from "./About.astro";
+import Experience from "./Experience.astro";
+import Skills from "./Skills.astro";
+import Education from "./Education.astro";
+import Contact from "./Contact.astro";
+import Footer from "./Footer.astro";
+import { profile } from "../content/career";
+import { useTranslations, type Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+/** Structured data, so search engines read this as a person rather than a page. */
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  jobTitle: t.hero.role,
+  url: Astro.site?.href,
+  sameAs: [profile.linkedin],
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Bamberg",
+    addressRegion: "Bavaria",
+    addressCountry: "DE",
+  },
+};
+---
+
+<Base locale={locale}>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(personSchema)}
+  />
+
+  <Nav locale={locale} />
+
+  <main id="main">
+    <Hero locale={locale} />
+    <About locale={locale} />
+    <Experience locale={locale} />
+    <Skills locale={locale} />
+    <Education locale={locale} />
+    <Contact locale={locale} />
+  </main>
+
+  <Footer locale={locale} />
+</Base>
+
+<script>
+  import "../scripts/motion";
+</script>

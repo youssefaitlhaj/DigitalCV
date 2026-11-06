@@ -1,0 +1,29 @@
+---
+import { interpolate, useTranslations, type Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="shell inner">
+    <p>{interpolate(t.footer.copyright, { year })}</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-block-start: 1px solid var(--color-hairline);
+    padding-block: 2.5rem clamp(5rem, 10vw, 7rem);
+  }
+
+  .inner {
+    font-size: var(--text-small);
+    color: var(--color-ink-muted);
+  }
+</style>

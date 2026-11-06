@@ -1,0 +1,117 @@
+---
+import SectionHeading from "./ui/SectionHeading.astro";
+import { profile } from "../content/career";
+import { useTranslations, type Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+/** Handle from the profile URL, so the label cannot drift from the link. */
+const linkedinHandle = new URL(profile.linkedin).pathname.replace(/\/+$/, "").split("/").pop();
+---
+
+<section id="contact" class="section" aria-labelledby="contact-heading">
+  <div class="shell">
+    <SectionHeading index="05" title={t.sections.contact} id="contact" />
+
+    <p class="lead" data-reveal>{t.contact.lead}</p>
+
+    <ul class="links">
+      {/*
+        The address is never a contiguous string in the built HTML — the two
+        halves live in separate attributes and are joined by `email.ts`. Naive
+        scrapers regex for `user@domain` and find nothing. Anyone with a browser
+        sees a normal mailto link.
+      */}
+      <li data-reveal>
+        <a
+          class="link"
+          data-email
+          data-email-user={profile.emailUser}
+          data-email-domain={profile.emailDomain}
+          href="#contact"
+        >
+          <span class="link-label">{t.contact.emailLabel}</span>
+          <span class="link-value" data-email-text>{t.contact.emailFallback}</span>
+        </a>
+      </li>
+
+      <li data-reveal>
+        <a class="link" href={profile.linkedin} target="_blank" rel="noopener noreferrer" data-magnetic>
+          <span class="link-label">{t.contact.linkedinLabel}</span>
+          <span class="link-value">{linkedinHandle}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--spacing-section);
+  }
+
+  .lead {
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    line-height: 1.35;
+    max-width: 24ch;
+    margin-block-end: clamp(3rem, 7vw, 5rem);
+  }
+
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .link {
+    display: grid;
+    gap: 0.4rem 2.5rem;
+    padding-block: 1.75rem;
+    border-block-start: 1px solid var(--color-hairline);
+    transition: color var(--duration-fast) var(--ease-in-out-quart);
+  }
+
+  .links li:last-child .link {
+    border-block-end: 1px solid var(--color-hairline);
+  }
+
+  @media (min-width: 40rem) {
+    .link {
+      grid-template-columns: 10rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  .link-label {
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .link-value {
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 3.5vw, 2.25rem);
+    /* Gold hairline grows under the value on hover — the accent's main job. */
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size var(--duration-base) var(--ease-out-expo);
+    /* Keeps a long address from pushing the page sideways on small screens. */
+    overflow-wrap: anywhere;
+  }
+
+  .link:hover .link-value,
+  .link:focus-visible .link-value {
+    background-size: 100% 1px;
+  }
+</style>

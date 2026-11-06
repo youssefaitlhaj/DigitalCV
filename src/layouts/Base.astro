@@ -1,0 +1,96 @@
+---
+import "../styles/global.css";
+import { LOCALES, dirFor, pathFor, useTranslations, type Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const dir = dirFor(locale);
+
+const canonical = new URL(pathFor(locale), Astro.site);
+const alternates = LOCALES.map((l) => ({
+  hreflang: l,
+  href: new URL(pathFor(l), Astro.site).href,
+}));
+---
+
+<!doctype html>
+<html lang={locale} dir={dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.meta.title}</title>
+    <meta name="description" content={t.meta.description} />
+    <link rel="canonical" href={canonical.href} />
+
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(pathFor("en"), Astro.site).href} />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={t.meta.title} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:locale" content={locale === "de" ? "de_DE" : "en_US"} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#fbf9f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131110" media="(prefers-color-scheme: dark)" />
+
+    {/*
+      Both flags are set before first paint, and both are deliberately inline
+      and synchronous:
+
+      - `data-theme` must resolve before the first pixel or the page flashes
+        ivory before turning dark. Reading localStorage here is the whole point.
+      - `js-motion` gates the reveal styles. Targets only hide themselves under
+        that class, so if scripting is off or this never runs, the page renders
+        fully visible rather than blank.
+    */}
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {
+          // Private mode can throw on localStorage; the media query in CSS
+          // covers this case, so leaving data-theme unset is correct.
+        }
+
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          var root = document.documentElement;
+          root.classList.add("js-motion");
+
+          // Failsafe. `js-motion` is what lets reveal targets hide themselves,
+          // so if the motion bundle never runs — a chunk fails to load, a
+          // browser chokes on it, a stale dev cache 504s — the page would stay
+          // permanently blank. motion.ts sets `data-motion-ready` once it has
+          // taken over; if that has not happened by now, assume it never will
+          // and reveal everything. Losing the animation is a nuisance, losing
+          // the content is a broken site.
+          window.setTimeout(function () {
+            if (!root.hasAttribute("data-motion-ready")) {
+              root.classList.remove("js-motion");
+            }
+          }, 4000);
+        }
+      })();
+    </script>
+
+    <slot name="head" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">{t.nav.skipToContent}</a>
+    <slot />
+  </body>
+</html>

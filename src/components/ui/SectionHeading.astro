@@ -1,0 +1,40 @@
+---
+interface Props {
+  /** Two-digit section numeral, e.g. "02". Gold, small, above the title. */
+  index: string;
+  title: string;
+  /** Anchor target for the nav's scroll-spy. */
+  id: string;
+}
+
+const { index, title, id } = Astro.props;
+---
+
+<header class="section-heading">
+  <span class="numeral" data-reveal aria-hidden="true">{index}</span>
+  <h2 id={`${id}-heading`} data-reveal-text>{title}</h2>
+</header>
+
+<style>
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    margin-block-end: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  /* One of the few places gold appears. Kept small on purpose. */
+  .numeral {
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--color-accent);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-size: var(--text-display);
+  }
+</style>

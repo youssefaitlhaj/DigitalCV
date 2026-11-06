@@ -1,0 +1,115 @@
+---
+import SectionHeading from "./ui/SectionHeading.astro";
+import { skillGroups } from "../content/career";
+import { useTranslations, type Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+/**
+ * Ids with no entry in `skills.items` are proper nouns — Java, Jira, Git — and
+ * render verbatim in every locale. Levels work the same way: `level.native` is
+ * translated, a bare "C1" is not.
+ */
+const label = (id: string) => t.skills.items[id] ?? id;
+const levelLabel = (level: string) => t.skills.levels[level] ?? level;
+---
+
+<section id="skills" class="section" aria-labelledby="skills-heading">
+  <div class="shell">
+    <SectionHeading index="03" title={t.sections.skills} id="skills" />
+
+    <div class="groups">
+      {
+        skillGroups.map((group) => (
+          <div class="group">
+            <h3 class="group-title" data-reveal>
+              {t.skills.groups[group.id]}
+            </h3>
+            <ul class="chips">
+              {group.items.map((item) => (
+                <li class="chip" data-reveal>
+                  {label(item.id)}
+                  {item.level && <span class="level">{levelLabel(item.level)}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--spacing-section);
+  }
+
+  .groups {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  @media (min-width: 48rem) {
+    .groups {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .group-title {
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    padding-block-end: 1rem;
+    border-block-end: 1px solid var(--color-hairline);
+  }
+
+  .chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-block-start: 1.5rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-hairline);
+    border-radius: 999px;
+    font-size: var(--text-small);
+    color: var(--color-ink);
+    background-color: var(--color-bg);
+    transition:
+      border-color var(--duration-fast) var(--ease-in-out-quart),
+      transform var(--duration-fast) var(--ease-out-expo);
+  }
+
+  .chip:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  /* Proficiency sits inside the chip, separated by a hairline rather than
+     punctuation — keeps "German C1" reading as one unit. */
+  .level {
+    padding-inline-start: 0.5rem;
+    border-inline-start: 1px solid var(--color-hairline);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.06em;
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+  }
+</style>

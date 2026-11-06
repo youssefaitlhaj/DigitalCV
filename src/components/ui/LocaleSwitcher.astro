@@ -1,0 +1,63 @@
+---
+import { LOCALES, pathFor, useTranslations, type Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const options = LOCALES.map((l) => ({
+  code: l,
+  href: pathFor(l),
+  label: useTranslations(l).localeName,
+  current: l === locale,
+}));
+---
+
+<div class="switcher" role="group" aria-label={t.nav.language}>
+  {
+    options.map((option) => (
+      <a
+        href={option.href}
+        class:list={["option", option.current && "current"]}
+        hreflang={option.code}
+        lang={option.code}
+        aria-current={option.current ? "true" : undefined}
+      >
+        {option.code.toUpperCase()}
+        <span class="sr-only">{option.label}</span>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding-inline-start: 0.6rem;
+    margin-inline-start: 0.35rem;
+    border-inline-start: 1px solid var(--color-hairline);
+  }
+
+  .option {
+    padding: 0.35rem 0.5rem;
+    border-radius: 999px;
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.08em;
+    color: var(--color-ink-muted);
+    transition: color var(--duration-fast) var(--ease-in-out-quart);
+  }
+
+  .option:hover {
+    color: var(--color-ink);
+  }
+
+  .current {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+</style>

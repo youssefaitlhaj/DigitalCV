@@ -1,0 +1,183 @@
+---
+import LocaleSwitcher from "./ui/LocaleSwitcher.astro";
+import ThemeToggle from "./ui/ThemeToggle.astro";
+import { useTranslations, type Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const items = [
+  { id: "about", label: t.nav.about },
+  { id: "experience", label: t.nav.experience },
+  { id: "skills", label: t.nav.skills },
+  { id: "education", label: t.nav.education },
+  { id: "contact", label: t.nav.contact },
+];
+---
+
+<nav class="nav" data-nav aria-label={t.nav.skipToContent}>
+  <div class="pill">
+    {/*
+      `data-lenis-prevent` is essential, not decorative: Lenis intercepts wheel
+      and touch events for the whole document, so without it a swipe on this
+      strip is swallowed by the page's smooth scroll and the list never moves.
+    */}
+    <ul class="items" data-nav-list data-lenis-prevent>
+      {/* The gold indicator is a single element moved with FLIP, not a per-item border. */}
+      <span class="indicator" data-nav-indicator aria-hidden="true"></span>
+
+      {
+        items.map((item) => (
+          <li>
+            <a href={`#${item.id}`} class="item" data-nav-link={item.id}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <LocaleSwitcher locale={locale} />
+    <ThemeToggle locale={locale} />
+  </div>
+</nav>
+
+<style>
+  .nav {
+    position: fixed;
+    inset-block-end: clamp(1rem, 3vw, 2rem);
+    inset-inline: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    /* Hidden until the hero is scrolled past; the motion layer reveals it. */
+    opacity: 0;
+    transform: translateY(120%);
+    transition:
+      opacity var(--duration-base) var(--ease-out-expo),
+      transform var(--duration-base) var(--ease-out-expo);
+  }
+
+  .nav[data-visible] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* With no JS the nav is simply always available rather than never. */
+  :global(html:not(.js-motion)) .nav {
+    opacity: 1;
+    transform: none;
+  }
+
+  .pill {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.5rem;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-bg) 82%, transparent);
+    border: 1px solid var(--color-hairline);
+    backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow: 0 8px 30px -12px rgb(28 26 23 / 0.18);
+    max-width: calc(100vw - 2rem);
+  }
+
+  .items {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    /* Breathing room before the first item and after the last, so neither sits
+       flush against the pill's edge when the strip is scrolled to either end.
+       Inside the scroll container rather than on `.pill`, so the space travels
+       with the content instead of clipping it. */
+    padding-inline: 0.5rem;
+    padding-block: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Keeps a swipe that runs past either end from scrolling the page behind
+       the nav, or triggering the browser's back gesture. */
+    overscroll-behavior-inline: contain;
+    /* Momentum scrolling on older iOS Safari. */
+    -webkit-overflow-scrolling: touch;
+    /* Fades the labels out at whichever edge has more content beyond it, so it
+       is visible that the strip scrolls. `scroll-driven` would be neater but
+       support is still thin, and a static fade at both ends reads fine. */
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 0.75rem,
+      #000 calc(100% - 0.75rem),
+      transparent 100%
+    );
+  }
+
+  .items::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* No overflow above the phone breakpoint, so no need to fade the ends. */
+  @media (min-width: 34rem) {
+    .items {
+      mask-image: none;
+    }
+  }
+
+  /* Size and position come from the active link via motion.ts, so the pill is
+     concentric with that link's box. Previously it stretched the full height
+     of the list, which left the label sitting visibly high inside it. */
+  .indicator {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-accent) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .item {
+    display: block;
+    padding: 0.62rem 0.85rem;
+    border-radius: 999px;
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.06em;
+    /* The body's 1.7 line-height splits unevenly around a 12px label and
+       pushes it off-centre inside the pill. At 1 the line box hugs the glyphs,
+       so the symmetric padding above actually centres them. */
+    line-height: 1;
+    /* letter-spacing appends a gap after the final character, which shifts the
+       glyph run left of centre. Half of it back as indent restores balance. */
+    text-indent: 0.03em;
+    white-space: nowrap;
+    color: var(--color-ink-muted);
+    transition: color var(--duration-fast) var(--ease-in-out-quart);
+  }
+
+  .item:hover,
+  .item[aria-current="true"] {
+    color: var(--color-ink);
+  }
+
+  /* Five items plus the locale switcher do not fit 375px at full padding.
+     The list scrolls either way, but tightening here keeps most of it visible
+     without a swipe — and German labels are the longest, so they set the bar. */
+  @media (max-width: 26rem) {
+    .item {
+      padding-inline: 0.6rem;
+      letter-spacing: 0.02em;
+    }
+
+    .pill {
+      padding-inline: 0.35rem;
+    }
+  }
+</style>
