@@ -37,8 +37,11 @@ export async function cropAll(refs: ImageRef[], root: string): Promise<void> {
     if (!SUPPORTED.has(ext)) {
       throw new ImageError(`${ref.src}: unsupported format ${ext || "(none)"} — upload JPG, PNG or WebP`);
     }
-    if (ext !== extname(ref.src).toLowerCase() && ref.src.slice(-ext.length) !== ext.toUpperCase()) {
-      throw new ImageError(`${ref.src}: file extension must be all lower case or all upper case`);
+    const raw = extname(ref.src);
+    if (raw !== raw.toLowerCase() && raw !== raw.toUpperCase()) {
+      throw new ImageError(
+        `${ref.src}: mixed-case extension ${raw} — rename it with an all-lowercase extension such as ${raw.toLowerCase()}`,
+      );
     }
     const input = join(root, ref.src);
     if (!existsSync(input)) throw new ImageError(`${ref.src}: file not found`);

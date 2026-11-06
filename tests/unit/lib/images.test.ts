@@ -154,3 +154,11 @@ describe("extension case", () => {
     expect(generatedPathFor(ref("a.jpg", c))).not.toBe(generatedPathFor(ref("a.JPG", c)));
   });
 });
+
+describe("mixed-case extension", () => {
+  test("IMG.Jpg is rejected with a rename hint", async () => {
+    await expect(cropAll([ref("IMG.Jpg")], root)).rejects.toThrow(
+      "/src/assets/uploads/IMG.Jpg: mixed-case extension .Jpg — rename it with an all-lowercase extension such as .jpg",
+    );
+  });
+});
