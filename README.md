@@ -7,17 +7,30 @@ Design spec: [`docs/superpowers/specs/2026-11-06-redesign-and-admin-design.md`](
 
 Accounts, deployment and the launch checklist: [`docs/SETUP.md`](docs/SETUP.md)
 
+## Requirements
+
+Node.js 24 or newer (`engines` in `package.json`; CI uses Node 24, and the PDF tests need it).
+
 ## Commands
 
 | Command | Action |
 | :-- | :-- |
 | `npm install` | Install dependencies |
-| `npm run dev` | Dev server at `localhost:4321` |
+| `npm run dev` | Dev server at `localhost:4321` (runs `predev` first) |
+| `npm run predev` | Vendors the admin scripts and generates the image crops; run once before `astro dev --background` |
 | `npm test` | Unit tests (Vitest) |
 | `npm run build` | Production build to `./dist/` (also generates the PDFs) |
 | `npm run test:pdf` | Tests on the generated PDFs (run after a build) |
 | `npx playwright test` | End-to-end tests, all viewport projects (slow) |
 | `npx astro check` | Type-check `.astro` and `.ts` |
+
+### Starting the dev server
+
+`npm run dev` first runs the `predev` step automatically: it copies the Sveltia CMS and Cropper.js files into
+`public/admin/` and generates the cropped images the pages import. Starting Astro directly (for example
+`npx astro dev --background`, which keeps the server running in the background) skips that step, so run
+`npm run predev` once beforehand, and again after changing an image or its crop by hand. Stop a background
+server with `npx astro dev stop`.
 
 ## Structure
 
@@ -36,7 +49,7 @@ Accounts, deployment and the launch checklist: [`docs/SETUP.md`](docs/SETUP.md)
 `npx playwright test` runs three projects: `desktop`, `narrow` (320px wide) and `reduced-motion`. A few tests
 are skipped on purpose depending on the project (`test.skip` conditions in `tests/e2e`): the 320px overflow
 check runs only in `narrow`, the motion-on checks are skipped under `reduced-motion`, the reduced-motion
-checks run only there, and one motion fixture check runs only in `desktop`. The last full run: 188 passed,
+checks run only there, and one motion fixture check runs only in `desktop`. The last full run: 191 passed,
 22 skipped, 0 failed.
 
 ## Editing content

@@ -4,6 +4,8 @@ Follow this once, in order. It assumes you are a developer who already has GitHu
 
 Repository: `youssefaitlhaj/DigitalCV`. Never paste a token, secret or password into a file in the repo. Secrets go only into the GitHub or Cloudflare screens named below.
 
+Working on the code on your own machine needs Node.js 24 or newer. Start the dev server with `npm run dev`. If you start Astro directly instead (`npx astro dev --background`), run `npm run predev` once first: it vendors the admin scripts and generates the image crops that `npm run dev` would otherwise prepare. Details are in the README.
+
 ## The launch order in one view
 
 The redesign goes live only after you have reviewed it on a protected preview. Merging is your sign-off.
@@ -103,7 +105,13 @@ Fallback without Zero Trust: skip this step. Previews stay on unguessable per-de
 1. On GitHub open a pull request from `redesign` into `main`.
 2. Wait for the `ci` check to finish (usually 10-20 minutes; the browser tests are the slow part) and for the `preview/deploy` status; its link opens the preview. Failed previews show a failed `preview/deploy` status on the PR.
 3. Open the preview link in a private window and confirm the Cloudflare Access login (step 4).
-4. Now that the `ci` check exists, protect `main`: **Settings**, **Branches**, **Add branch ruleset** (or classic protection rule) for `main`. Tick **Require a pull request before merging** and **Require status checks to pass before merging**, and add the check named `ci`. Require only `ci`; do not require `preview`, `preview-failed` or `preview/deploy`, or Publish can stall. Save.
+4. Now that the `ci` check exists, protect `main` with a **classic** branch protection rule (not a ruleset): **Settings**, **Branches**, **Add classic branch protection rule**. Branch name pattern: `main`.
+   - Tick **Require a pull request before merging**. Untick its sub-option **Require approvals**: you are the only reviewer and cannot approve your own pull request.
+   - Tick **Require status checks to pass before merging**, search for and add the check named `ci`. Require only `ci`; do not require `preview`, `preview-failed` or `preview/deploy`, or Publish can stall.
+   - Leave **Do not allow bypassing the above settings** **unticked**. This matters: uploading or deleting a file in the `/admin` Media library commits straight to `main` (it does not open a pull request). As the repository owner you may bypass the rule, so those commits go through; with bypassing forbidden they would fail.
+   - Save.
+
+   The cost of allowing the bypass: a Media-library commit skips the `ci` check, so the browser (Playwright) tests do not run for it. The production deploy that follows still runs `astro check`, the unit tests, the build and the PDF tests, and a failure there stops the deploy, so a broken image cannot reach the live site. Everything else (every content edit) still goes through a pull request and the full `ci` check.
 
 ## 8. Review on the protected preview
 
@@ -112,6 +120,7 @@ Do all of this before merging. Fix anything by editing files on `redesign` and p
 - Every entry in `docs/superpowers/notes/german-drafts.md`: find it on the preview and review the German text.
 - The privacy policy text, English and German.
 - Both CV PDFs (English and German) download and open.
+- Accents and umlauts (é, ä, ö, ü, ß) render correctly in both PDFs (for example "Université Hassan II" in both, and "Otto-Friedrich-Universität", "Französisch", "größten" and "Außerdem" in the German CV); no empty boxes or missing letters.
 - The site at phone width.
 - Overall: nothing shows a phone number or postal address, and the Impressum page is hidden (it is off by default).
 
@@ -130,6 +139,9 @@ Open `https://youssefaitlhaj.pages.dev/admin/` and log in with GitHub. Saving an
 - [ ] Round trip: edit a German job title, save, open the preview link (behind Cloudflare Access), then Publish. The live site shows it within about 5 minutes. The pull request diff changes only that field.
 - [ ] Crop the portrait on a phone, Publish, and confirm the cropped image is live. An EXIF-rotated phone photo crops the right way up.
 - [ ] Upload a new photo in the Media library first, then choose it in an image field; the build accepts it. Note whether choosing a fresh upload directly in the field commits.
+- [ ] Uploading a photo in the Media library works with branch protection on: the upload is committed to `main` without an error (this relies on **Do not allow bypassing the above settings** staying unticked, step 7), and the Deploy run that follows is green.
+- [ ] An iPhone HEIC photo chosen in an image field shows "This format isn't supported. Upload a JPG, PNG or WebP ..." instead of saving.
+- [ ] Remove an optional image: in a project card's **Image** or a quote's **Photo**, click **Remove image**, save and Publish. The image disappears from the site and the YAML no longer has that field. (Required images such as the portrait have no Remove button; use **Replace image**.)
 - [ ] In a rich-text field, `<u>x</u>` and `<span class="c-accent">y</span>` survive saving unchanged, and the coloured word renders in the accent colour. (Colour and underline are written as these snippets.)
 - [ ] Reordering sections works on a laptop (drag) and on a phone (Move up / Move down buttons; drag needs a mouse).
 - [ ] Saving an entry does not add stray empty fields or `false` values, and the build still passes.
@@ -138,6 +150,10 @@ Open `https://youssefaitlhaj.pages.dev/admin/` and log in with GitHub. Saving an
 - [ ] Saving with an empty English or German text field is blocked.
 - [ ] A deliberately broken preview shows as a failed `preview/deploy` status instead of silently missing.
 - [ ] The weekly scheduled rebuild runs green once (it keeps date-driven values such as "years at TestBench" current).
+
+### Maintenance: keep the weekly rebuild alive
+
+GitHub switches off scheduled workflows in a public repository after 60 days without any repository activity (no commits, no Publish). It emails you a warning a few days before. To turn it back on (or to keep it on when you get the warning): open **Actions**, choose **Scheduled rebuild** in the left list, and click **Enable workflow** in the banner. You can also start a rebuild at any time with **Run workflow** on the same page. Any Publish from `/admin` also counts as activity and resets the 60 days.
 
 ## 11. Later: your own domain
 
