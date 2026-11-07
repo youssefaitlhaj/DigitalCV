@@ -31,6 +31,14 @@ Accounts, deployment and the launch checklist: [`docs/SETUP.md`](docs/SETUP.md)
 - `tests/`: unit, PDF and Playwright end-to-end tests.
 - `.github/workflows/`: CI, preview deploys, production deploy.
 
+## Testing
+
+`npx playwright test` runs three projects: `desktop`, `narrow` (320px wide) and `reduced-motion`. A few tests
+are skipped on purpose depending on the project (`test.skip` conditions in `tests/e2e`): the 320px overflow
+check runs only in `narrow`, the motion-on checks are skipped under `reduced-motion`, the reduced-motion
+checks run only there, and one motion fixture check runs only in `desktop`. The last full run: 188 passed,
+22 skipped, 0 failed.
+
 ## Editing content
 
 Use the editor at `/admin` (log in with GitHub). Saving creates a pull request and a protected preview;
