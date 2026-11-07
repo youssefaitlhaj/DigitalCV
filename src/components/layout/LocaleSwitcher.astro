@@ -24,6 +24,7 @@ const { site, locale, path = "/" } = Astro.props;
           lang={l}
           class:list={["opt", l === locale && "current"]}
           aria-current={l === locale ? "true" : undefined}
+          data-locale-link={l === locale ? undefined : ""}
         >
           {l.toUpperCase()}
         </a>
@@ -31,6 +32,11 @@ const { site, locale, path = "/" } = Astro.props;
     ))
   }
 </div>
+
+<script>
+  import { initKeepSection } from "../../scripts/keep-section";
+  initKeepSection();
+</script>
 
 <style>
   .switcher {
