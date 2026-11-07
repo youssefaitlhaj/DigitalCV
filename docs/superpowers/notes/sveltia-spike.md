@@ -22,7 +22,7 @@ Nothing in this spike was exercised in a running UI. "Verified in source" means 
 
 - Package: `@sveltia/cms`, **0.261.0**, MIT licence.
 - Published 2026-11-06T02:38:22Z (`npm view @sveltia/cms time`).
-- Previous releases: 0.260.0 on 2026-11-05, 0.259.0 on 2026-11-04. The project releases almost daily, so pin the exact version.
+- Previous releases: 0.260.0 on 2026-11-05, 0.259.0 on 2026-11-05. The project releases almost daily, so pin the exact version.
 
 ## Verdict against spec §7.1
 
