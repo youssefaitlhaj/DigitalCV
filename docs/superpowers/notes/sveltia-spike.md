@@ -26,7 +26,14 @@ Nothing in this spike was exercised in a running UI. "Verified in source" means 
 
 ## Verdict against spec §7.1
 
-**Sveltia passes every must-have; the Keystatic fallback is not triggered.** Two caveats:
+**No §7.1 must-have fails on the evidence available; the Keystatic fallback is not triggered.** These points need confirmation in Task 15/17:
+
+- phone crop with the custom widget (including `pickFile`/`addFile` on a phone);
+- the raw inline HTML round trip in the markdown widget;
+- image replace and delete;
+- the auto-merge/required-check Publish behaviour.
+
+Two known caveats:
 
 - There is no drag on touch screens; the phone uses Move Up/Move Down buttons.
 - There is no built-in crop, so the crop widget is custom work (decision A below).
@@ -49,7 +56,7 @@ Nothing in this spike was exercised in a running UI. "Verified in source" means 
 - Both languages show inside one object group on one screen, one under the other, so they are adjacent.
 - CMS `i18n` is not used, as planned.
 - Mark `required: true` on both subfields.
-- Under the editorial workflow, drafts can be saved incomplete (`allow_incomplete_drafts` defaults to `true`), but required fields must be filled before Publish. Set `allow_incomplete_drafts: false` to block the save too.
+- Under the editorial workflow, drafts can be saved incomplete (`allow_incomplete_drafts` defaults to `true`), but required fields must be filled before Publish. Recommended: `publish_mode: { type: preview, allow_incomplete_drafts: false }` (the key is documented on the workflow pages and present in the 0.261.0 and 0.252.0 bundles), so a missing EN/DE string cannot even be saved as a draft (spec §7.1 #4). To be confirmed in Task 15.
 - Task 3's schema validation in CI remains the second safety net.
 
 ### 2. Editorial / preview workflow
@@ -145,7 +152,7 @@ Markdown output of underline is therefore **unverified, and treated as unsupport
 |---|---|---|
 | **Crop** | **(A) Custom field type using `cropperjs`** | Registered with `CMS.registerFieldType('imageref', …)`. It wraps the whole `imageRef` (src via `pickFile`/`addFile`, alt as `en`/`de` inputs, `crop` {x,y,width,height} in percent). Cropper.js supports touch (pinch and drag), so crop works on a phone. Load order: cropper CSS and JS, then the widget script, all before `CMS.init`. |
 | **Rich text** | **(B) Native marks plus documented inline HTML snippets** | `<u>…</u>` and `<span class="c-accent">…</span>` (also `c-muted`, `c-highlight`, `c-positive`) are listed in the field `hint`; the editor's raw mode is the way to type them. The bold, italic, strikethrough, code, link, list and quote buttons are native. Fallback if the round trip proves lossy (see 4c): pattern-based inline components (4b). |
-| **Preview** | **(A) Per-PR preview deploys through `publish_mode: preview`** | `preview_context: preview/deploy`. The Task 17 workflow posts the commit status (see 2c) and the repo needs auto-merge allowed plus a required check on `main` (see 2d). The `backend.branch: draft` fallback (B) is not needed. |
+| **Preview** | **(A) Per-PR preview deploys through `publish_mode: preview`** | `publish_mode: preview` is the single-stage variant of option A (the editorial workflow with per-PR preview deploys). Exact config: `publish_mode: { type: preview, allow_incomplete_drafts: false }`. Also:  `preview_context: preview/deploy`. The Task 17 workflow posts the commit status (see 2c) and the repo needs auto-merge allowed plus a required check on `main` (see 2d). The `backend.branch: draft` fallback (B) is not needed. |
 | **Statistics link** | **Custom page link, `registerCustomPage({ id: 'statistics', label: 'Statistics', icon: 'monitoring', url: <Umami share URL>, newTab: true })`** | Appears in the desktop toolbar and the mobile Menu page. The URL comes from the Umami share link. |
 
 ## Pinned assets for Task 15
@@ -172,9 +179,19 @@ cropperjs 1.7.0 (classic API; the registry latest is 2.3.1, a web-component rewr
 
 Caveat: `sveltia-cms.js` lazy-loads chunks (`chunks/git.js`, `qrcode.js`, `react-dom.js`, `assets/…`) with a dynamic `import()` relative to its own URL. SRI covers only the main file. A version-pinned unpkg URL is immutable, so the chunks are safe in practice. If strict SRI is wanted, self-host the whole `dist/` folder from the npm tarball in `public/admin/` instead.
 
+## Controller rulings
+
+1. **Self-host, no unpkg and no SRI.** Install exact versions as npm dependencies (`@sveltia/cms`, `cropperjs@1.7.0`) and serve their dist files from `/admin/` on the same origin. SRI on the entry file does not cover Sveltia's lazy-loaded chunks. Files to serve, keeping this relative layout because chunks load relative to the entry script:
+   - `node_modules/@sveltia/cms/dist/sveltia-cms.js`
+   - `node_modules/@sveltia/cms/dist/chunks/*.js` (`git.js`, `qrcode.js`, `react-dom.js`) and `chunks/assets/*` (for example `rolldown-runtime-*.js`)
+   - skip the `.map` files and the `.mjs` build (about 30 MB with maps)
+   - `node_modules/cropperjs/dist/cropper.min.js` and `cropper.min.css`
+2. **Pin a release at least about two weeks old.** The latest `@sveltia/cms` published on or before 2026-10-24 is **0.252.0** (2026-10-24T17:28Z, 14 days old on 2026-11-07). Its bundle contains `registerFieldType` (7), `registerWidget` (3), `registerCustomPage` (3), `registerEditorComponent` (3), `preview_context` (4), `allow_incomplete_drafts` (2), `enablePullRequestAutoMerge` (1), `newTab` (7), and the publish-mode list `["preview","editorial_workflow"]`. **Task 15 pins 0.252.0.** The SRI hashes recorded above for 0.261.0 are superseded; 0.252.0 `sveltia-cms.js` is `sha384-1lhFs8+tXG4MV80L+/4enmKGio3aT9qrPGfM8/OTuo7Td7z+PW/8eOZBUXgXwRRc` (informational only, since self-hosting needs none).
+
 ## Open risks
 
 1. Nothing was exercised in a browser (R8); the UI-level claims rest on source and docs.
+1a. The custom `imageref` crop widget is untested on a phone (touch crop, and `pickFile`/`addFile` on a phone).
 2. HTML round trip in the rich text editor (4c) and the inline-component fallback (4b) are unverified.
 3. The preview link depends on the Task 17 workflow posting the `preview/deploy` status; without it there is no link, but publishing still works.
 4. Phone reorder is by buttons, not drag.
