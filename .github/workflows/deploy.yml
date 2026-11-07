@@ -3,12 +3,15 @@ name: Deploy
 # Production deploy. Rebuilds and re-runs check, unit and PDF tests from scratch;
 # if any fail, the deploy job never runs. E2E is not repeated here: the required
 # "ci" check already ran it on the same content before the PR was merged.
-# Cloudflare secrets are only visible to the wrangler step of the deploy job,
-# never to install, build or test code.
+# GitHub builds, Vercel only hosts: the deploy job turns dist/ into Vercel's Build
+# Output (scripts/vercel-output.ts) and uploads it with `vercel deploy --prebuilt`.
+# VERCEL_TOKEN is only visible to that one step, never to install, build or test code.
 on:
   push:
     branches: [main]
   workflow_call:
+  # Manual redeploy: Actions, Deploy, Run workflow (branch main).
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -46,6 +49,8 @@ jobs:
   deploy:
     name: deploy
     needs: build
+    # Production is only ever built from main, even if Run workflow is started on another branch.
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -59,18 +64,22 @@ jobs:
         with:
           name: dist
           path: dist
-      - name: Deploy to Cloudflare Pages
+      - name: Prepare Vercel build output
+        run: npx tsx scripts/vercel-output.ts
+      - name: Deploy to Vercel (production)
+        shell: bash
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
+          set -o pipefail
           missing=""
-          [ -n "$CLOUDFLARE_API_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
-          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
-          [ -n "$CF_PAGES_PROJECT" ] || missing="$missing CF_PAGES_PROJECT(variable)"
+          [ -n "$VERCEL_TOKEN" ] || missing="$missing VERCEL_TOKEN"
+          [ -n "$VERCEL_ORG_ID" ] || missing="$missing VERCEL_ORG_ID(variable)"
+          [ -n "$VERCEL_PROJECT_ID" ] || missing="$missing VERCEL_PROJECT_ID(variable)"
           if [ -n "$missing" ]; then
             echo "::error::Missing deploy configuration:$missing"
             exit 1
           fi
-          npx wrangler pages deploy dist --project-name="$CF_PAGES_PROJECT" --branch=main --commit-dirty=true
+          npx vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN"
