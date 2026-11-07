@@ -171,7 +171,7 @@ test.describe("motion on", () => {
 
   test("nav highlights the section in view, also while the journey is pinned", async ({ page }) => {
     await page.goto("/");
-    const active = () => page.locator(".site-header nav a.active").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    const active = () => page.locator('[data-secnav] a[aria-current="true"]').evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     const box = await page.locator("section[data-journey]").evaluate((el) => {
       const b = el.closest(".pin-spacer") ?? el;
       return { top: b.getBoundingClientRect().top + scrollY, height: b.getBoundingClientRect().height };

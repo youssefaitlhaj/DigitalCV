@@ -144,8 +144,8 @@ test.describe("hidden section", () => {
       await page.goto(fixture.url(path));
       await expect(page.locator("#experience")).toHaveCount(1);
       await expect(page.locator("#skills")).toHaveCount(0);
-      await expect(page.locator('header a[href$="#experience"]')).toHaveCount(1);
-      await expect(page.locator('header a[href$="#skills"]')).toHaveCount(0);
+      await expect(page.locator('[data-secnav] a[href$="#experience"]')).toHaveCount(1);
+      await expect(page.locator('[data-secnav] a[href$="#skills"]')).toHaveCount(0);
     }
   });
 });

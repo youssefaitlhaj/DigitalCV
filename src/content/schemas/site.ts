@@ -35,6 +35,7 @@ export const siteSchema = z.object({
     skipToContent: localized(),
     themeToggle: localized(),
     language: localized(),
+    sections: localized(),
     privacy: localized(),
     impressum: localized(),
     codeLink: localized(),

@@ -1,9 +1,9 @@
 ---
-import { menuEntries, anchorFor } from "../../lib/sections";
 import { pathFor, type Locale } from "../../i18n/locales";
 import type { Content } from "../../content/repository";
 import LocaleSwitcher from "./LocaleSwitcher.astro";
 import ThemeToggle from "./ThemeToggle.astro";
+import SectionNav from "./SectionNav.astro";
 
 interface Props {
   content: Content;
@@ -12,8 +12,7 @@ interface Props {
 }
 
 const { content, locale, path = "/" } = Astro.props;
-const { site, page } = content;
-const entries = menuEntries(page.sections, locale);
+const { site } = content;
 const logoParts = site.logoText.split(".");
 ---
 
@@ -24,19 +23,15 @@ const logoParts = site.logoText.split(".");
     <a class="logo" href={pathFor(locale)}>
       {logoParts.map((part, i) => (<>{i > 0 && <span>.</span>}{part}</>))}
     </a>
-    <nav aria-label="Main">
-      {
-        entries.map((e) => (
-          <a class:list={[e.id !== "contact" && "hide"]} href={`${pathFor(locale)}#${anchorFor(e.id)}`}>
-            {e.label}
-          </a>
-        ))
-      }
+    <div class="tools">
       <LocaleSwitcher site={site} locale={locale} path={path} />
       <ThemeToggle site={site} locale={locale} />
-    </nav>
+    </div>
   </div>
 </header>
+
+{/* The section links live in the floating bar at the bottom of the viewport. */}
+<SectionNav content={content} locale={locale} />
 
 <style>
   /* Scroll progress only exists with the motion layer (html.motion); it has no final state to show. */
@@ -79,40 +74,10 @@ const logoParts = site.logoText.split(".");
   .logo span {
     color: var(--accent-text);
   }
-  nav {
+  .tools {
     display: flex;
-    gap: 22px;
+    gap: 12px;
     align-items: center;
-    font-size: 14px;
-    color: var(--muted);
-  }
-  nav > a {
-    text-decoration: none;
-  }
-  nav > a:hover,
-  nav > a.active {
-    color: var(--ink);
-  }
-  /* The motion layer marks the link of the section in view. */
-  nav > a.active {
-    position: relative;
-  }
-  nav > a.active::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -19px;
-    height: 2px;
-    background: var(--accent);
-  }
-  @media (max-width: 820px) {
-    nav {
-      gap: 12px;
-    }
-    nav > a.hide {
-      display: none;
-    }
   }
   @media (max-width: 400px) {
     .shell {

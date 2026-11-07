@@ -323,6 +323,19 @@ collections:
                     name: de
                     widget: string
                     required: true
+              - label: Sections bar
+                name: sections
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
               - label: Privacy link
                 name: privacy
                 widget: object

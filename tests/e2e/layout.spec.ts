@@ -21,7 +21,8 @@ test("theme toggle switches and persists", async ({ page }) => {
 
 test("de page has German menu", async ({ page }) => {
   await page.goto("/de/");
-  await expect(page.locator("header").getByText("Erfahrung")).toBeAttached();
+  const nav = page.locator('nav[aria-label="Abschnitte"]');
+  await expect(nav.locator("a", { hasText: "Erfahrung" })).toHaveAttribute("href", "/de/#experience");
 });
 
 test("skip link targets main", async ({ page }) => {

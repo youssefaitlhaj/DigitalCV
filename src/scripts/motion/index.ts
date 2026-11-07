@@ -21,8 +21,9 @@ import { effect as typer } from "./effects/typer";
 import { effect as chips } from "./effects/chips";
 import { effect as scaleIn } from "./effects/scaleIn";
 import { effect as navSpy } from "./effects/navSpy";
+import { effect as navReveal } from "./effects/navReveal";
 
-const effects: Effect[] = [intro, progress, parallax, statement, counters, journey, rail, typer, chips, scaleIn, navSpy];
+const effects: Effect[] = [intro, progress, parallax, statement, counters, journey, rail, typer, chips, scaleIn, navSpy, navReveal];
 
 export function initMotion(): void {
   const root = document.documentElement;

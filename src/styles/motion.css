@@ -46,6 +46,13 @@
     background: var(--bg);
     transform: none;
   }
+
+  /* ⑥ Sections bar: tucked below the viewport until the hero is scrolled past (navReveal adds data-visible). */
+  .motion [data-secnav]:not([data-visible]) {
+    opacity: 0;
+    transform: translateY(120%);
+    visibility: hidden;
+  }
 }
 
 /* Words of the typed name never break across lines. */

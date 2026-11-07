@@ -1,0 +1,176 @@
+---
+import { menuEntries, anchorFor } from "../../lib/sections";
+import { pathFor, type Locale } from "../../i18n/locales";
+import { pick } from "../../lib/localize";
+import type { Content } from "../../content/repository";
+
+interface Props {
+  content: Content;
+  locale: Locale;
+}
+
+const { content, locale } = Astro.props;
+const { site, page } = content;
+const entries = menuEntries(page.sections, locale);
+---
+
+{/*
+  The sections bar: a floating pill near the bottom of the viewport, as on the
+  original site. Without the motion layer (no JS, reduced motion) it is simply
+  always there. With it, src/scripts/motion/effects/navReveal.ts slides it in
+  once the hero is behind the reader and navSpy.ts moves the accent indicator
+  to the link of the section in view.
+*/}
+{
+  entries.length > 0 && (
+    <nav class="secnav" data-secnav aria-label={pick(site.labels.sections, locale)}>
+      <div class="pill">
+        <div class="items" data-secnav-list>
+          {/* One indicator moved between links, not a per-link border. */}
+          <span class="indicator" data-secnav-indicator aria-hidden="true" />
+          <ul>
+            {entries.map((e) => (
+              <li>
+                <a href={`${pathFor(locale)}#${anchorFor(e.id)}`} data-secnav-link={e.id}>
+                  {e.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </nav>
+  )
+}
+
+<style is:global>
+  /* Room under the footer so the floating bar never covers the last line or the contact buttons. */
+  :root {
+    --secnav-h: 48px;
+    --secnav-gap: clamp(12px, 3vw, 24px);
+    --secnav-space: calc(var(--secnav-h) + 2 * var(--secnav-gap) + env(safe-area-inset-bottom, 0px));
+  }
+  @media (max-width: 760px) {
+    :root {
+      --secnav-h: 54px;
+    }
+  }
+  @media screen {
+    body:has([data-secnav]) {
+      padding-bottom: var(--secnav-space);
+    }
+    html:has([data-secnav]) {
+      scroll-padding-bottom: var(--secnav-space);
+    }
+  }
+</style>
+
+<style>
+  .secnav {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: calc(var(--secnav-gap) + env(safe-area-inset-bottom, 0px));
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    /* The hidden state (html.motion only) lives in src/styles/motion.css.
+       `visibility` keeps the links out of the tab order while it is hidden. */
+    transition:
+      opacity 0.35s ease,
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0.5s;
+  }
+
+  .pill {
+    pointer-events: auto;
+    height: var(--secnav-h);
+    max-width: calc(100vw - 32px);
+    padding: 4px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg) 84%, transparent);
+    border: 1px solid var(--line);
+    /* One filter function: the CSS minifier drops the space between two, which Chromium rejects. */
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px -12px color-mix(in srgb, var(--ink) 30%, transparent);
+  }
+
+  .items {
+    position: relative;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    /* A swipe past either end does not scroll the page or trigger "back". */
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 999px;
+    /* The labels fade at the edges so it is visible that the strip scrolls. The
+       fade is as wide as the list's own padding, so a label at either end of a
+       strip that fits is never dimmed. */
+    mask-image: linear-gradient(to right, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+  }
+  .items::-webkit-scrollbar {
+    display: none;
+  }
+
+  ul {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 100%;
+    width: max-content;
+    margin: 0;
+    padding: 0 8px;
+    list-style: none;
+  }
+
+  /* Position and size come from the active link (navSpy.ts). */
+  .indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: calc(var(--secnav-h) - 10px);
+    padding: 0 14px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  a:hover,
+  a[aria-current="true"] {
+    color: var(--ink);
+  }
+  /* Inset: the scrolling strip would clip an outside outline. */
+  a:focus-visible {
+    outline: 2px solid var(--accent-text);
+    outline-offset: -2px;
+  }
+
+  @media (max-width: 420px) {
+    a {
+      padding: 0 11px;
+    }
+  }
+
+  @media print {
+    .secnav {
+      display: none;
+    }
+  }
+</style>

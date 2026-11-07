@@ -37,6 +37,7 @@ labels:
   skipToContent: { en: Skip to content, de: Zum Inhalt springen }
   themeToggle: { en: Toggle night mode, de: Nachtmodus umschalten }
   language: { en: Language, de: Sprache }
+  sections: { en: Sections, de: Abschnitte }
   privacy: { en: Privacy, de: Datenschutz }
   impressum: { en: Impressum, de: Impressum }
   codeLink: { en: Code, de: Code }
