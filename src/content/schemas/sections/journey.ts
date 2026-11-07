@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { localized, localizedRich } from "../primitives";
+import { localized, localizedRich, optionalField } from "../primitives";
 import { sectionBase } from "./base";
 
 export const journeySchema = z.object({
   ...sectionBase,
   type: z.literal("journey"),
   /** Large headline above the track, e.g. "From Casablanca to Bamberg." `title` stays the menu label. */
-  heading: localized().optional(),
+  heading: optionalField(localized()),
   stops: z
     .array(
       z.object({

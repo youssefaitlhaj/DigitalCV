@@ -16,3 +16,18 @@ describe("admin index.html", () => {
     expect(html).toContain('href="/admin/config.yml"');
   });
 });
+
+describe("admin headers", () => {
+  const headers = readFileSync("public/_headers", "utf8");
+  const csp = headers.split("\n").find((l) => l.includes("Content-Security-Policy"))!;
+  it("blocks foreign scripts and framing for /admin/*", () => {
+    expect(headers).toMatch(/^\/admin\/\*/m);
+    expect(csp).toMatch(/script-src 'self';/);
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).not.toMatch(/script-src[^;]*(unsafe|https:)/);
+  });
+  it("allows the auth origin that config.yml uses", () => {
+    const base = /base_url:\s*(\S+)/.exec(readFileSync("public/admin/config.yml", "utf8"))![1].replace(/["']/g, "");
+    expect(csp).toContain(base);
+  });
+});

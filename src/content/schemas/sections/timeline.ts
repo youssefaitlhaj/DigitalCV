@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { localized, localizedRich, yearOrMonth } from "../primitives";
+import { localized, localizedRich, optionalField, yearOrMonth } from "../primitives";
 import { sectionBase } from "./base";
 
 /** Month index; a bare year is January when starting and December when ending. */
@@ -12,13 +12,13 @@ const item = z
   .object({
     title: localized(),
     org: z.string().trim().min(1),
-    orgUrl: z.url().optional(),
+    orgUrl: optionalField(z.url()),
     location: z.string().trim().min(1),
-    employment: z.enum(["full-time", "part-time", "internship"]).optional(),
+    employment: optionalField(z.enum(["full-time", "part-time", "internship"])),
     start: yearOrMonth,
     end: z.union([yearOrMonth, z.literal("present")]),
-    description: localizedRich.optional(),
-    badge: z.string().trim().min(1).optional(),
+    description: optionalField(localizedRich),
+    badge: optionalField(z.string().trim().min(1)),
   })
   .refine((i) => i.end === "present" || monthIndex(i.end, "end") >= monthIndex(i.start, "start"), {
     message: "End must not be before start",

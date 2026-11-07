@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { localized, slugId } from "./primitives";
+import { localized, optionalField, slugId } from "./primitives";
 
 const employmentLabels = z.object({
   "full-time": localized(),
@@ -23,7 +23,7 @@ export const siteSchema = z.object({
     background: backgroundIdSchema,
   }),
   pdf: z.object({ includePortrait: z.boolean(), fileBaseName: slugId }),
-  analytics: z.object({ umamiWebsiteId: z.string().trim().min(1).optional(), dashboardUrl: z.url().optional() }),
+  analytics: z.object({ umamiWebsiteId: optionalField(z.string().trim().min(1)), dashboardUrl: optionalField(z.url()) }),
   labels: z.object({
     present: localized(),
     year: localized(),

@@ -3,11 +3,13 @@ backend:
   name: github
   repo: youssefaitlhaj/DigitalCV
   branch: main
-  base_url: https://sveltia-cms-auth.REPLACE.workers.dev
+  base_url: https://sveltia-auth.invalid
   preview_context: preview/deploy
 publish_mode:
   type: preview
   allow_incomplete_drafts: false
+output:
+  omit_empty_optional_fields: true
 media_folder: src/assets/uploads
 public_folder: /src/assets/uploads
 locale: en
@@ -745,7 +747,7 @@ collections:
                               - number
                               - yearsSince
                               - count
-                            hint: "number: use N. yearsSince: use Date. count: use Section ID."
+                            hint: "number: fill N only. yearsSince: fill Date only. count: fill Section ID only (the id of the section whose items are counted). Leave the other two empty."
                             required: true
                           - label: N (kind number)
                             name: n
@@ -1398,17 +1400,36 @@ collections:
                         name: items
                         widget: list
                         collapsed: true
-                        summary: "{{fields.label}}"
+                        summary: "{{fields.label.en}}"
                         fields:
                           - label: Label
                             name: label
-                            widget: string
+                            widget: object
                             required: true
-                          - label: Level
+                            fields:
+                              - label: English
+                                name: en
+                                widget: string
+                                required: true
+                              - label: Deutsch
+                                name: de
+                                widget: string
+                                required: true
+                          - label: Level (optional)
                             name: level
-                            widget: string
+                            widget: object
                             required: false
-                            hint: Plain text. Existing bilingual levels (for example Native / Muttersprache) cannot be edited here yet.
+                            fields:
+                              - label: English
+                                name: en
+                                widget: string
+                                required: true
+                                hint: Both languages or neither, for example C1 / C1 or Native / Muttersprache.
+                              - label: Deutsch
+                                name: de
+                                widget: string
+                                required: true
+                                hint: Both languages or neither, for example C1 / C1 or Native / Muttersprache.
                         required: true
                     required: true
               - label: Text

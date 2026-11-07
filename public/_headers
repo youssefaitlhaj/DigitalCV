@@ -1,0 +1,7 @@
+# Cloudflare Pages response headers.
+# The auth origin below (sveltia-auth.invalid) is a placeholder: docs/SETUP.md must replace it
+# with the real OAuth worker origin, here and in public/admin/config.yml (backend.base_url).
+/admin/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; connect-src 'self' data: blob: https://api.github.com https://github.com https://sveltia-auth.invalid https://unpkg.com https://www.githubstatus.com; font-src 'self' https://cdn.jsdelivr.net data:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: same-origin

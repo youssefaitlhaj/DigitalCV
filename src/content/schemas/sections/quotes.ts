@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { imageRef, localized, localizedRich } from "../primitives";
+import { imageRef, localized, localizedRich, optionalField } from "../primitives";
 import { sectionBase } from "./base";
 
 export const quotesSchema = z.object({
@@ -10,7 +10,7 @@ export const quotesSchema = z.object({
       quote: localizedRich,
       name: z.string().trim().min(1),
       role: localized(),
-      photo: imageRef.optional(),
+      photo: optionalField(imageRef),
     }),
   ),
 });

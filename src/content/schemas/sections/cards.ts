@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { imageRef, localized, localizedRich, yearOrMonth } from "../primitives";
+import { imageRef, localized, localizedRich, optionalField, yearOrMonth } from "../primitives";
 import { sectionBase } from "./base";
 
 const item = z.object({
@@ -7,10 +7,10 @@ const item = z.object({
   description: localizedRich,
   role: localized(),
   tech: z.array(z.string().trim().min(1)),
-  start: yearOrMonth.optional(),
-  end: z.union([yearOrMonth, z.literal("present")]).optional(),
-  links: z.object({ code: z.url().optional(), live: z.url().optional() }).optional(),
-  image: imageRef.optional(),
+  start: optionalField(yearOrMonth),
+  end: optionalField(z.union([yearOrMonth, z.literal("present")])),
+  links: optionalField(z.object({ code: optionalField(z.url()), live: optionalField(z.url()) })),
+  image: optionalField(imageRef),
   confidential: z.boolean().default(false),
 });
 

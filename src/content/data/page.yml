@@ -193,21 +193,21 @@ sections:
     groups:
       - title: { en: Languages & Frameworks, de: Sprachen & Frameworks }
         items:
-          - label: Java
-          - label: Spring Boot
-          - label: Swing
-          - label: C#
-          - label: .NET Framework
+          - label: { en: Java, de: Java }
+          - label: { en: Spring Boot, de: Spring Boot }
+          - label: { en: Swing, de: Swing }
+          - label: { en: C#, de: C# }
+          - label: { en: .NET Framework, de: .NET Framework }
       - title: { en: Databases, de: Datenbanken }
         items:
-          - label: SQL
-          - label: Oracle Database
-          - label: MS SQL Server
+          - label: { en: SQL, de: SQL }
+          - label: { en: Oracle Database, de: Oracle Database }
+          - label: { en: MS SQL Server, de: MS SQL Server }
       - title: { en: Tools & Collaboration, de: Werkzeuge & Zusammenarbeit }
         items:
-          - label: Git
-          - label: Mercurial
-          - label: Jira
+          - label: { en: Git, de: Git }
+          - label: { en: Mercurial, de: Mercurial }
+          - label: { en: Jira, de: Jira }
           - label: { en: Sprint Management, de: Sprint-Management }
       - title: { en: Practice, de: Praxis }
         items:
@@ -220,11 +220,11 @@ sections:
           - label: { en: Arabic, de: Arabisch }
             level: { en: Native, de: Muttersprache }
           - label: { en: German, de: Deutsch }
-            level: C1
+            level: { en: C1, de: C1 }
           - label: { en: French, de: Französisch }
-            level: C1
+            level: { en: C1, de: C1 }
           - label: { en: English, de: Englisch }
-            level: C1
+            level: { en: C1, de: C1 }
 
   - type: timeline
     id: education

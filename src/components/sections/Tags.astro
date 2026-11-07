@@ -1,6 +1,6 @@
 ---
 import SectionFrame from "../layout/SectionFrame.astro";
-import { pick, pickText } from "../../lib/localize";
+import { pick } from "../../lib/localize";
 import type { Content } from "../../content/repository";
 import type { SectionOf } from "../../content/schemas/registry";
 import type { Locale } from "../../i18n/locales";
@@ -26,8 +26,8 @@ const { section, locale } = Astro.props;
             <ul class="chips" data-chips>
               {group.items.map((item) => (
                 <li class="chip">
-                  {pickText(item.label, locale)}
-                  {item.level && <i class="lvl">{pickText(item.level, locale)}</i>}
+                  {pick(item.label, locale)}
+                  {item.level && <i class="lvl">{pick(item.level, locale)}</i>}
                 </li>
               ))}
             </ul>

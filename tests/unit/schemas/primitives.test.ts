@@ -1,8 +1,10 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it, test } from "vitest";
+import { z } from "zod";
 import {
   imageRef,
   localized,
   localizedRich,
+  optionalField,
   month,
   richText,
   slugId,
@@ -100,5 +102,29 @@ describe("imageRef path safety", () => {
   });
   test("accepts normal names including dots", () => {
     expect(ok("/src/assets/uploads/my..photo.jpg")).toBe(true);
+  });
+});
+
+describe("optionalField", () => {
+  const schema = z.object({
+    url: optionalField(z.url()),
+    note: optionalField(localizedRich),
+  });
+  it("treats empty strings, blank localized pairs and null as absent", () => {
+    const r = schema.parse({ url: "", note: { en: "", de: "" } });
+    const img = imageRef.parse({ src: "/src/assets/uploads/a.jpg", alt: { en: "a", de: "a" }, crop: { x: null, y: "", width: null, height: null } });
+    expect(img.crop).toBeUndefined();
+    expect(r.url).toBeUndefined();
+    expect(r.note).toBeUndefined();
+  });
+  it("accepts a missing key", () => {
+    expect(schema.safeParse({}).success).toBe(true);
+  });
+  it("still validates values that are present", () => {
+    expect(schema.safeParse({ url: "not a url" }).success).toBe(false);
+    expect(schema.safeParse({ note: { en: "x", de: "" } }).success).toBe(false);
+  });
+  it("keeps a valid value", () => {
+    expect(schema.parse({ url: "https://a.de" }).url).toBe("https://a.de");
   });
 });

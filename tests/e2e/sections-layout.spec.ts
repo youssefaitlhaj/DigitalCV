@@ -155,7 +155,7 @@ test.describe("layout extremes", () => {
     const byId = (id: string) => page.sections.find((s) => s.id === id)!;
     byId("about").paragraphs.push(l(`See ${LONG_URL} for ${LONG_WORD}.`, `Siehe ${LONG_URL} zur ${LONG_WORD}.`));
     byId("experience").items[0].title = l(LONG_WORD);
-    byId("skills").groups.push({ title: l(LONG_WORD), items: [{ label: LONG_WORD, level: l("C1") }] });
+    byId("skills").groups.push({ title: l(LONG_WORD), items: [{ label: l(LONG_WORD), level: l("C1") }] });
     Object.assign(byId("projects"), {
       visible: true,
       items: [

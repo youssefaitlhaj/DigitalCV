@@ -31,6 +31,18 @@ export const yearOrMonth = z
     message: 'Expected "YYYY" or "YYYY-MM"',
   });
 
+/** `""`, `null`, and objects whose values are all blank (e.g. `{ en: "", de: "" }`, an empty crop) count as absent. */
+function isBlank(v: unknown): boolean {
+  if (v === "" || v === null || v === undefined) return true;
+  if (typeof v === "object" && !Array.isArray(v)) return Object.values(v as object).every(isBlank);
+  return false;
+}
+
+/** An optional field where an editor leaving it empty means "not set" rather than an invalid empty value. */
+export function optionalField<T extends z.ZodType>(inner: T) {
+  return z.preprocess((v) => (isBlank(v) ? undefined : v), inner.optional());
+}
+
 const percent = z.number().min(0).max(100);
 
 /** Crop rectangle in percent of the source image. */
@@ -61,7 +73,7 @@ export const imageRef = z.object({
       message: "Image must sit directly in src/assets/uploads (no subfolders)",
     }),
   alt: localized(),
-  crop: crop.optional(),
+  crop: optionalField(crop),
 });
 
 export const slugId = z.string().regex(/^[a-z0-9-]+$/);

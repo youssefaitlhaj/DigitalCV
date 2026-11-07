@@ -1,8 +1,6 @@
 import { z } from "zod";
-import { localized } from "../primitives";
+import { localized, optionalField } from "../primitives";
 import { sectionBase } from "./base";
-
-const plainOrLocalized = z.union([z.string().trim().min(1), localized()]);
 
 export const tagsSchema = z.object({
   ...sectionBase,
@@ -10,7 +8,7 @@ export const tagsSchema = z.object({
   groups: z.array(
     z.object({
       title: localized(),
-      items: z.array(z.object({ label: plainOrLocalized, level: plainOrLocalized.optional() })),
+      items: z.array(z.object({ label: localized(), level: optionalField(localized()) })),
     }),
   ),
 });
