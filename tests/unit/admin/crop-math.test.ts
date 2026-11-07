@@ -107,3 +107,16 @@ describe("library-only images", () => {
     expect(isLibraryPath("blob:x")).toBe(false);
   });
 });
+
+describe("isLibraryPath mirrors the build rules", () => {
+  it.each([
+    ["/src/assets/uploads/../x.jpg", false],
+    ["/src/assets/uploads/a/b.jpg", false],
+    ["/src/assets/uploads/a\\b.jpg", false],
+    ["/src/assets/uploads/x.heic", false],
+    ["/src/assets/uploads/noext", false],
+    ["/src/assets/uploads/x.Jpg", false],
+    ["/src/assets/uploads/IMG_1.JPG", true],
+    ["/src/assets/uploads/a.webp", true],
+  ])("%s -> %s", (src, expected) => expect(isLibraryPath(src)).toBe(expected));
+});
