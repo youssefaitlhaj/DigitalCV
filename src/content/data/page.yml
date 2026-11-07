@@ -311,8 +311,8 @@ sections:
     inPdf: true
     items:
       - description:
-          en: An AI developed [**_Postgress Web Application_**,](https://shape-shift.vercel.app/) that helps beginner trainee to find a confortable workout, create a workout plan, and also log the food
-          de: An AI developed _[`Postgress Web Application`](https://shape-shift.vercel.app/)_, that helps beginner trainee to find a confortable workout, create a workout plan, and also log the food
+          en: An AI developed [**_Postgress Web Application_**,](https://shape-shift.vercel.app/) that helps beginner trainee to find a comfortable workout, create a workout plan, and also log the food
+          de: An AI developed _[`Postgress Web Application`](https://shape-shift.vercel.app/)_, that helps beginner trainee to find a comfortable workout, create a workout plan, and also log the food
         name:
           en: ShapeShift
           de: ShapeShift
