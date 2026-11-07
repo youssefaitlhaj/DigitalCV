@@ -14,7 +14,9 @@
     "astro": "astro",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "check": "astro check"
+    "check": "astro check",
+    "postbuild": "tsx scripts/generate-pdf.ts",
+    "test:pdf": "vitest run --config vitest.pdf.config.ts"
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans": "^5.3.0",
@@ -36,6 +38,7 @@
     "sharp": "^0.35.5",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
+    "unpdf": "^2.1.0",
     "vitest": "^5.1.0"
   }
 }
