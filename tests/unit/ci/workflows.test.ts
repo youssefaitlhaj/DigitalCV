@@ -127,7 +127,8 @@ describe("ci workflows", () => {
           expect(s.env.VERCEL_ORG_ID).toBe("${{ vars.VERCEL_ORG_ID }}");
           expect(s.env.VERCEL_PROJECT_ID).toBe("${{ vars.VERCEL_PROJECT_ID }}");
           expect(s.run, `${name}/${id}`).toContain("npx vercel deploy --prebuilt");
-          expect(s.run, `${name}/${id}`).toContain('--token "$VERCEL_TOKEN"');
+          // The CLI reads VERCEL_TOKEN from env; keep it out of argv.
+          expect(s.run, `${name}/${id}`).not.toContain("--token");
           expect(s.run).not.toMatch(/npm (ci|run|test)|playwright|tsx/);
         }
       }

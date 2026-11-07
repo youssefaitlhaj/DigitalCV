@@ -97,7 +97,7 @@ jobs:
             exit 1
           fi
           # Without a TTY the CLI writes the deployment URL to stdout; progress goes to stderr.
-          npx vercel deploy --prebuilt --yes --token "$VERCEL_TOKEN" | tee vercel.log
+          npx vercel deploy --prebuilt --yes | tee vercel.log
           url=$(grep -oE 'https://[A-Za-z0-9.-]+\.vercel\.app' vercel.log | head -n 1 || true)
           if [ -z "$url" ]; then
             echo "::error::Could not find the preview URL in the Vercel CLI output"
