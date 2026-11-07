@@ -13,7 +13,7 @@ const item = z
     title: localized(),
     org: z.string().trim().min(1),
     orgUrl: optionalField(z.url()),
-    location: z.string().trim().min(1),
+    location: localized(),
     employment: optionalField(z.enum(["full-time", "part-time", "internship"])),
     start: yearOrMonth,
     end: z.union([yearOrMonth, z.literal("present")]),

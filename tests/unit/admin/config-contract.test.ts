@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
 import type { z } from "zod";
@@ -6,6 +6,7 @@ import { legalSchema } from "../../../src/content/schemas/legal";
 import { pageSchema, sectionSchemas } from "../../../src/content/schemas/registry";
 import { siteSchema } from "../../../src/content/schemas/site";
 import { accents, backgrounds } from "../../../src/lib/palettes";
+import { minimalPage } from "../../fixtures/page.min";
 
 type Cms = {
   name: string;
@@ -265,6 +266,64 @@ describe("Sveltia config contract", () => {
         expect(hint, `${path} ${label}`).toContain(label);
       }
     }
+  });
+
+  it("every markdown field limits its toolbar to what the site renders", () => {
+    // Mirrors src/lib/rich-text.ts: inline fields render no lists or headings; only the legal bodies offer headings.
+    const INLINE = ["bold", "italic", "strikethrough", "code", "link"];
+    const BLOCK = [...INLINE, "bulleted-list", "numbered-list"];
+    const LEGAL = [...BLOCK, "heading-two", "heading-three"];
+    const inlinePaths = ["page.sections.statement.text", "page.sections.journey.stops.text"];
+    const markdown: { path: string; buttons?: unknown; components?: unknown }[] = [];
+    const walk = (f: Cms & { buttons?: unknown; editor_components?: unknown }, path: string) => {
+      if (f.widget === "markdown") markdown.push({ path, buttons: f.buttons, components: f.editor_components });
+      for (const k of [...(f.fields ?? []), ...(f.types ?? []), ...(f.field ? [f.field] : [])]) walk(k, `${path}.${k.name}`);
+    };
+    for (const f of files) walk(f, f.name);
+    expect(markdown.length).toBeGreaterThan(0);
+    for (const { path, buttons, components } of markdown) {
+      const field = path.replace(/\.(en|de)$/, "");
+      const expected = field.startsWith("legal.") ? LEGAL : inlinePaths.includes(field) ? INLINE : BLOCK;
+      expect(buttons, path).toEqual(expected);
+      expect(components, `${path} editor_components`).toEqual([]);
+    }
+    // every inline path really exists, so the list above cannot go stale silently
+    for (const p of inlinePaths) expect(markdown.some((m) => m.path.startsWith(`${p}.`)), p).toBe(true);
+    expect(markdown.filter((m) => m.path.startsWith("legal.")).length).toBe(4);
+  });
+
+  it("inline-rendered markdown fields are the ones the components render inline", () => {
+    // If a new component renders a field inline, add it to inlinePaths above and update this list.
+    const astro = (readdirSync("src/components", { recursive: true }) as string[]).filter((f) => f.endsWith(".astro"));
+    const inlineUses = astro.flatMap((f) =>
+      [...readFileSync(`src/components/${f}`, "utf8").matchAll(/<RichText value=\{([\w.]+)\}[^>]*\binline\b/g)].map((m) => `${f.split("/").pop()}:${m[1]}`),
+    );
+    expect(inlineUses.sort()).toEqual(["Journey.astro:stop.text", "Statement.astro:section.text", "Statement.astro:section.text"]);
+  });
+
+  it("every section id field rejects the ids the schema reserves", () => {
+    const patterns = sections.map((t) => (t.fields!.find((f) => f.name === "id") as Cms & { pattern: [string, string] }).pattern);
+    expect(patterns).toHaveLength(sections.length);
+    for (const [source] of patterns) {
+      const re = new RegExp(source);
+      for (const bad of ["main", "experience-title", "-title", "Main", "a b"]) expect(re.test(bad), `${source} ${bad}`).toBe(false);
+      for (const good of ["experience", "main-work", "titles", "title", "x-title-2"]) expect(re.test(good), `${source} ${good}`).toBe(true);
+    }
+    // and the schema agrees on the same samples
+    const accepts = (id: string) => {
+      const page = minimalPage();
+      page.sections[1].id = id;
+      return pageSchema.safeParse(page).success;
+    };
+    expect(["main", "experience-title"].map(accepts)).toEqual([false, false]);
+    expect(["main-work", "titles", "title", "x-title-2"].map(accepts)).toEqual([true, true, true, true]);
+  });
+
+  it("the privacy page has no visibility switch, the impressum does", () => {
+    const legal = file("legal").fields!;
+    const kids = (n: string) => legal.find((f) => f.name === n)!.fields!.map((f) => f.name);
+    expect(kids("privacy")).not.toContain("visible");
+    expect(kids("impressum")).toContain("visible");
   });
 
   it("every image object uses the imageref widget", () => {

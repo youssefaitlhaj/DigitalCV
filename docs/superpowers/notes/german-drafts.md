@@ -30,7 +30,7 @@ Stats labels:
 - `stats.items[2].label.de`: "Abschlüsse in Informatik"
 - `stats.items[3].label.de`: "gesprochene Sprachen"
 
-Journey (all `text`, `heading` and `year` entries are drafts; the captions are plain proper-noun strings):
+Journey (all `text`, `heading` and `year` entries are drafts):
 - `journey.stops[0].heading.de`: "Casablanca"
 - `journey.stops[0].text.de`: "Fachtechnikerdiplom im Bereich Informatik an der OFPPT."
 - `journey.stops[1].heading.de`: "Erster Commit"
@@ -45,6 +45,20 @@ Journey (all `text`, `heading` and `year` entries are drafts; the captions are p
 - `journey.stops[5].text.de`: "Softwareentwickler bei Imbus AG: neue Funktionen, Fehlerbehebung und die Erweiterung der Datenbank hinter TestBench."
 - `journey.heading.de`: "Von Casablanca nach Bamberg." (EN "From Casablanca to Bamberg.")
 - `journey.stops[5].year.de`: "2026" (the " · HEAD" marker is rendered from `head: true`, kept as a git term)
+
+- `journey.stops[*].caption.de`: identical to English (proper nouns, code terms) except where a place name has a German form:
+  - `journey.stops[0].caption.de`: "git init"
+  - `journey.stops[1].caption.de`: "NT SOFT · Casablanca"
+  - `journey.stops[2].caption.de`: "Casablanca"
+  - `journey.stops[3].caption.de`: "Imbus AG · Bayern" (EN "Imbus AG · Bavaria")
+  - `journey.stops[4].caption.de`: "Uni Bamberg + Imbus AG"
+  - `journey.stops[5].caption.de`: "Imbus AG · Bayern" (EN "Imbus AG · Bavaria")
+
+Timeline locations (`location` is bilingual so the German site and PDF show German place names):
+- `experience.items[0].location.de` and `experience.items[1].location.de`: "Bayern, Deutschland" (EN "Bavaria, Germany")
+- `experience.items[2].location.de`, `experience.items[3].location.de`, `experience.items[4].location.de`: "Casablanca-Settat, Marokko" (EN "Casablanca-Settat, Morocco")
+- `education.items[0].location.de`: "Bamberg, Deutschland" (EN "Bamberg, Germany")
+- `education.items[1].location.de` and `education.items[2].location.de`: "Casablanca, Marokko" (EN "Casablanca, Morocco")
 
 Contact:
 - `contact.heading.de`: "Lass uns etwas bauen, das es wert ist."
@@ -66,7 +80,7 @@ Other label strings (`present`, `year`, `years`, `month`, `months`, `employment.
 ## src/content/data/legal.yml
 
 - `privacy.title.de` and the whole `privacy.body.de` (Datenschutzerklärung). **Needs Youssef's review; this is a plain-language draft and not legal advice.** It names Cloudflare Pages (hosting, server logs), Umami Cloud (cookieless analytics, no personal profiles, limited retention), says no cookies are set, lists the GDPR rights and points to the email address. It deliberately contains no postal address or phone number. The English counterpart is `privacy.body.en`. Check the data retention wording against the Umami plan actually used.
-- `impressum.body.de`: "Diese Seite wird bewusst nicht veröffentlicht." (placeholder, `visible: false`)
+- `impressum.body.de`: "Diese Seite wird bewusst nicht veröffentlicht." (placeholder, `impressum.visible: false`). The privacy page has no `visible` switch: it is always published.
 
 ## Notes
 

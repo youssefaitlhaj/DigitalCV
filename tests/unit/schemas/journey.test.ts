@@ -6,7 +6,7 @@ const base = {
   type: "journey",
   id: "journey",
   title: l("Journey", "Werdegang"),
-  stops: [{ year: l("2013"), heading: l("Casablanca"), text: l("Diploma."), caption: "git init" }],
+  stops: [{ year: l("2013"), heading: l("Casablanca"), text: l("Diploma."), caption: l("git init") }],
 };
 
 describe("journeySchema heading", () => {

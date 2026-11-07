@@ -53,7 +53,7 @@ const title = pick(section.title, locale);
               <div class="yr">{pick(stop.year, locale)}{stop.head && " · HEAD"}</div>
               <h3>{pick(stop.heading, locale)}</h3>
               <p><RichText value={stop.text} locale={locale} inline /></p>
-              <div class="where">{stop.caption}</div>
+              <div class="where">{pick(stop.caption, locale)}</div>
             </li>
           ))
         }

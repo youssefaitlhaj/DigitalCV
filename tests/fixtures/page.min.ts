@@ -29,7 +29,7 @@ export function minimalPage() {
           {
             title: l("Engineer", "Ingenieur"),
             org: "Acme",
-            location: "Berlin",
+            location: l("Berlin"),
             start: "2020-01",
             end: "present",
           },

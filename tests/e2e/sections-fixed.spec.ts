@@ -120,6 +120,29 @@ test.describe("fixed sections, JavaScript disabled", () => {
     await expect(page.locator("section[data-journey] h2")).toHaveText("Von Casablanca nach Bamberg.");
   });
 
+  test("timeline locations and journey captions are localised", async ({ page }) => {
+    // Driven by page.yml so editing a location in the CMS does not break the check.
+    type Loc = { en: string; de: string };
+    const content = parse(readFileSync("src/content/data/page.yml", "utf8"));
+    const experience = content.sections.find((s: { id: string }) => s.id === "experience");
+    const journey = content.sections.find((s: { type: string }) => s.type === "journey");
+    const locations: Loc[] = experience.items.map((i: { location: Loc }) => i.location);
+    const captions: Loc[] = journey.stops.map((s: { caption: Loc }) => s.caption);
+
+    await page.goto("/de/");
+    const section = page.locator("section#experience");
+    await expect(section).not.toContainText("Germany");
+    for (const loc of locations) {
+      await expect(section).toContainText(loc.de);
+      if (loc.en !== loc.de) await expect(section).not.toContainText(loc.en);
+    }
+    for (const c of captions) await expect(page.locator("section[data-journey]")).toContainText(c.de);
+
+    await page.goto("/");
+    for (const loc of locations) await expect(page.locator("section#experience")).toContainText(loc.en);
+  });
+
+
   test("scroll regions are keyboard-focusable and labelled", async ({ page }) => {
     await page.goto("/");
     const wrap = page.locator("section[data-journey] .track-wrap");

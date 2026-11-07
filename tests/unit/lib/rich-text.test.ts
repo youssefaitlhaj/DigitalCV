@@ -1,5 +1,7 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { renderRichText, toPlainText } from "../../../src/lib/rich-text";
+import { parse } from "yaml";
+import { renderRichText } from "../../../src/lib/rich-text";
 
 describe("renderRichText", () => {
   it("renders bold, italic, underline, link", () => {
@@ -28,7 +30,39 @@ describe("renderRichText", () => {
     expect(out).not.toContain("_top");
     expect(out).toContain('href="/x"');
   });
-  it("toPlainText strips tags and decodes entities", () => {
-    expect(toPlainText("**a** &amp; <span class=\"c-accent\">b</span>\n\nc")).toBe("a & b c");
+  it("block mode keeps h2 and h3 headings", () => {
+    const out = renderRichText("## Hosting\n\ntext\n\n### Detail", {});
+    expect(out).toContain("<h2>Hosting</h2>");
+    expect(out).toContain("<h3>Detail</h3>");
+  });
+  it("block mode still drops other heading levels but keeps their text", () => {
+    const out = renderRichText("# One\n\n#### Four", {});
+    expect(out).not.toMatch(/<h[1-6]/);
+    expect(out).toContain("One");
+    expect(out).toContain("Four");
+  });
+  it("inline mode strips headings", () => {
+    const out = renderRichText("<h2>Title</h2> and <h3>more</h3>", { inline: true });
+    expect(out).not.toMatch(/<h[23]/);
+    expect(out).toContain("Title");
+    expect(out).toContain("more");
+  });
+  it("strikethrough (GFM ~~) renders as <s> in both modes", () => {
+    expect(renderRichText("~~gone~~", { inline: true })).toBe("<s>gone</s>");
+    expect(renderRichText("~~gone~~", {})).toBe("<p><s>gone</s></p>");
+  });
+  it("block mode renders bulleted and numbered lists", () => {
+    const out = renderRichText("- a\n- b\n\n1. c", {});
+    expect(out).toMatch(/<ul>\s*<li>a<\/li>/);
+    expect(out).toMatch(/<ol>\s*<li>c<\/li>/);
+  });
+  it.each(["en", "de"] as const)("the real privacy policy (%s) keeps its section headings", (locale) => {
+    const legal = parse(readFileSync("src/content/data/legal.yml", "utf8"));
+    const out = renderRichText(legal.privacy.body[locale], {});
+    const headings = [...out.matchAll(/<h2>([^<]+)<\/h2>/g)].map((m) => m[1]);
+    const source = [...legal.privacy.body[locale].matchAll(/^## (.+)$/gm)].map((m: RegExpMatchArray) => m[1].trim());
+    expect(source.length).toBeGreaterThan(0);
+    expect(headings).toEqual(source);
+    expect(out).not.toContain("## ");
   });
 });

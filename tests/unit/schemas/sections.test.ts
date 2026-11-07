@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { pageSchema } from "../../../src/content/schemas/registry";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { pageSchema, RESERVED_SECTION_IDS } from "../../../src/content/schemas/registry";
 import { minimalPage } from "../../fixtures/page.min";
 
 const l = (en: string, de = en) => ({ en, de });
@@ -20,6 +22,36 @@ describe("pageSchema", () => {
     const r = pageSchema.safeParse(page);
     expect(r.success).toBe(false);
     if (!r.success) expect(r.error.issues.some((i) => i.path.includes("sections"))).toBe(true);
+  });
+
+  it.each(["main", "experience-title", "x-title"])("rejects the reserved section id %s", (id) => {
+    const page = minimalPage();
+    page.sections[1].id = id;
+    const r = pageSchema.safeParse(page);
+    expect(r.success).toBe(false);
+    if (!r.success) {
+      expect(r.error.issues.some((i) => i.path.join(".") === "sections.1.id" && /reserved/.test(i.message))).toBe(true);
+    }
+  });
+
+  it("allows ids that only contain the reserved words", () => {
+    const page = minimalPage();
+    page.sections[1].id = "main-projects";
+    expect(pageSchema.safeParse(page).success).toBe(true);
+    page.sections[1].id = "titles";
+    expect(pageSchema.safeParse(page).success).toBe(true);
+  });
+
+  it("every literal id in src/ is a reserved section id", () => {
+    const walk = (dir: string): string[] =>
+      readdirSync(dir).flatMap((n) => {
+        const p = join(dir, n);
+        return statSync(p).isDirectory() ? walk(p) : /\.(astro|ts|js)$/.test(n) ? [p] : [];
+      });
+    const literal = new Set<string>();
+    for (const f of walk("src")) for (const m of readFileSync(f, "utf8").matchAll(/\bid="([^"]+)"/g)) literal.add(m[1]);
+    expect(literal.size).toBeGreaterThan(0);
+    expect([...literal].filter((id) => !(RESERVED_SECTION_IDS as readonly string[]).includes(id))).toEqual([]);
   });
 
   it("slugifies ids for anchors", () => {

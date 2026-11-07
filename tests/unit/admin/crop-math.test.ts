@@ -71,7 +71,17 @@ describe("a helper-produced crop round trips through imageRef and cropAll", () =
   });
 });
 
-import { isLibraryPath, mergeImageRef, validateImageRef } from "../../../public/admin/crop-math.js";
+import {
+  imageSrcProblem,
+  isLibraryPath,
+  isRequiredField,
+  mergeImageRef,
+  MIXED_CASE_EXTENSION_MESSAGE,
+  NOT_UPLOADED_MESSAGE,
+  removeImageRef,
+  UNSUPPORTED_FORMAT_MESSAGE,
+  validateImageRef,
+} from "../../../public/admin/crop-math.js";
 
 describe("imageref value logic", () => {
   const ok = { src: "/src/assets/uploads/a.jpg", alt: { en: "a", de: "b" } };
@@ -94,6 +104,55 @@ describe("imageref value logic", () => {
   it("without a src nothing is kept (no stray alt or crop)", () => {
     expect(mergeImageRef(undefined, { alt: { en: "a", de: "" } })).toBeNull();
     expect(mergeImageRef({}, { crop: { x: 0, y: 0, width: 1, height: 1 } })).toBeNull();
+  });
+});
+
+describe("removing an optional image", () => {
+  const full = { src: "/src/assets/uploads/a.jpg", alt: { en: "a", de: "b" }, crop: { x: 1, y: 2, width: 3, height: 4 } };
+  it("removeImageRef commits no value at all (null), whatever was set", () => {
+    expect(removeImageRef(full)).toBeNull();
+    expect(removeImageRef({ src: full.src })).toBeNull();
+    expect(removeImageRef(undefined)).toBeNull();
+  });
+  it("the removed (null) value is valid for an optional field and an error for a required one", () => {
+    expect(validateImageRef(removeImageRef(full), false)).toBe(true);
+    expect(validateImageRef(removeImageRef(full), true)).toMatchObject({ error: expect.anything() });
+  });
+  it("isRequiredField reads Sveltia's Immutable field map or a plain object; required defaults to true", () => {
+    const map = (o: Record<string, unknown>) => ({ get: (k: string) => o[k] });
+    expect(isRequiredField(map({ required: false }))).toBe(false);
+    expect(isRequiredField(map({ required: true }))).toBe(true);
+    expect(isRequiredField(map({}))).toBe(true);
+    expect(isRequiredField({ required: false })).toBe(false);
+    expect(isRequiredField(undefined)).toBe(true);
+  });
+});
+
+describe("image source messages", () => {
+  const alt = { en: "a", de: "b" };
+  it.each(["blob:http://localhost/abc", "https://example.com/a.jpg", "/images/a.jpg", "/src/assets/uploads/", "/src/assets/uploads/sub/a.jpg"])(
+    "%s is 'not uploaded yet'",
+    (src) => {
+      expect(imageSrcProblem(src)).toBe(NOT_UPLOADED_MESSAGE);
+      expect(validateImageRef({ src, alt }, true)).toEqual({ error: { message: NOT_UPLOADED_MESSAGE } });
+    },
+  );
+  it.each(["/src/assets/uploads/IMG_0001.HEIC", "/src/assets/uploads/photo.heic", "/src/assets/uploads/scan.tiff", "/src/assets/uploads/noext"])(
+    "%s is an unsupported format",
+    (src) => {
+      expect(imageSrcProblem(src)).toBe(UNSUPPORTED_FORMAT_MESSAGE);
+      expect(validateImageRef({ src, alt }, false)).toEqual({ error: { message: UNSUPPORTED_FORMAT_MESSAGE } });
+    },
+  );
+  it("the unsupported-format message names the accepted formats and the iPhone setting", () => {
+    expect(UNSUPPORTED_FORMAT_MESSAGE).toMatch(/JPG, PNG or WebP/);
+    expect(UNSUPPORTED_FORMAT_MESSAGE).toMatch(/Most Compatible/);
+  });
+  it("a mixed-case extension asks for a rename", () => {
+    expect(imageSrcProblem("/src/assets/uploads/a.Jpg")).toBe(MIXED_CASE_EXTENSION_MESSAGE);
+  });
+  it.each(["/src/assets/uploads/a.jpg", "/src/assets/uploads/A.JPEG", "/src/assets/uploads/a.webp", "/src/assets/uploads/a.png"])("%s has no problem", (src) => {
+    expect(imageSrcProblem(src)).toBeNull();
   });
 });
 

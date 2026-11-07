@@ -41,7 +41,7 @@ const now = new Date();
                 {item.badge && <span class="p-ref">{item.badge}</span>}
               </h3>
               <div class="org">
-                {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {item.location}
+                {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {pick(item.location, locale)}
               </div>
             </div>
           </li>
@@ -61,7 +61,7 @@ const now = new Date();
               {item.employment && <span class="p-tag">{pick(labels.employment[item.employment], locale)}</span>}
             </h3>
             <div class="org">
-              {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {item.location}
+              {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {pick(item.location, locale)}
             </div>
             {item.description && (
               <div class="desc p-rich">

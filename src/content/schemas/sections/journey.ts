@@ -13,7 +13,7 @@ export const journeySchema = z.object({
         year: localized(),
         heading: localized(),
         text: localizedRich,
-        caption: z.string().trim().min(1),
+        caption: localized(),
         head: z.boolean().optional(),
       }),
     )

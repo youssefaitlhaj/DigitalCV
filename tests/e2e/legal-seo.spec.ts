@@ -1,4 +1,10 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
+import { parse } from "yaml";
+
+/** The `## ` headings of the privacy body in legal.yml, so editing the policy does not break the test. */
+const legal = parse(readFileSync("src/content/data/legal.yml", "utf8"));
+const headings = (locale: "en" | "de"): string[] => [...legal.privacy.body[locale].matchAll(/^## (.+)$/gm)].map((m: RegExpMatchArray) => m[1].trim());
 
 test("privacy page in both languages linked from footer", async ({ page }) => {
   await page.goto("/");
@@ -11,6 +17,11 @@ test("privacy page in both languages linked from footer", async ({ page }) => {
   await page.locator("footer").getByRole("link", { name: "Datenschutz" }).click();
   await expect(page).toHaveURL(/\/de\/privacy$/);
   await expect(page.locator("main h1")).toHaveText("Datenschutzerklärung");
+  await expect(page.locator("main h2")).toHaveText(headings("de"));
+  await expect(page.locator("main")).not.toContainText("## ");
+
+  await page.goto("/privacy");
+  await expect(page.locator("main h2")).toHaveText(headings("en"));
 });
 
 test("impressum hidden by default: no footer link, /impressum not 200", async ({ page }) => {

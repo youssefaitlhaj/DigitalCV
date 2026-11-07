@@ -46,7 +46,7 @@ const now = new Date();
                 ) : (
                   item.org
                 )}{" "}
-                · {item.location}
+                · {pick(item.location, locale)}
               </div>
             </div>
           </li>
@@ -73,7 +73,7 @@ const now = new Date();
                 ) : (
                   item.org
                 )}{" "}
-                · {item.location}
+                · {pick(item.location, locale)}
               </div>
               {item.description && (
                 <div class="desc">

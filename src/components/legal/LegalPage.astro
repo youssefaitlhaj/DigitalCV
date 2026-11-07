@@ -45,6 +45,16 @@ const title = `${pick(doc.title, locale)} · ${content.site.name}`;
     margin: 32px 0 8px;
     font-size: 20px;
   }
+  .prose :global(h3) {
+    margin: 24px 0 8px;
+    font-size: 17px;
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 16px;
+    padding-left: 1.4em;
+    line-height: 1.7;
+  }
   .prose :global(p) {
     margin: 0 0 16px;
     line-height: 1.7;

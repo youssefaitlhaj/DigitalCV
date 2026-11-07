@@ -74,13 +74,13 @@ sections:
         text:
           en: Technician Diploma in Computer Science at OFPPT.
           de: Fachtechnikerdiplom im Bereich Informatik an der OFPPT.
-        caption: git init
+        caption: { en: "git init", de: "git init" }
       - year: { en: "2015", de: "2015" }
         heading: { en: First commit, de: Erster Commit }
         text:
           en: "Internship at NT SOFT: built a store management application in C# and MS SQL Server."
           de: "Praktikum bei NT SOFT: eine Anwendung zur Ladenverwaltung in C# und MS SQL Server entwickelt."
-        caption: NT SOFT · Casablanca
+        caption: { en: "NT SOFT · Casablanca", de: "NT SOFT · Casablanca" }
       - year: { en: 2015 – 2017, de: 2015 – 2017 }
         heading:
           en: Bachelor's and two more internships
@@ -88,13 +88,13 @@ sections:
         text:
           en: Computer Science at Université Hassan II. Moved an insurance application to the web, then brought a non-profit's programme online.
           de: Informatik an der Université Hassan II. Eine Versicherungsanwendung ins Web gebracht, danach das Programm eines Vereins online gestellt.
-        caption: Casablanca
+        caption: { en: "Casablanca", de: "Casablanca" }
       - year: { en: "2019", de: "2019" }
         heading: { en: Bamberg, de: Bamberg }
         text:
           en: Moved to Germany and joined Imbus AG part time, working on TestBench.
           de: Nach Deutschland gezogen und in Teilzeit bei Imbus AG eingestiegen, an TestBench.
-        caption: Imbus AG · Bavaria
+        caption: { en: "Imbus AG · Bavaria", de: "Imbus AG · Bayern" }
       - year: { en: 2020 – 2025, de: 2020 – 2025 }
         heading:
           en: Second degree, still building
@@ -102,13 +102,13 @@ sections:
         text:
           en: B.Sc. Software Systems Science at the University of Bamberg, while working at Imbus the whole way through.
           de: B.Sc. Software Systems Science an der Universität Bamberg, die ganze Zeit über neben der Arbeit bei Imbus.
-        caption: Uni Bamberg + Imbus AG
+        caption: { en: "Uni Bamberg + Imbus AG", de: "Uni Bamberg + Imbus AG" }
       - year: { en: 2026 · HEAD, de: 2026 · HEAD }
         heading: { en: Full time, de: Vollzeit }
         text:
           en: "Software Developer at Imbus AG: features, bug fixing, and extending the database behind TestBench."
           de: "Softwareentwickler bei Imbus AG: neue Funktionen, Fehlerbehebung und die Erweiterung der Datenbank hinter TestBench."
-        caption: Imbus AG · Bavaria
+        caption: { en: "Imbus AG · Bavaria", de: "Imbus AG · Bayern" }
         head: true
 
   - type: text
@@ -133,7 +133,7 @@ sections:
       - title: { en: Software Developer, de: "" }
         org: Imbus AG
         orgUrl: https://www.imbus.de/
-        location: Bavaria, Germany
+        location: { en: "Bavaria, Germany", de: "Bayern, Deutschland" }
         employment: full-time
         start: "2026-02"
         end: present
@@ -144,7 +144,7 @@ sections:
       - title: { en: Software Developer, de: Softwareentwickler }
         org: Imbus AG
         orgUrl: https://www.imbus.de/
-        location: Bavaria, Germany
+        location: { en: "Bavaria, Germany", de: "Bayern, Deutschland" }
         employment: part-time
         start: "2019-08"
         end: "2026-01"
@@ -153,7 +153,7 @@ sections:
           de: Sechseinhalb Jahre in Teilzeit am selben Produkt, über mein gesamtes Studium hinweg. Ich bin dazugekommen, als ich zu studieren begann, und geblieben.
       - title: { en: Web Developer, de: Webentwickler }
         org: AESVT Maroc
-        location: Casablanca-Settat, Morocco
+        location: { en: "Casablanca-Settat, Morocco", de: "Casablanca-Settat, Marokko" }
         employment: internship
         start: "2017-03"
         end: "2017-06"
@@ -162,7 +162,7 @@ sections:
           de: Die WordPress-Website des Vereins überarbeitet und erweitert und das gesamte Programm online gebracht — samt öffentlicher Abstimmung über die besten Umweltkunstwerke und -ideen.
       - title: { en: Software Developer, de: Softwareentwickler }
         org: Compagnie d'Assurance Transport
-        location: Casablanca-Settat, Morocco
+        location: { en: "Casablanca-Settat, Morocco", de: "Casablanca-Settat, Marokko" }
         employment: internship
         start: "2016-06"
         end: "2016-09"
@@ -171,7 +171,7 @@ sections:
           de: Teil des Teams, das eine Desktop-Versicherungsanwendung ins Web überführt hat — mit C# und MS SQL Server.
       - title: { en: Software Developer, de: Softwareentwickler }
         org: NT SOFT
-        location: Casablanca-Settat, Morocco
+        location: { en: "Casablanca-Settat, Morocco", de: "Casablanca-Settat, Marokko" }
         employment: internship
         start: "2015-03"
         end: "2015-05"
@@ -233,18 +233,18 @@ sections:
       - title: { en: B.Sc. Software Systems Science, de: B.Sc. Software Systems Science }
         org: Otto-Friedrich-Universität Bamberg
         orgUrl: https://www.uni-bamberg.de/
-        location: Bamberg, Germany
+        location: { en: "Bamberg, Germany", de: "Bamberg, Deutschland" }
         start: "2020"
         end: "2025"
       - title: { en: Bachelor's Degree in Computer Science, de: Bachelor-Abschluss in Informatik }
         org: Université Hassan II
         orgUrl: https://www.univh2c.ma/
-        location: Casablanca, Morocco
+        location: { en: "Casablanca, Morocco", de: "Casablanca, Marokko" }
         start: "2015"
         end: "2016"
       - title: { en: Technician Diploma in Computer Science, de: Fachtechnikerdiplom im Bereich Informatik }
         org: OFPPT
-        location: Casablanca, Morocco
+        location: { en: "Casablanca, Morocco", de: "Casablanca, Marokko" }
         start: "2013"
         end: "2015"
 

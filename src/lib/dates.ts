@@ -41,16 +41,6 @@ export function formatMonth(value: string, locale: Locale, labels: Pick<Labels, 
   );
 }
 
-/** e.g. "Aug 2019 – Jan 2026" */
-export function formatRange(
-  start: string,
-  end: string,
-  locale: Locale,
-  labels: Pick<Labels, "present">,
-): string {
-  return `${formatMonth(start, locale, labels)} – ${formatMonth(end, locale, labels)}`;
-}
-
 /** e.g. "6 yrs 6 mos", "10 mos", "1 yr" — omits any zero part. */
 export function formatDuration(
   months: number,

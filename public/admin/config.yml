@@ -411,8 +411,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -566,8 +566,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -611,11 +611,25 @@ collections:
                       - label: English
                         name: en
                         widget: markdown
+                        buttons:
+                          - bold
+                          - italic
+                          - strikethrough
+                          - code
+                          - link
+                        editor_components: []
                         required: true
                         hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Deutsch
                         name: de
                         widget: markdown
+                        buttons:
+                          - bold
+                          - italic
+                          - strikethrough
+                          - code
+                          - link
+                        editor_components: []
                         required: true
                         hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
               - label: Stats
@@ -627,8 +641,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -734,8 +748,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -825,17 +839,40 @@ collections:
                           - label: English
                             name: en
                             widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                            editor_components: []
                             required: true
                             hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                           - label: Deutsch
                             name: de
                             widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                            editor_components: []
                             required: true
                             hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Caption (code-style)
                         name: caption
-                        widget: string
+                        widget: object
                         required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
                       - label: Marks the current position (HEAD)
                         name: head
                         widget: boolean
@@ -851,8 +888,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -909,11 +946,29 @@ collections:
                       - label: English
                         name: en
                         widget: markdown
+                        buttons:
+                          - bold
+                          - italic
+                          - strikethrough
+                          - code
+                          - link
+                          - bulleted-list
+                          - numbered-list
+                        editor_components: []
                         required: true
                         hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Deutsch
                         name: de
                         widget: markdown
+                        buttons:
+                          - bold
+                          - italic
+                          - strikethrough
+                          - code
+                          - link
+                          - bulleted-list
+                          - numbered-list
+                        editor_components: []
                         required: true
                         hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                   - label: Email label
@@ -964,8 +1019,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -1038,8 +1093,17 @@ collections:
                         required: false
                       - label: Location
                         name: location
-                        widget: string
+                        widget: object
                         required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
                       - label: Employment
                         name: employment
                         widget: select
@@ -1070,11 +1134,29 @@ collections:
                           - label: English
                             name: en
                             widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
                             required: true
                             hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                           - label: Deutsch
                             name: de
                             widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
                             required: true
                             hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Badge
@@ -1091,8 +1173,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -1155,11 +1237,29 @@ collections:
                           - label: English
                             name: en
                             widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
                             required: true
                             hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                           - label: Deutsch
                             name: de
                             widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
                             required: true
                             hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Role
@@ -1238,8 +1338,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -1339,8 +1439,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -1389,11 +1489,29 @@ collections:
                         - label: English
                           name: en
                           widget: markdown
+                          buttons:
+                            - bold
+                            - italic
+                            - strikethrough
+                            - code
+                            - link
+                            - bulleted-list
+                            - numbered-list
+                          editor_components: []
                           required: true
                           hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                         - label: Deutsch
                           name: de
                           widget: markdown
+                          buttons:
+                            - bold
+                            - italic
+                            - strikethrough
+                            - code
+                            - link
+                            - bulleted-list
+                            - numbered-list
+                          editor_components: []
                           required: true
                           hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                     summary: "{{fields.item.en}}"
@@ -1407,8 +1525,8 @@ collections:
                     name: id
                     widget: string
                     pattern:
-                      - ^[a-z0-9-]+$
-                      - Lowercase letters, digits and hyphens only
+                      - ^(?!main$)(?!.*-title$)[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only; not "main" and not ending in "-title"
                     hint: Used in links; keep it stable.
                     required: true
                   - label: Title (menu label)
@@ -1458,11 +1576,29 @@ collections:
                           - label: English
                             name: en
                             widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
                             required: true
                             hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                           - label: Deutsch
                             name: de
                             widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
                             required: true
                             hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Name
@@ -1496,12 +1632,8 @@ collections:
           - label: Privacy
             name: privacy
             widget: object
+            hint: The privacy policy is always published.
             fields:
-              - label: Visible
-                name: visible
-                widget: boolean
-                default: true
-                required: false
               - label: Title
                 name: title
                 widget: object
@@ -1523,11 +1655,33 @@ collections:
                   - label: English
                     name: en
                     widget: markdown
+                    buttons:
+                      - bold
+                      - italic
+                      - strikethrough
+                      - code
+                      - link
+                      - bulleted-list
+                      - numbered-list
+                      - heading-two
+                      - heading-three
+                    editor_components: []
                     required: true
                     hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                   - label: Deutsch
                     name: de
                     widget: markdown
+                    buttons:
+                      - bold
+                      - italic
+                      - strikethrough
+                      - code
+                      - link
+                      - bulleted-list
+                      - numbered-list
+                      - heading-two
+                      - heading-three
+                    editor_components: []
                     required: true
                     hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
             required: true
@@ -1561,11 +1715,33 @@ collections:
                   - label: English
                     name: en
                     widget: markdown
+                    buttons:
+                      - bold
+                      - italic
+                      - strikethrough
+                      - code
+                      - link
+                      - bulleted-list
+                      - numbered-list
+                      - heading-two
+                      - heading-three
+                    editor_components: []
                     required: true
                     hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                   - label: Deutsch
                     name: de
                     widget: markdown
+                    buttons:
+                      - bold
+                      - italic
+                      - strikethrough
+                      - code
+                      - link
+                      - bulleted-list
+                      - numbered-list
+                      - heading-two
+                      - heading-three
+                    editor_components: []
                     required: true
                     hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
             required: true

@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { extractText, getDocumentProxy } from "unpdf";
+import { parse } from "yaml";
 import { generatePdfs } from "../../../scripts/generate-pdf";
 
 // Needs a built site: run `npm run build && npm run test:pdf`.
@@ -32,6 +33,29 @@ describe("generatePdfs", () => {
     expect(en).toContain("Youssef Ait Lhaj");
     expect(en).toContain("Imbus AG");
     expect((await text("de")).toLowerCase()).toContain("erfahrung");
+  });
+
+  it("each pdf shows the timeline locations in its own language", async () => {
+    // Driven by page.yml so editing a location in the CMS does not break the deploy.
+    type Loc = { en: string; de: string };
+    const page = parse(readFileSync("src/content/data/page.yml", "utf8"));
+    const locations: Loc[] = page.sections
+      .filter((s: { type: string; visible?: boolean; inPdf?: boolean }) => s.type === "timeline" && s.visible !== false && s.inPdf !== false)
+      .flatMap((s: { items: { location: Loc }[] }) => s.items.map((i) => i.location));
+    expect(locations.length).toBeGreaterThan(0);
+    const [en, de] = [await text("en"), await text("de")];
+    for (const loc of locations) {
+      expect(de).toContain(loc.de);
+      expect(en).toContain(loc.en);
+      if (loc.en !== loc.de) expect(de).not.toContain(loc.en);
+    }
+    expect(de).not.toContain("Germany");
+  });
+
+  it("accents and umlauts survive in the pdf text", async () => {
+    expect(await text("en")).toContain("Université");
+    const de = await text("de");
+    for (const word of ["Université", "Universität", "Französisch"]) expect(de).toContain(word);
   });
 
   it("pdf contains email in plain text and no phone", async () => {

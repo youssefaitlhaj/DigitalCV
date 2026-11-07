@@ -1,7 +1,7 @@
 // "imageref" custom field type: the whole image object { src, alt: { en, de }, crop? } in one control.
 // It wraps the whole object (not only `crop`) because a custom control in Sveltia 0.252.0 receives its own
 // value and the entry, but not its path inside the entry, so it cannot find a sibling `src` by itself.
-import { isLibraryPath, mergeImageRef, NOT_UPLOADED_MESSAGE, percentToPixels, pixelsToPercentCrop, validateImageRef } from "./crop-math.js";
+import { imageSrcProblem, isRequiredField, mergeImageRef, percentToPixels, pixelsToPercentCrop, removeImageRef, validateImageRef } from "./crop-math.js";
 
 const plain = (v) => (v && typeof v.toJS === "function" ? v.toJS() : v) ?? {};
 
@@ -9,7 +9,7 @@ export function registerCropWidget(CMS) {
   const { useState, useEffect, useRef, useImperativeHandle } = CMS.React;
   const h = CMS.React.createElement;
 
-  function ImageRefControl({ value, onChange, pickFile, getAsset, forID, ref }) {
+  function ImageRefControl({ value, onChange, pickFile, getAsset, forID, field, ref }) {
     const v = plain(value);
     const latest = useRef(v);
     latest.current = v;
@@ -17,12 +17,13 @@ export function registerCropWidget(CMS) {
     const [cropping, setCropping] = useState(false);
     const [error, setError] = useState("");
     const url = v.src ? (getAsset?.(v.src)?.url ?? v.src) : "";
+    const required = isRequiredField(field);
 
     // Sveltia calls isValid(value, fieldConfig) with the field config as an Immutable Map; required defaults to true.
     useImperativeHandle?.(
       ref,
       () => ({
-        isValid: (val, field) => validateImageRef(plain(val), (field?.get ? field.get("required") : undefined) !== false),
+        isValid: (val, config) => validateImageRef(plain(val), isRequiredField(config)),
       }),
       [],
     );
@@ -62,8 +63,9 @@ export function registerCropWidget(CMS) {
       setError("");
       try {
         const picked = await pickFile({ kind: "image", accept: "image/*", allowURL: false });
-        if (picked && !isLibraryPath(picked.value)) {
-          setError(NOT_UPLOADED_MESSAGE);
+        const problem = picked ? imageSrcProblem(picked.value) : null;
+        if (problem) {
+          setError(problem);
         } else if (picked) {
           setCropping(false);
           // A different picture makes the old crop meaningless.
@@ -91,6 +93,8 @@ export function registerCropWidget(CMS) {
             setCropping(!cropping);
           } }, cropping ? "Done cropping" : c ? "Adjust crop" : "Crop"),
         c && h("button", { ...btn, onClick: () => { setCropping(false); commit({ crop: undefined }); } }, "Reset crop"),
+        // Only optional images can be removed; a required one can only be replaced.
+        !required && v.src && h("button", { ...btn, onClick: () => { setCropping(false); setError(""); onChange(removeImageRef(latest.current)); } }, "Remove image"),
       ),
       c && h("div", { style: { fontSize: 12, opacity: 0.7 } }, `Crop: x ${c.x}%, y ${c.y}%, ${c.width}% x ${c.height}%`),
       error && h("div", { role: "alert", style: { color: "#b00020" } }, error),

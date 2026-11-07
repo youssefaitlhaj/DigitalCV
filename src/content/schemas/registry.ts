@@ -41,6 +41,11 @@ const sectionUnion = z.discriminatedUnion("type", [
   quotesSchema,
 ]);
 
+/** Ids the page layout already uses: the skip-link target. Every hard-coded id attribute in src must be listed here (a unit test checks). */
+export const RESERVED_SECTION_IDS = ["main"] as const;
+/** Section headings get the id `<section id>-title`, so a section id with this suffix could clash with another section's heading. */
+export const RESERVED_SECTION_ID_SUFFIX = "-title";
+
 export const pageSchema = z
   .object({ sections: z.array(sectionUnion) })
   .superRefine((page, ctx) => {
@@ -50,6 +55,16 @@ export const pageSchema = z
         ctx.addIssue({ code: "custom", message: `Duplicate section id "${s.id}"`, path: ["sections", i, "id"] });
       }
       seen.add(s.id);
+      if ((RESERVED_SECTION_IDS as readonly string[]).includes(s.id)) {
+        ctx.addIssue({ code: "custom", message: `Section id "${s.id}" is reserved by the page layout`, path: ["sections", i, "id"] });
+      }
+      if (s.id.endsWith(RESERVED_SECTION_ID_SUFFIX)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `Section id must not end in "${RESERVED_SECTION_ID_SUFFIX}" (reserved for section headings)`,
+          path: ["sections", i, "id"],
+        });
+      }
     });
     for (const type of ["hero", "contact"] as const) {
       page.sections.forEach((s, i) => {

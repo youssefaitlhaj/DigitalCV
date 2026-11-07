@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { loadContent } from "../../../src/content/repository";
-import { formatDuration, formatMonth, formatRange, monthsBetween } from "../../../src/lib/dates";
+import { formatDuration, formatMonth, monthsBetween } from "../../../src/lib/dates";
 
 const now = new Date(Date.UTC(2026, 10, 6));
 const { labels } = loadContent().site;
@@ -31,7 +31,7 @@ describe("formatDuration", () => {
   });
 });
 
-describe("formatMonth / formatRange", () => {
+describe("formatMonth", () => {
   it("formats a German month", () => {
     const s = formatMonth("2019-08", "de", labels);
     expect(s).toContain("Aug");
@@ -42,8 +42,5 @@ describe("formatMonth / formatRange", () => {
   });
   it("prints present from labels", () => {
     expect(formatMonth("present", "de", labels)).toBe(labels.present.de);
-  });
-  it("joins with an en dash", () => {
-    expect(formatRange("2019-08", "present", "en", labels)).toBe(`Aug 2019 – ${labels.present.en}`);
   });
 });
