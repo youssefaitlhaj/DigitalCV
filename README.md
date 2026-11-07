@@ -40,7 +40,7 @@ server with `npx astro dev stop`.
 - `src/pages/`: English and German routes, print routes used for the PDFs.
 - `src/scripts/`: motion and small runtime scripts.
 - `public/admin/`: the Sveltia CMS configuration and the custom image and crop widgets.
-- `scripts/`: build helpers (image crops, PDF generation, admin vendoring).
+- `scripts/`: build helpers (image crops, PDF generation, admin vendoring, Vercel build output).
 - `tests/`: unit, PDF and Playwright end-to-end tests.
 - `.github/workflows/`: CI, preview deploys, production deploy.
 
@@ -49,12 +49,12 @@ server with `npx astro dev stop`.
 `npx playwright test` runs three projects: `desktop`, `narrow` (320px wide) and `reduced-motion`. A few tests
 are skipped on purpose depending on the project (`test.skip` conditions in `tests/e2e`): the 320px overflow
 check runs only in `narrow`, the motion-on checks are skipped under `reduced-motion`, the reduced-motion
-checks run only there, and one motion fixture check runs only in `desktop`. The last full run: 191 passed,
-22 skipped, 0 failed.
+checks run only there, and one motion fixture check runs only in `desktop`. The last full run: 225 passed,
+24 skipped, 0 failed.
 
 ## Editing content
 
-Use the editor at `/admin` (log in with GitHub). Saving creates a pull request and a protected preview;
+Use the editor at `/admin` (sign in with a GitHub access token). Saving creates a pull request and a protected preview;
 Publish merges it and the live site updates in about 5 minutes. See [`docs/SETUP.md`](docs/SETUP.md) for setup.
 
 You can still edit the YAML files in `src/content/data/` by hand. The build validates them and fails with a
@@ -63,5 +63,7 @@ pushing.
 
 ## Deploying
 
-Pull requests build a preview; merging to `main` deploys to Cloudflare Pages via GitHub Actions. A weekly
+GitHub Actions build and test the site; Vercel only hosts it. Pull requests upload a protected preview
+and merging to `main` deploys to production, both with `vercel deploy --prebuilt` (`scripts/vercel-output.ts`
+turns `dist/` into Vercel's Build Output; Vercel's own Git builds are off in `vercel.json`). A weekly
 scheduled rebuild keeps date-driven values (such as the duration of an open-ended role) fresh.

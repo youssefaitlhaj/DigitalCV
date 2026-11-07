@@ -222,6 +222,8 @@ Offer the combinations from `palette-explorer.html` that pass AA in both modes. 
 
 ## 10. Hosting, build and deploy
 
+> **2026-11-07 (Youssef):** hosting moved to Vercel (GitHub Actions build, Vercel hosts via prebuilt deploy); admin login via GitHub access token; Cloudflare dropped.
+
 - Code and content: **https://github.com/youssefaitlhaj/DigitalCV** (GitHub user `youssefaitlhaj`). **(Youssef)** The repo is **public**, so:
   - GitHub Actions minutes are unlimited, and branch protection with required status checks is available on the free plan. Use it so Publish (draft → main) can't merge a failing build.
   - Draft content is publicly readable on GitHub before it is published. Accepted, since it's CV content.

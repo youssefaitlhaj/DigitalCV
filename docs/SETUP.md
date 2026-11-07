@@ -1,151 +1,134 @@
 # Setup guide and launch checklist
 
-Follow this once, in order. It assumes you are a developer who already has GitHub but has never used Cloudflare, Umami or Sveltia. Everything in the repo is already committed and tested; what remains are accounts and a few copy-and-paste values that only you can create.
+Follow this once, in order. Everything in the repo is already committed and tested; what remains are a few settings and copy-and-paste values that only you can create, in Vercel, GitHub and Umami.
 
-Repository: `youssefaitlhaj/DigitalCV`. Never paste a token, secret or password into a file in the repo. Secrets go only into the GitHub or Cloudflare screens named below.
+Repository: `youssefaitlhaj/DigitalCV`. Vercel project: `digital-cv`. Never paste a token, secret or password into a file in the repo. Secrets go only into the GitHub or Vercel screens named below.
 
 Working on the code on your own machine needs Node.js 24 or newer. Start the dev server with `npm run dev`. If you start Astro directly instead (`npx astro dev --background`), run `npm run predev` once first: it vendors the admin scripts and generates the image crops that `npm run dev` would otherwise prepare. Details are in the README.
 
+## How hosting works
+
+**GitHub builds, Vercel hosts.** GitHub Actions install, check, test and build the site (the build needs a headless Chromium for the CV PDFs). The finished site is then uploaded to Vercel with the Vercel CLI as a ready-made build (`vercel deploy --prebuilt`); Vercel never builds the repo itself. `vercel.json` switches off Vercel's own Git builds (`git.deploymentEnabled: false`), which is why the builds Vercel started for `main` until now (and which failed) stop once this change is merged.
+
+- A pull request runs the `ci` check and uploads a **preview** deployment. Its link is posted on the pull request as the `preview/deploy` status, which `/admin` shows next to the entry.
+- A merge into `main` (a **Publish**) runs the **Deploy** workflow, which rebuilds, re-tests and uploads to **production**.
+- A weekly **Scheduled rebuild** reruns Deploy so date-driven values stay fresh.
+
+Response headers (the strict Content-Security-Policy for `/admin`) live in `public/_headers`; `scripts/vercel-output.ts` turns them into Vercel routes at deploy time.
+
 ## The launch order in one view
 
-The redesign goes live only after you have reviewed it on a protected preview. Merging is your sign-off.
-
-1. Accounts and Cloudflare (steps 1 to 4).
-2. Admin login (step 5): the auth worker and the GitHub OAuth app, then two file edits committed on the `redesign` branch.
-3. Umami (step 6): two values added to `site.yml` by hand on the `redesign` branch. `/admin` is not live yet, so editing the file is the simplest way.
-4. Open the pull request `redesign` into `main` (step 7). Wait for the `ci` check and the preview link, then turn on branch protection for `main`.
-5. Review on the protected preview (step 8).
-6. Merge the pull request. That merge is the first Publish. Watch the first deploy, then check the live site (step 9).
-7. After launch, test the editor on the live site (step 10).
-8. Later: your own domain (step 11).
+1. Vercel: IDs, a deploy token, preview protection (step 1).
+2. GitHub: one secret, two variables, auto-merge (step 2).
+3. Site URL and Umami (step 3).
+4. Open (or update) the pull request `vercel-hosting` into `main`, review the preview, merge. The merge is the first production deploy (steps 4 and 5).
+5. Protect `main` (step 6).
+6. Admin login with a GitHub access token, then test the editor on the live site (steps 7 and 8).
+7. Later: your own domain (step 9).
 
 Terms: **Preview** is a protected copy of the site built from a pull request. **Publish** merges a change into `main`, which deploys the live site.
 
-## 1. Cloudflare account
+## 1. Vercel
 
-1. Go to https://dash.cloudflare.com/sign-up, sign up with your email, and verify it.
-2. Note your **Account ID**: in the dashboard open **Workers & Pages**; it is shown in the right-hand sidebar (and in the URL after `dash.cloudflare.com/`). You need it in step 3.
-3. Zero Trust (used in step 4 to protect previews) is free, but Cloudflare may ask for a payment card the first time you open it, even on the free plan. You are not charged on the free plan.
-4. If you do not want to enter a card, use a fallback in step 4: skip Access and treat preview links as private (they are unguessable per-deployment URLs). Decide before step 4; nothing else depends on it.
+You already have the project `digital-cv`, connected to the repo.
 
-## 2. Cloudflare Pages project (Direct Upload)
+1. **Project ID.** Open the project, **Settings**, **General**. Copy **Project ID** (starts with `prj_`).
+2. **Team/Org ID.** For a team: team **Settings**, **General**, copy **Team ID** (starts with `team_`). For a personal Hobby account: **Account Settings**, **General**, copy **Vercel ID**. This is the `VERCEL_ORG_ID` below.
+3. **Access token.** **Account Settings**, **Tokens** (https://vercel.com/account/settings/tokens), **Create Token**. Name it `github-actions-deploy`, scope it to the team or account that owns `digital-cv`, pick an expiration (and put a reminder in your calendar a week before it). Copy it now; it is shown once.
+4. **Build settings.** Nothing to set: Vercel does not build, so the Framework Preset, build command and Node.js version are not used. Leave **Root Directory** empty (the CLI looks for the upload in `.vercel/output` at the repo root).
+5. **Git builds.** Nothing to do: `vercel.json` turns them off once this branch is merged. If the failing builds of `main` bother you before then, **Settings**, **Git**, **Disconnect** is also fine; deploys come from GitHub Actions either way.
+6. **Protect previews.** **Settings**, **Deployment Protection**: turn on **Vercel Authentication** with **Standard Protection** (free on Hobby). This protects every preview and every per-deployment URL, so only you (logged in to Vercel) can open them; the production domain stays public. Open preview links in a browser where you are logged in to Vercel, including on your phone.
 
-The site is built by GitHub Actions and uploaded to Cloudflare. Do not connect the repo to Cloudflare's Git integration.
+## 2. GitHub: secret, variables, auto-merge
 
-1. In the dashboard open **Workers & Pages**, **Create application**, the **Pages** tab, then **Upload assets** (Direct Upload).
-2. Name the project exactly `youssefaitlhaj` and click **Create project**.
-3. On the upload screen upload any small file (for example an empty `index.html`) and click **Deploy site**. This only creates the project; the real site arrives from GitHub Actions.
-4. Note the project URL, `https://youssefaitlhaj.pages.dev`. If Cloudflare gave a different subdomain, use that one wherever this guide says `youssefaitlhaj.pages.dev`. It must also match `siteUrl` in `src/content/data/site.yml`; if it differs, change `siteUrl` in the step 6.4 edit.
-5. Open **Settings**, **Builds & deployments** (or **Branch control**) and make sure the production branch is `main`.
+1. In GitHub open the repo, **Settings**, **Secrets and variables**, **Actions**.
+2. **Secrets** tab, **New repository secret**: `VERCEL_TOKEN` = the token from step 1.3.
+3. **Variables** tab, **New repository variable**, twice:
+   - `VERCEL_ORG_ID` = the Team ID or Vercel ID from step 1.2
+   - `VERCEL_PROJECT_ID` = the Project ID from step 1.1
+4. **Settings**, **Actions**, **General**: confirm workflows are allowed to run, and that "Workflow permissions" is on the default read setting (the jobs request the extra permissions they need).
+5. **Settings**, **General**, **Pull Requests**: tick **Allow auto-merge**. Publish uses it.
 
-## 3. API token, GitHub secrets, auto-merge
+Only the single "Deploy" step of each workflow sees the token; install, build and test steps never do. A missing secret or variable is named in that step's log.
 
-1. In Cloudflare open **My Profile**, **API Tokens**, **Create Token**, **Create Custom Token**.
-2. Name it `github-pages-deploy`. Under **Permissions** choose **Account**, **Cloudflare Pages**, **Edit**. Under **Account Resources** pick your account. Create the token and copy it now; it is shown once.
-3. In GitHub open the repo, **Settings**, **Secrets and variables**, **Actions**.
-4. On the **Secrets** tab click **New repository secret** twice:
-   - `CLOUDFLARE_API_TOKEN` = the token from step 2
-   - `CLOUDFLARE_ACCOUNT_ID` = the Account ID from step 1.2
-5. On the **Variables** tab click **New repository variable**: `CF_PAGES_PROJECT` = `youssefaitlhaj`.
-6. Open **Settings**, **Actions**, **General**: confirm workflows are allowed to run, and that "Workflow permissions" is on the default read setting (the jobs request the extra permissions they need).
-7. Open **Settings**, **General**, scroll to **Pull Requests**, and tick **Allow auto-merge**. Publish uses it.
+## 3. Site URL and Umami
 
-## 4. Cloudflare Access for previews
+`siteUrl` in `src/content/data/site.yml` still says `https://youssefaitlhaj.pages.dev`, a leftover from the earlier Cloudflare plan. It drives the canonical and language links search engines see, and Umami only counts visits on that host (`data-domains`). Set it to your Vercel **production domain**:
 
-Every pull request deploys a preview. Lock previews to your email.
-
-1. In the Cloudflare dashboard open **Workers & Pages**, your project `youssefaitlhaj`, **Settings**.
-2. Under **General**, **Access policy**, click **Enable access policy** (it applies to preview deployments). Cloudflare creates an Access application; Zero Trust may ask you to choose a team name and the Free plan (and possibly a card, see step 1).
-3. Edit the created policy: **Action** Allow, **Include** rule **Emails**, and enter only your own email address. Save.
-4. You will test it in step 7, when the first preview exists: a private browser window should show a Cloudflare login that emails you a one-time code, and only your address works.
-
-Do not put the production domain behind Access; only previews.
-
-Fallback without Zero Trust: skip this step. Previews stay on unguessable per-deployment URLs. The site pages do not add a no-index tag for previews (adding one would be a small code change), so do not post a preview link anywhere public.
-
-## 5. Admin login: Sveltia auth worker
-
-`/admin` edits content by committing to GitHub as you. It needs a small Cloudflare Worker to complete GitHub's login.
-
-1. Open https://github.com/sveltia/sveltia-cms-auth and use the **Deploy to Cloudflare Workers** button in its README. Sign in, choose your account, and deploy it with the default name `sveltia-cms-auth`. Note its URL, for example `https://sveltia-cms-auth.<your-subdomain>.workers.dev`. This is `<WORKER_URL>` below.
-2. In GitHub open your profile **Settings**, **Developer settings**, **OAuth Apps**, **New OAuth App**:
-   - Application name: `youssefaitlhaj admin`
-   - Homepage URL: `https://youssefaitlhaj.pages.dev`
-   - Authorization callback URL: `<WORKER_URL>/callback`
-   - Click **Register application**, then **Generate a new client secret**. Copy the Client ID and the secret.
-3. In Cloudflare open **Workers & Pages**, the worker `sveltia-cms-auth`, **Settings**, **Variables and Secrets**, and add:
-   - `GITHUB_CLIENT_ID` = the Client ID
-   - `GITHUB_CLIENT_SECRET` = the client secret (choose the secret/encrypted type if offered)
-   - `ALLOWED_DOMAINS` = the production host only, for example `youssefaitlhaj.pages.dev`
-   - Save and deploy.
-4. On the `redesign` branch, replace the placeholder `https://sveltia-auth.invalid` with `<WORKER_URL>` in **both** files, then commit and push to `redesign`:
-   - `public/admin/config.yml`: `backend.base_url`
-   - `public/_headers`: the `connect-src` entry in the `/admin/*` Content-Security-Policy (the origin only, no path)
-
-   The unit tests check the two files agree and reject placeholder hosts, so run `npm test` before pushing.
-5. Check: search the repo for `sveltia-auth.invalid` (for example `grep -rn sveltia-auth.invalid public src tests`). It must no longer appear in `public/admin/config.yml` or `public/_headers`, and `npm test` must pass.
-
-`/admin` itself cannot be used until the site is live (step 9); you test it in step 10.
-
-## 6. Umami Cloud (analytics), edited by hand on `redesign`
-
-1. Go to https://cloud.umami.is and sign up (free plan). The free plan keeps 6 months of data.
-2. **Websites**, **Add website**: name `youssefaitlhaj`, domain `youssefaitlhaj.pages.dev`. Save.
-3. Open the website's **Settings** and copy the **Website ID**. Enable **Share URL** and copy the share link (the public statistics dashboard).
-4. On the `redesign` branch edit `src/content/data/site.yml` by hand (simplest, because `/admin` is not live yet; you could also do it later in `/admin`):
+1. In Vercel open the project, **Settings**, **Domains**, and note the production domain, for example `https://digital-cv.vercel.app`. Use this domain, not a long per-deployment URL such as `digital-cv-a1b2c3-….vercel.app` (those are protected and change with every deploy).
+2. Umami (https://cloud.umami.is): the website id is already in `site.yml` (`analytics.umamiWebsiteId: ece2ccaf-…`). In the website's **Settings**, set its domain to the production host from step 3.1, enable **Share URL** and copy the share link.
+3. Edit `src/content/data/site.yml` by hand on the `vercel-hosting` branch (or later in `/admin`, **Site settings**) and push:
    ```yaml
+   siteUrl: https://<your-production-domain>
    analytics:
-     umamiWebsiteId: <WEBSITE_ID>
+     umamiWebsiteId: ece2ccaf-3e90-45b5-b402-f2718a07c654
      dashboardUrl: <SHARE_URL>
    ```
-   If your Pages URL differs from `https://youssefaitlhaj.pages.dev`, also change `siteUrl` in the same edit. Commit and push to `redesign`. Analytics load only on the production deploy, never in previews or dev. The site sets no cookies and shows no cookie banner. Download buttons send a `cv-download` event.
 
-## 7. Open the pull request and protect `main`
+Analytics load only on the production deploy, never in previews or dev. The site sets no cookies and shows no cookie banner. Download buttons send a `cv-download` event.
 
-1. On GitHub open a pull request from `redesign` into `main`.
-2. Wait for the `ci` check to finish (usually 10-20 minutes; the browser tests are the slow part) and for the `preview/deploy` status; its link opens the preview. Failed previews show a failed `preview/deploy` status on the PR.
-3. Open the preview link in a private window and confirm the Cloudflare Access login (step 4).
-4. Now that the `ci` check exists, protect `main` with a **classic** branch protection rule (not a ruleset): **Settings**, **Branches**, **Add classic branch protection rule**. Branch name pattern: `main`.
-   - Tick **Require a pull request before merging**. Untick its sub-option **Require approvals**: you are the only reviewer and cannot approve your own pull request.
-   - Tick **Require status checks to pass before merging**, search for and add the check named `ci`. Require only `ci`; do not require `preview`, `preview-failed` or `preview/deploy`, or Publish can stall.
-   - Leave **Do not allow bypassing the above settings** **unticked**. This matters: uploading or deleting a file in the `/admin` Media library commits straight to `main` (it does not open a pull request). As the repository owner you may bypass the rule, so those commits go through; with bypassing forbidden they would fail.
-   - Save.
+## 4. Pull request and preview review
 
-   The cost of allowing the bypass: a Media-library commit skips the `ci` check, so the browser (Playwright) tests do not run for it. The production deploy that follows still runs `astro check`, the unit tests, the build and the PDF tests, and a failure there stops the deploy, so a broken image cannot reach the live site. Everything else (every content edit) still goes through a pull request and the full `ci` check.
+1. Open a pull request from `vercel-hosting` into `main` (or push again if it is already open, so CI runs with the new secrets).
+2. Wait for the `ci` check (usually 10-20 minutes; the browser tests are the slow part) and for the `preview/deploy` status; its link opens the preview. A failed preview shows as a failed `preview/deploy` status.
+3. Open the preview link in a private window: Vercel asks you to log in. Then open it where you are logged in and review:
+   - Every entry in `docs/superpowers/notes/german-drafts.md`: find it on the preview and review the German text.
+   - The privacy policy, English and German. It now names Vercel (Vercel Inc., USA) as the host; it is a plain-language draft, not legal advice.
+   - Both CV PDFs (English and German) download and open; accents and umlauts (é, ä, ö, ü, ß) render, for example "Université Hassan II", "Otto-Friedrich-Universität", "Französisch", "größten", "Außerdem".
+   - The site at phone width.
+   - Nothing shows a phone number or postal address, and the Impressum page is hidden.
 
-## 8. Review on the protected preview
+## 5. Merge = first production deploy
 
-Do all of this before merging. Fix anything by editing files on `redesign` and pushing; the preview rebuilds.
-
-- Every entry in `docs/superpowers/notes/german-drafts.md`: find it on the preview and review the German text.
-- The privacy policy text, English and German.
-- Both CV PDFs (English and German) download and open.
-- Accents and umlauts (é, ä, ö, ü, ß) render correctly in both PDFs (for example "Université Hassan II" in both, and "Otto-Friedrich-Universität", "Französisch", "größten" and "Außerdem" in the German CV); no empty boxes or missing letters.
-- The site at phone width.
-- Overall: nothing shows a phone number or postal address, and the Impressum page is hidden (it is off by default).
-
-## 9. Merge = first Publish, and watch the first deploy
-
-1. Merge the pull request. Merging is your sign-off for the redesign.
-2. Open **Actions**, **Deploy**, and watch it, especially the `wrangler pages deploy` step; this is its first real run. A missing secret or variable is named in the log. The weekly scheduled rebuild reuses this same workflow.
-3. Check the live site `https://youssefaitlhaj.pages.dev`: both languages, both PDFs, no console errors.
+1. Merge the pull request. This runs **Actions**, **Deploy**: the `build` job, then the `deploy` job, whose "Deploy to Vercel (production)" step is the first real upload.
+2. To redeploy at any time: **Actions**, **Deploy**, **Run workflow** on branch `main`. (The weekly **Scheduled rebuild** runs the same workflow.)
+3. Check the live site on the production domain: both languages, both PDFs, no console errors, and `/admin/` loads.
 4. Open the Umami dashboard: your visit and a `cv-download` event (click a download button) appear.
 
-## 10. After launch: test the editor on the live site
+## 6. Protect `main`
 
-Open `https://youssefaitlhaj.pages.dev/admin/` and log in with GitHub. Saving an entry opens a pull request and a preview; Publish merges it and the live site updates in about 5 minutes. Tick each item:
+Protect `main` with a **classic** branch protection rule (not a ruleset): **Settings**, **Branches**, **Add classic branch protection rule**. Branch name pattern: `main`.
 
-- [ ] Login works. If the popup reports a disallowed origin, re-check `ALLOWED_DOMAINS`.
-- [ ] Round trip: edit a German job title, save, open the preview link (behind Cloudflare Access), then Publish. The live site shows it within about 5 minutes. The pull request diff changes only that field.
+- Tick **Require a pull request before merging**. Untick its sub-option **Require approvals**: you are the only reviewer and cannot approve your own pull request.
+- Tick **Require status checks to pass before merging**, search for and add the check named `ci`. Require only `ci`; do not require `preview`, `preview-failed` or `preview/deploy`, or Publish can stall.
+- Leave **Do not allow bypassing the above settings** **unticked**. This matters: uploading or deleting a file in the `/admin` Media library commits straight to `main` (it does not open a pull request). As the repository owner you may bypass the rule, so those commits go through; with bypassing forbidden they would fail.
+- Save.
+
+The cost of allowing the bypass: a Media-library commit skips the `ci` check, so the browser (Playwright) tests do not run for it. The production deploy that follows still runs `astro check`, the unit tests, the build and the PDF tests, and a failure there stops the deploy, so a broken image cannot reach the live site. Everything else (every content edit) still goes through a pull request and the full `ci` check.
+
+## 7. Admin login with a GitHub access token
+
+`/admin` edits content by committing to GitHub as you. There is no OAuth app or login server: you sign in with a fine-grained personal access token, once per device and browser.
+
+1. GitHub, your profile **Settings**, **Developer settings**, **Personal access tokens**, **Fine-grained tokens**, **Generate new token** (https://github.com/settings/personal-access-tokens/new).
+   - Token name: `cv-admin` (add the device name if you make one per device).
+   - Expiration: up to one year. Put a reminder in your calendar.
+   - Resource owner: `youssefaitlhaj`. Repository access: **Only select repositories**, `youssefaitlhaj/DigitalCV`.
+   - Repository permissions:
+     - **Contents**: Read and write (read entries, commit edits and uploads, merge on Publish)
+     - **Pull requests**: Read and write (every save is a pull request; Publish merges or auto-merges it)
+     - **Commit statuses**: Read-only (shows the `preview/deploy` link and state next to an entry)
+     - **Metadata**: Read-only (added automatically)
+   - Nothing else. Generate the token and copy it.
+2. Open `https://<your-production-domain>/admin/`, click **Sign In Using Access Token**, paste the token, **Sign In**. It is the only sign-in option (`auth_methods: [token]` in `public/admin/config.yml`).
+3. Repeat step 2 on each device (laptop, phone). The token stays in that browser's storage until you sign out; sign out on any device that is not yours.
+4. When the token expires (or if a device is lost): revoke it on the same GitHub page, generate a new one with the same settings, and sign in again on each device.
+
+## 8. After launch: test the editor on the live site
+
+Saving an entry opens a pull request and a preview; Publish merges it and the live site updates in about 5 minutes. Tick each item:
+
+- [ ] Sign-in with the access token works on the laptop and on the phone.
+- [ ] Round trip: edit a German job title, save, open the preview link (behind Vercel Authentication), then Publish. The live site shows it within about 5 minutes. The pull request diff changes only that field.
 - [ ] Crop the portrait on a phone, Publish, and confirm the cropped image is live. An EXIF-rotated phone photo crops the right way up.
 - [ ] Upload a new photo in the Media library first, then choose it in an image field; the build accepts it. Note whether choosing a fresh upload directly in the field commits.
-- [ ] Uploading a photo in the Media library works with branch protection on: the upload is committed to `main` without an error (this relies on **Do not allow bypassing the above settings** staying unticked, step 7), and the Deploy run that follows is green.
+- [ ] Uploading a photo in the Media library works with branch protection on: the upload is committed to `main` without an error (this relies on **Do not allow bypassing the above settings** staying unticked, step 6), and the Deploy run that follows is green.
 - [ ] An iPhone HEIC photo chosen in an image field shows "This format isn't supported. Upload a JPG, PNG or WebP ..." instead of saving.
 - [ ] Remove an optional image: in a project card's **Image** or a quote's **Photo**, click **Remove image**, save and Publish. The image disappears from the site and the YAML no longer has that field. (Required images such as the portrait have no Remove button; use **Replace image**.)
 - [ ] In a rich-text field, `<u>x</u>` and `<span class="c-accent">y</span>` survive saving unchanged, and the coloured word renders in the accent colour. (Colour and underline are written as these snippets.)
 - [ ] Reordering sections works on a laptop (drag) and on a phone (Move up / Move down buttons; drag needs a mouse).
 - [ ] Saving an entry does not add stray empty fields or `false` values, and the build still passes.
-- [ ] The browser console shows no Content-Security-Policy errors in `/admin`.
+- [ ] The browser console shows no Content-Security-Policy errors in `/admin` on the production domain, and the response for `/admin/` carries the `Content-Security-Policy` header (browser dev tools, **Network**).
 - [ ] The tag with a bilingual level (formerly "Native/Muttersprache") edits correctly in both languages.
 - [ ] Saving with an empty English or German text field is blocked.
 - [ ] A deliberately broken preview shows as a failed `preview/deploy` status instead of silently missing.
@@ -155,10 +138,13 @@ Open `https://youssefaitlhaj.pages.dev/admin/` and log in with GitHub. Saving an
 
 GitHub switches off scheduled workflows in a public repository after 60 days without any repository activity (no commits, no Publish). It emails you a warning a few days before. To turn it back on (or to keep it on when you get the warning): open **Actions**, choose **Scheduled rebuild** in the left list, and click **Enable workflow** in the banner. You can also start a rebuild at any time with **Run workflow** on the same page. Any Publish from `/admin` also counts as activity and resets the 60 days.
 
-## 11. Later: your own domain
+### Maintenance: tokens
 
-1. Buy `youssefaitlhaj.com` (Cloudflare Registrar is simplest, or any registrar).
-2. In Cloudflare open **Workers & Pages**, your Pages project, **Custom domains**, **Set up a custom domain**, enter the domain and follow the DNS prompts. For a domain registered elsewhere, add it to Cloudflare as a site first and switch the nameservers.
-3. In `/admin` change **Site URL** (`siteUrl`) to `https://youssefaitlhaj.com`, preview, Publish.
-4. Add the new host to the worker's `ALLOWED_DOMAINS` (comma separated) and update the GitHub OAuth app's homepage URL.
-5. Update the website's domain in Umami.
+Two tokens expire: the Vercel token in the `VERCEL_TOKEN` secret (deploys fail with an authentication error in the "Deploy to Vercel" step; create a new one as in step 1.3 and replace the secret) and your GitHub access token for `/admin` (step 7.4).
+
+## 9. Later: your own domain
+
+1. Buy the domain (for example `youssefaitlhaj.com`) at any registrar.
+2. In Vercel open the project, **Settings**, **Domains**, **Add**, enter the domain and follow the DNS instructions shown.
+3. In `/admin` change **Site URL** (`siteUrl`) to `https://<the-domain>`, preview, Publish.
+4. Update the website's domain in Umami.
