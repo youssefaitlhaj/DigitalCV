@@ -33,7 +33,7 @@ The site is built by GitHub Actions and uploaded to Cloudflare. Do not connect t
 1. In the dashboard open **Workers & Pages**, **Create application**, the **Pages** tab, then **Upload assets** (Direct Upload).
 2. Name the project exactly `youssefaitlhaj` and click **Create project**.
 3. On the upload screen upload any small file (for example an empty `index.html`) and click **Deploy site**. This only creates the project; the real site arrives from GitHub Actions.
-4. Note the project URL, `https://youssefaitlhaj.pages.dev`. If Cloudflare gave a different subdomain, use that one wherever this guide says `youssefaitlhaj.pages.dev`. It must also match `siteUrl` in `src/content/data/site.yml`; change it in the same `redesign` edit as step 6 if it differs.
+4. Note the project URL, `https://youssefaitlhaj.pages.dev`. If Cloudflare gave a different subdomain, use that one wherever this guide says `youssefaitlhaj.pages.dev`. It must also match `siteUrl` in `src/content/data/site.yml`; if it differs, change `siteUrl` in the step 6.4 edit.
 5. Open **Settings**, **Builds & deployments** (or **Branch control**) and make sure the production branch is `main`.
 
 ## 3. API token, GitHub secrets, auto-merge
@@ -81,6 +81,7 @@ Fallback without Zero Trust: skip this step. Previews stay on unguessable per-de
    - `public/_headers`: the `connect-src` entry in the `/admin/*` Content-Security-Policy (the origin only, no path)
 
    The unit tests check the two files agree and reject placeholder hosts, so run `npm test` before pushing.
+5. Check: search the repo for `sveltia-auth.invalid` (for example `grep -rn sveltia-auth.invalid public src tests`). It must no longer appear in `public/admin/config.yml` or `public/_headers`, and `npm test` must pass.
 
 `/admin` itself cannot be used until the site is live (step 9); you test it in step 10.
 
@@ -95,12 +96,12 @@ Fallback without Zero Trust: skip this step. Previews stay on unguessable per-de
      umamiWebsiteId: <WEBSITE_ID>
      dashboardUrl: <SHARE_URL>
    ```
-   Commit and push to `redesign`. Analytics load only on the production deploy, never in previews or dev. The site sets no cookies and shows no cookie banner. Download buttons send a `cv-download` event.
+   If your Pages URL differs from `https://youssefaitlhaj.pages.dev`, also change `siteUrl` in the same edit. Commit and push to `redesign`. Analytics load only on the production deploy, never in previews or dev. The site sets no cookies and shows no cookie banner. Download buttons send a `cv-download` event.
 
 ## 7. Open the pull request and protect `main`
 
 1. On GitHub open a pull request from `redesign` into `main`.
-2. Wait for the `ci` check to finish (about 15 minutes, it runs the end-to-end tests) and for the `preview/deploy` status; its link opens the preview. Failed previews show a failed `preview/deploy` status on the PR.
+2. Wait for the `ci` check to finish (usually 10-20 minutes; the browser tests are the slow part) and for the `preview/deploy` status; its link opens the preview. Failed previews show a failed `preview/deploy` status on the PR.
 3. Open the preview link in a private window and confirm the Cloudflare Access login (step 4).
 4. Now that the `ci` check exists, protect `main`: **Settings**, **Branches**, **Add branch ruleset** (or classic protection rule) for `main`. Tick **Require a pull request before merging** and **Require status checks to pass before merging**, and add the check named `ci`. Require only `ci`; do not require `preview`, `preview-failed` or `preview/deploy`, or Publish can stall. Save.
 
