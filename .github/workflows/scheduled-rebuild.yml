@@ -1,0 +1,15 @@
+name: Scheduled rebuild
+
+# Weekly rebuild so date-driven content (e.g. the experience duration) stays fresh.
+on:
+  schedule:
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

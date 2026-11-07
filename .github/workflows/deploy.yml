@@ -1,0 +1,51 @@
+name: Deploy
+
+# Production deploy. Rebuilds and re-runs every test from scratch; if anything
+# fails, the deploy step never runs.
+on:
+  push:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PUBLIC_DEPLOY_ENV: production
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx astro check
+      - run: npm test
+      - run: npm run build
+      - run: npm run test:pdf
+      - run: npx playwright test
+      - name: Upload Playwright report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Deploy to Cloudflare Pages
+        run: npx wrangler pages deploy dist --project-name="$CF_PAGES_PROJECT" --branch=main --commit-dirty=true
