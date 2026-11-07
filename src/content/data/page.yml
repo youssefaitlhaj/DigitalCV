@@ -1,8 +1,13 @@
 sections:
   - type: hero
     id: hero
-    title: { en: Home, de: Start }
+    title:
+      en: Home
+      de: Start
+    visible: true
     inMenu: false
+    animate: true
+    inPdf: true
     prompt: whoami
     role:
       en: Software Developer at Imbus AG
@@ -10,29 +15,45 @@ sections:
     subtitle:
       en: Seven years building TestBench, a test management platform, first alongside my computer science degree, now full time.
       de: Sieben Jahre an TestBench, einer Testmanagement-Plattform, zuerst neben meinem Informatikstudium, jetzt in Vollzeit.
-    ctaPrimary: { en: Download CV (PDF), de: Lebenslauf herunterladen (PDF) }
-    ctaSecondary: { en: Contact me, de: Kontakt aufnehmen }
+    ctaPrimary:
+      en: Download CV (PDF)
+      de: Lebenslauf herunterladen (PDF)
+    ctaSecondary:
+      en: Contact me
+      de: Kontakt aufnehmen
     jsonCard:
       - key: location
         values:
-          - { en: "Bamberg, Germany", de: "Bamberg, Deutschland" }
+          - en: Bamberg, Germany
+            de: Bamberg, Deutschland
       - key: stack
         values:
-          - { en: Java, de: Java }
-          - { en: C#, de: C# }
-          - { en: .NET, de: .NET }
-          - { en: SQL, de: SQL }
+          - en: Java
+            de: Java
+          - en: C#
+            de: C#
+          - en: .NET
+            de: .NET
+          - en: SQL
+            de: SQL
       - key: speaks
         values:
-          - { en: Arabic, de: Arabisch }
-          - { en: German, de: Deutsch }
-          - { en: French, de: Französisch }
-          - { en: English, de: Englisch }
+          - en: Arabic
+            de: Arabisch
+          - en: German
+            de: Deutsch
+          - en: French
+            de: Französisch
+          - en: English
+            de: Englisch
       - key: traits
         values:
-          - { en: never gives up, de: gibt nie auf }
-          - { en: learns fast, de: lernt schnell }
-          - { en: team player, de: Teamplayer }
+          - en: never gives up
+            de: gibt nie auf
+          - en: learns fast
+            de: lernt schnell
+          - en: team player
+            de: Teamplayer
     portrait:
       src: /src/assets/uploads/portrait.jpg
       alt:
@@ -42,222 +63,440 @@ sections:
       en: Enjoy the ride and live the success.
       de: Enjoy the ride and live the success.
     showMotto: false
-
   - type: statement
     id: statement
-    title: { en: Statement, de: Leitgedanke }
+    title:
+      en: Statement
+      de: Leitgedanke
+    visible: true
     inMenu: false
+    animate: true
+    inPdf: true
     text:
       en: Seven years on one product. I joined Imbus as a student, <span class="c-accent">stayed through my whole degree</span>, and never left. Today I build it full time.
       de: Sieben Jahre an einem Produkt. Ich bin bei Imbus als Student eingestiegen, <span class="c-accent">bin während meines ganzen Studiums geblieben</span> und nie gegangen. Heute entwickle ich es in Vollzeit.
-
   - type: stats
     id: stats
-    title: { en: By the numbers, de: In Zahlen }
+    title:
+      en: By the numbers
+      de: In Zahlen
+    visible: true
     inMenu: false
+    animate: true
+    inPdf: true
     items:
-      - label: { en: years building TestBench, de: Jahre an TestBench }
-        value: { kind: yearsSince, date: "2019-08" }
-      - label: { en: years since my first professional code, de: Jahre seit meinem ersten professionellen Code }
-        value: { kind: yearsSince, date: "2015-03" }
-      - label: { en: qualifications in computer science, de: Abschlüsse in Informatik }
-        value: { kind: count, sectionId: education }
-      - label: { en: languages spoken, de: gesprochene Sprachen }
-        value: { kind: number, n: 4 }
-
+      - label:
+          en: years building TestBench
+          de: Jahre an TestBench
+        value:
+          kind: yearsSince
+          date: 2019-08
+      - label:
+          en: years since my first professional code
+          de: Jahre seit meinem ersten professionellen Code
+        value:
+          kind: yearsSince
+          date: 2015-03
+      - label:
+          en: qualifications in computer science
+          de: Abschlüsse in Informatik
+        value:
+          kind: count
+          sectionId: education
+      - label:
+          en: languages spoken
+          de: gesprochene Sprachen
+        value:
+          kind: number
+          'n': 4
   - type: journey
     id: journey
-    title: { en: Journey, de: Werdegang }
-    heading: { en: From Casablanca to Bamberg., de: Von Casablanca nach Bamberg. }
+    title:
+      en: Journey
+      de: Werdegang
+    visible: true
+    inMenu: true
+    animate: true
+    inPdf: true
+    heading:
+      en: From Casablanca to Bamberg.
+      de: Von Casablanca nach Bamberg.
     stops:
-      - year: { en: "2013", de: "2013" }
-        heading: { en: Casablanca, de: Casablanca }
+      - year:
+          en: '2013'
+          de: '2013'
+        heading:
+          en: Casablanca
+          de: Casablanca
         text:
           en: Technician Diploma in Computer Science at OFPPT.
           de: Fachtechnikerdiplom im Bereich Informatik an der OFPPT.
-        caption: { en: "git init", de: "git init" }
-      - year: { en: "2015", de: "2015" }
-        heading: { en: First commit, de: Erster Commit }
+        caption:
+          en: git init
+          de: git init
+        head: false
+      - year:
+          en: '2015'
+          de: '2015'
+        heading:
+          en: First commit
+          de: Erster Commit
         text:
-          en: "Internship at NT SOFT: built a store management application in C# and MS SQL Server."
-          de: "Praktikum bei NT SOFT: eine Anwendung zur Ladenverwaltung in C# und MS SQL Server entwickelt."
-        caption: { en: "NT SOFT · Casablanca", de: "NT SOFT · Casablanca" }
-      - year: { en: 2015 – 2017, de: 2015 – 2017 }
+          en: 'Internship at NT SOFT: built a store management application in C# and MS SQL Server.'
+          de: 'Praktikum bei NT SOFT: eine Anwendung zur Ladenverwaltung in C# und MS SQL Server entwickelt.'
+        caption:
+          en: NT SOFT · Casablanca
+          de: NT SOFT · Casablanca
+        head: false
+      - year:
+          en: 2015 – 2017
+          de: 2015 – 2017
         heading:
           en: Bachelor's and two more internships
           de: Bachelor und zwei weitere Praktika
         text:
           en: Computer Science at Université Hassan II. Moved an insurance application to the web, then brought a non-profit's programme online.
           de: Informatik an der Université Hassan II. Eine Versicherungsanwendung ins Web gebracht, danach das Programm eines Vereins online gestellt.
-        caption: { en: "Casablanca", de: "Casablanca" }
-      - year: { en: "2019", de: "2019" }
-        heading: { en: Bamberg, de: Bamberg }
+        caption:
+          en: Casablanca
+          de: Casablanca
+        head: false
+      - year:
+          en: '2019'
+          de: '2019'
+        heading:
+          en: Bamberg
+          de: Bamberg
         text:
           en: Moved to Germany and joined Imbus AG part time, working on TestBench.
           de: Nach Deutschland gezogen und in Teilzeit bei Imbus AG eingestiegen, an TestBench.
-        caption: { en: "Imbus AG · Bavaria", de: "Imbus AG · Bayern" }
-      - year: { en: 2020 – 2025, de: 2020 – 2025 }
+        caption:
+          en: Imbus AG · Bavaria
+          de: Imbus AG · Bayern
+        head: false
+      - year:
+          en: 2020 – 2025
+          de: 2020 – 2025
         heading:
           en: Second degree, still building
           de: Zweites Studium, weiter am Bauen
         text:
           en: B.Sc. Software Systems Science at the University of Bamberg, while working at Imbus the whole way through.
           de: B.Sc. Software Systems Science an der Universität Bamberg, die ganze Zeit über neben der Arbeit bei Imbus.
-        caption: { en: "Uni Bamberg + Imbus AG", de: "Uni Bamberg + Imbus AG" }
-      - year: { en: "2026", de: "2026" }
-        heading: { en: Full time, de: Vollzeit }
+        caption:
+          en: Uni Bamberg + Imbus AG
+          de: Uni Bamberg + Imbus AG
+        head: false
+      - year:
+          en: '2026'
+          de: '2026'
+        heading:
+          en: Full time
+          de: Vollzeit
         text:
-          en: "Software Developer at Imbus AG: features, bug fixing, and extending the database behind TestBench."
-          de: "Softwareentwickler bei Imbus AG: neue Funktionen, Fehlerbehebung und die Erweiterung der Datenbank hinter TestBench."
-        caption: { en: "Imbus AG · Bavaria", de: "Imbus AG · Bayern" }
+          en: 'Software Developer at Imbus AG: features, bug fixing, and extending the database behind TestBench.'
+          de: 'Softwareentwickler bei Imbus AG: neue Funktionen, Fehlerbehebung und die Erweiterung der Datenbank hinter TestBench.'
+        caption:
+          en: Imbus AG · Bavaria
+          de: Imbus AG · Bayern
         head: true
-
   - type: text
     id: about
-    title: { en: About, de: Über mich }
+    title:
+      en: About
+      de: Über mich
+    visible: true
+    inMenu: true
+    animate: true
+    inPdf: true
     paragraphs:
       - en: I build software at Imbus AG in Bavaria, where I have spent the better part of seven years working on TestBench, their test management platform, first alongside my computer science degree, now full time.
         de: Ich entwickle Software bei Imbus AG in Bayern, wo ich den größten Teil der vergangenen sieben Jahre an TestBench gearbeitet habe, der Testmanagement-Plattform des Hauses, zunächst neben meinem Informatikstudium, inzwischen in Vollzeit.
       - en: "The path here started in Casablanca, with a technician diploma, a bachelor's degree, and three internships: a software house, a transport insurer, an environmental association. Building a store management tool, moving an insurance application to the web, and putting a non-profit's programme online taught me how differently the same craft looks depending on who it serves."
-        de: "Angefangen hat der Weg in Casablanca, mit einem Fachtechnikerdiplom, einem Bachelor-Abschluss und drei Praktika: ein Softwarehaus, ein Transportversicherer, ein Umweltbildungsverein. Eine Lagerverwaltung zu bauen, eine Versicherungsanwendung ins Web zu holen und das Programm eines Vereins online zu bringen, hat mir gezeigt, wie unterschiedlich dasselbe Handwerk aussieht, je nachdem, wem es dient."
+        de: 'Angefangen hat der Weg in Casablanca, mit einem Fachtechnikerdiplom, einem Bachelor-Abschluss und drei Praktika: ein Softwarehaus, ein Transportversicherer, ein Umweltbildungsverein. Eine Lagerverwaltung zu bauen, eine Versicherungsanwendung ins Web zu holen und das Programm eines Vereins online zu bringen, hat mir gezeigt, wie unterschiedlich dasselbe Handwerk aussieht, je nachdem, wem es dient.'
       - en: Then I moved to Germany, took a second bachelor's at the University of Bamberg in Software Systems Science, and kept building the whole way through.
         de: Dann bin ich nach Deutschland gezogen, habe an der Universität Bamberg einen zweiten Bachelor in Software Systems Science gemacht und die ganze Zeit über weiter entwickelt.
       - en: I work in Java, C#, and .NET, with SQL underneath and the web on top.
         de: Ich arbeite mit Java, C# und .NET, mit SQL darunter und dem Web darüber.
       - en: I also speak four languages, which has been quietly useful in a field where most of the work is understanding what someone actually meant.
         de: Außerdem spreche ich vier Sprachen — was sich in einem Beruf, in dem es meistens darum geht zu verstehen, was jemand eigentlich gemeint hat, still und leise als nützlich erwiesen hat.
-
   - type: timeline
     id: experience
-    title: { en: Experience, de: Erfahrung }
+    title:
+      en: Experience
+      de: Erfahrung
+    visible: true
+    inMenu: true
+    animate: true
+    inPdf: true
+    compact: false
     items:
-      - title: { en: Software Developer, de: Softwareentwickler }
+      - title:
+          en: Software Developer
+          de: Softwareentwickler
         org: Imbus AG
         orgUrl: https://www.imbus.de/
-        location: { en: "Bavaria, Germany", de: "Bayern, Deutschland" }
+        location:
+          en: Bavaria, Germany
+          de: Bayern, Deutschland
         employment: full-time
-        start: "2026-02"
+        start: 2026-02
         end: present
-        badge: HEAD
         description:
           en: Full time on TestBench since finishing my degree — feature development, bug fixing, and extending the underlying database.
           de: Seit dem Abschluss meines Studiums in Vollzeit an TestBench — neue Funktionen, Fehlerbehebung und die Erweiterung der zugrunde liegenden Datenbank.
-      - title: { en: Software Developer, de: Softwareentwickler }
+        badge: HEAD
+      - title:
+          en: Software Developer
+          de: Softwareentwickler
         org: Imbus AG
         orgUrl: https://www.imbus.de/
-        location: { en: "Bavaria, Germany", de: "Bayern, Deutschland" }
+        location:
+          en: Bavaria, Germany
+          de: Bayern, Deutschland
         employment: part-time
-        start: "2019-08"
-        end: "2026-01"
+        start: 2019-08
+        end: 2026-01
         description:
           en: Six and a half years part time on the same product, spanning my entire degree. I joined while I started studying and never left.
           de: Sechseinhalb Jahre in Teilzeit am selben Produkt, über mein gesamtes Studium hinweg. Ich bin dazugekommen, als ich zu studieren begann, und geblieben.
-      - title: { en: Web Developer, de: Webentwickler }
+      - title:
+          en: Web Developer
+          de: Webentwickler
         org: AESVT Maroc
-        location: { en: "Casablanca-Settat, Morocco", de: "Casablanca-Settat, Marokko" }
+        location:
+          en: Casablanca-Settat, Morocco
+          de: Casablanca-Settat, Marokko
         employment: internship
-        start: "2017-03"
-        end: "2017-06"
+        start: 2017-03
+        end: 2017-06
         description:
           en: Rebuilt and extended the association's WordPress site, and brought their programme online — including public voting for the best environmental artwork and ideas.
           de: Die WordPress-Website des Vereins überarbeitet und erweitert und das gesamte Programm online gebracht — samt öffentlicher Abstimmung über die besten Umweltkunstwerke und -ideen.
-      - title: { en: Software Developer, de: Softwareentwickler }
+      - title:
+          en: Software Developer
+          de: Softwareentwickler
         org: Compagnie d'Assurance Transport
-        location: { en: "Casablanca-Settat, Morocco", de: "Casablanca-Settat, Marokko" }
+        location:
+          en: Casablanca-Settat, Morocco
+          de: Casablanca-Settat, Marokko
         employment: internship
-        start: "2016-06"
-        end: "2016-09"
+        start: 2016-06
+        end: 2016-09
         description:
           en: Part of the team that migrated a desktop insurance application to the web, in C# and MS SQL Server.
           de: Teil des Teams, das eine Desktop-Versicherungsanwendung ins Web überführt hat — mit C# und MS SQL Server.
-      - title: { en: Software Developer, de: Softwareentwickler }
+      - title:
+          en: Software Developer
+          de: Softwareentwickler
         org: NT SOFT
-        location: { en: "Casablanca-Settat, Morocco", de: "Casablanca-Settat, Marokko" }
+        location:
+          en: Casablanca-Settat, Morocco
+          de: Casablanca-Settat, Marokko
         employment: internship
-        start: "2015-03"
-        end: "2015-05"
-        badge: first commit
+        start: 2015-03
+        end: 2015-05
         description:
           en: Built a store management application in C# and MS SQL Server. My first professional work.
           de: Eine Anwendung zur Lagerverwaltung in C# und MS SQL Server entwickelt. Meine erste berufliche Arbeit.
-
+        badge: first commit
   - type: cards
     id: projects
-    title: { en: Projects, de: Projekte }
-    visible: false
-    items: []
-
+    title:
+      en: Projects
+      de: Projekte
+    visible: true
+    inMenu: true
+    animate: true
+    inPdf: true
+    items:
+      - description:
+          en: An AI developed [**_Postgress Web Application_**,](https://shape-shift.vercel.app/) that helps beginner trainee to find a confortable workout, create a workout plan, and also log the food
+          de: An AI developed _[`Postgress Web Application`](https://shape-shift.vercel.app/)_, that helps beginner trainee to find a confortable workout, create a workout plan, and also log the food
+        name:
+          en: ShapeShift
+          de: ShapeShift
+        role:
+          en: Developer, PO, Tester
+          de: Developer, PO, Tester
+        tech:
+          - Claude code
+        confidential: false
+      - description:
+          en: Expenses Manager. [https://expenger.vercel.app/](https://expenger.vercel.app/)
+          de: Expenses Manager. [https://expenger.vercel.app/](https://expenger.vercel.app/)
+        name:
+          en: Expenger
+          de: Expenger
+        role:
+          en: Developer
+          de: Developer
+        tech:
+          - Claude code
+        confidential: false
   - type: tags
     id: skills
-    title: { en: Skills, de: Fähigkeiten }
+    title:
+      en: Skills
+      de: Fähigkeiten
+    visible: true
+    inMenu: true
+    animate: true
+    inPdf: true
     groups:
-      - title: { en: Languages & Frameworks, de: Sprachen & Frameworks }
+      - title:
+          en: Languages & Frameworks
+          de: Sprachen & Frameworks
         items:
-          - label: { en: Java, de: Java }
-          - label: { en: Spring Boot, de: Spring Boot }
-          - label: { en: Swing, de: Swing }
-          - label: { en: C#, de: C# }
-          - label: { en: .NET Framework, de: .NET Framework }
-      - title: { en: Databases, de: Datenbanken }
+          - label:
+              en: Java
+              de: Java
+          - label:
+              en: Spring Boot
+              de: Spring Boot
+          - label:
+              en: Swing
+              de: Swing
+          - label:
+              en: C#
+              de: C#
+          - label:
+              en: .NET Framework
+              de: .NET Framework
+      - title:
+          en: Databases
+          de: Datenbanken
         items:
-          - label: { en: SQL, de: SQL }
-          - label: { en: Oracle Database, de: Oracle Database }
-          - label: { en: MS SQL Server, de: MS SQL Server }
-      - title: { en: Tools & Collaboration, de: Werkzeuge & Zusammenarbeit }
+          - label:
+              en: SQL
+              de: SQL
+          - label:
+              en: Oracle Database
+              de: Oracle Database
+          - label:
+              en: MS SQL Server
+              de: MS SQL Server
+      - title:
+          en: Tools & Collaboration
+          de: Werkzeuge & Zusammenarbeit
         items:
-          - label: { en: Git, de: Git }
-          - label: { en: Mercurial, de: Mercurial }
-          - label: { en: Jira, de: Jira }
-          - label: { en: Sprint Management, de: Sprint-Management }
-      - title: { en: Practice, de: Praxis }
+          - label:
+              en: Git
+              de: Git
+          - label:
+              en: Mercurial
+              de: Mercurial
+          - label:
+              en: Jira
+              de: Jira
+          - label:
+              en: Sprint Management
+              de: Sprint-Management
+      - title:
+          en: Practice
+          de: Praxis
         items:
-          - label: { en: Software Development, de: Softwareentwicklung }
-          - label: { en: Web Development, de: Webentwicklung }
-          - label: { en: Vibe Coding, de: Vibe Coding }
-          - label: { en: Building tools that simplify IT work, de: "Werkzeuge bauen, die IT-Arbeit erleichtern" }
-      - title: { en: Languages, de: Sprachen }
+          - label:
+              en: Software Development
+              de: Softwareentwicklung
+          - label:
+              en: Web Development
+              de: Webentwicklung
+          - label:
+              en: Vibe Coding
+              de: Vibe Coding
+          - label:
+              en: Building tools that simplify IT work
+              de: Werkzeuge bauen, die IT-Arbeit erleichtern
+      - title:
+          en: Languages
+          de: Sprachen
         items:
-          - label: { en: Arabic, de: Arabisch }
-            level: { en: Native, de: Muttersprache }
-          - label: { en: German, de: Deutsch }
-            level: { en: C1, de: C1 }
-          - label: { en: French, de: Französisch }
-            level: { en: C1, de: C1 }
-          - label: { en: English, de: Englisch }
-            level: { en: C1, de: C1 }
-
+          - label:
+              en: Arabic
+              de: Arabisch
+            level:
+              en: Native
+              de: Muttersprache
+          - label:
+              en: German
+              de: Deutsch
+            level:
+              en: C1
+              de: C1
+          - label:
+              en: French
+              de: Französisch
+            level:
+              en: C1
+              de: C1
+          - label:
+              en: English
+              de: Englisch
+            level:
+              en: C1
+              de: C1
   - type: timeline
     id: education
-    title: { en: Education, de: Ausbildung }
+    title:
+      en: Education
+      de: Ausbildung
+    visible: true
+    inMenu: true
+    animate: true
+    inPdf: true
     compact: true
     items:
-      - title: { en: B.Sc. Software Systems Science, de: B.Sc. Software Systems Science }
+      - title:
+          en: B.Sc. Software Systems Science
+          de: B.Sc. Software Systems Science
         org: Otto-Friedrich-Universität Bamberg
         orgUrl: https://www.uni-bamberg.de/
-        location: { en: "Bamberg, Germany", de: "Bamberg, Deutschland" }
-        start: "2020"
-        end: "2025"
-      - title: { en: Bachelor's Degree in Computer Science, de: Bachelor-Abschluss in Informatik }
+        location:
+          en: Bamberg, Germany
+          de: Bamberg, Deutschland
+        start: '2020'
+        end: '2025'
+      - title:
+          en: Bachelor's Degree in Computer Science
+          de: Bachelor-Abschluss in Informatik
         org: Université Hassan II
         orgUrl: https://www.univh2c.ma/
-        location: { en: "Casablanca, Morocco", de: "Casablanca, Marokko" }
-        start: "2015"
-        end: "2016"
-      - title: { en: Technician Diploma in Computer Science, de: Fachtechnikerdiplom im Bereich Informatik }
+        location:
+          en: Casablanca, Morocco
+          de: Casablanca, Marokko
+        start: '2015'
+        end: '2016'
+      - title:
+          en: Technician Diploma in Computer Science
+          de: Fachtechnikerdiplom im Bereich Informatik
         org: OFPPT
-        location: { en: "Casablanca, Morocco", de: "Casablanca, Marokko" }
-        start: "2013"
-        end: "2015"
-
+        location:
+          en: Casablanca, Morocco
+          de: Casablanca, Marokko
+        start: '2013'
+        end: '2015'
   - type: contact
     id: contact
-    title: { en: Contact, de: Kontakt }
+    title:
+      en: Contact
+      de: Kontakt
+    visible: true
+    inMenu: true
+    animate: true
+    inPdf: true
     heading:
       en: Let's build something worth building.
       de: Lass uns etwas bauen, das es wert ist.
     lead:
       en: Open to a conversation about work, or about anything worth building.
       de: Offen für ein Gespräch über Arbeit oder über alles, was sich zu bauen lohnt.
-    emailLabel: { en: Email me, de: Schreib mir }
-    linkedinLabel: { en: LinkedIn, de: LinkedIn }
-    cvLabel: { en: CV (PDF), de: Lebenslauf (PDF) }
+    emailLabel:
+      en: Email me
+      de: Schreib mir
+    linkedinLabel:
+      en: LinkedIn
+      de: LinkedIn
+    cvLabel:
+      en: CV (PDF)
+      de: Lebenslauf (PDF)
