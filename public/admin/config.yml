@@ -1,0 +1,1703 @@
+# Generated once from the Zod schemas in src/content/schemas; kept in sync by tests/unit/admin/config-contract.test.ts.
+backend:
+  name: github
+  repo: youssefaitlhaj/DigitalCV
+  branch: main
+  base_url: https://sveltia-cms-auth.REPLACE.workers.dev
+  preview_context: preview/deploy
+publish_mode:
+  type: preview
+  allow_incomplete_drafts: false
+media_folder: src/assets/uploads
+public_folder: /src/assets/uploads
+locale: en
+collections:
+  - name: content
+    label: Content
+    files:
+      - name: site
+        label: Site settings
+        file: src/content/data/site.yml
+        format: yaml
+        fields:
+          - label: Name
+            name: name
+            widget: string
+            required: true
+          - label: Logo text
+            name: logoText
+            widget: string
+            required: true
+          - label: Search and sharing
+            name: meta
+            widget: object
+            fields:
+              - label: Title
+                name: title
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Description
+                name: description
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+            required: true
+          - label: Email (stored as two halves)
+            name: email
+            widget: object
+            fields:
+              - label: Before the @
+                name: user
+                widget: string
+                required: true
+              - label: After the @
+                name: domain
+                widget: string
+                required: true
+            required: true
+          - label: LinkedIn URL
+            name: linkedin
+            widget: string
+            pattern:
+              - ^https?://
+              - Must start with http:// or https://
+            required: true
+          - label: Location
+            name: location
+            widget: object
+            required: true
+            fields:
+              - label: English
+                name: en
+                widget: string
+                required: true
+              - label: Deutsch
+                name: de
+                widget: string
+                required: true
+          - label: Site URL
+            name: siteUrl
+            widget: string
+            pattern:
+              - ^https?://
+              - Must start with http:// or https://
+            required: true
+          - label: Palette
+            name: palette
+            widget: object
+            fields:
+              - label: Accent colour
+                name: accent
+                widget: select
+                options:
+                  - whisky
+                  - bourbon
+                  - singleMalt
+                  - green
+                required: true
+              - label: Background
+                name: background
+                widget: select
+                options:
+                  - oat
+                  - paper
+                  - stone
+                  - white
+                required: true
+            required: true
+          - label: PDF
+            name: pdf
+            widget: object
+            fields:
+              - label: Include portrait
+                name: includePortrait
+                widget: boolean
+                default: true
+                required: true
+              - label: File name (without .pdf)
+                name: fileBaseName
+                widget: string
+                pattern:
+                  - ^[a-z0-9-]+$
+                  - Lowercase letters, digits and hyphens only
+                hint: Used in links; keep it stable.
+                required: true
+            required: true
+          - label: Analytics
+            name: analytics
+            widget: object
+            fields:
+              - label: Umami website ID
+                name: umamiWebsiteId
+                widget: string
+                required: false
+              - label: Statistics dashboard URL
+                name: dashboardUrl
+                widget: string
+                pattern:
+                  - ^https?://
+                  - Must start with http:// or https://
+                required: false
+            required: true
+          - label: Interface labels
+            name: labels
+            widget: object
+            fields:
+              - label: Present
+                name: present
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: year (short)
+                name: year
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: years (short)
+                name: years
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: month (short)
+                name: month
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: months (short)
+                name: months
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Employment types
+                name: employment
+                widget: object
+                fields:
+                  - label: Full-time
+                    name: full-time
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Part-time
+                    name: part-time
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Internship
+                    name: internship
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                required: true
+              - label: Download CV
+                name: downloadCv
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Skip to content
+                name: skipToContent
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Theme toggle
+                name: themeToggle
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Language
+                name: language
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Privacy link
+                name: privacy
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Impressum link
+                name: impressum
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Code link
+                name: codeLink
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Live link
+                name: liveLink
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Confidential
+                name: confidential
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+            collapsed: true
+            required: true
+      - name: page
+        label: Page sections
+        file: src/content/data/page.yml
+        format: yaml
+        fields:
+          - label: Sections
+            name: sections
+            widget: list
+            typeKey: type
+            collapsed: true
+            summary: "{{fields.title.en}} ({{fields.type}})"
+            types:
+              - label: Hero
+                name: hero
+                widget: object
+                summary: "Hero: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Terminal prompt command
+                    name: prompt
+                    widget: string
+                    required: true
+                  - label: Role
+                    name: role
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Subtitle
+                    name: subtitle
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Primary button
+                    name: ctaPrimary
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Secondary button
+                    name: ctaSecondary
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: JSON card
+                    name: jsonCard
+                    widget: list
+                    collapsed: true
+                    summary: "{{fields.key}}"
+                    fields:
+                      - label: Key
+                        name: key
+                        widget: string
+                        required: true
+                      - label: Values
+                        name: values
+                        widget: list
+                        collapsed: true
+                        field:
+                          label: Item
+                          name: item
+                          widget: object
+                          required: true
+                          fields:
+                            - label: English
+                              name: en
+                              widget: string
+                              required: true
+                            - label: Deutsch
+                              name: de
+                              widget: string
+                              required: true
+                        summary: "{{fields.item.en}}"
+                        required: true
+                    required: true
+                  - label: Portrait
+                    name: portrait
+                    widget: object
+                    fields:
+                      - label: Image
+                        name: src
+                        widget: image
+                        required: true
+                      - label: Alt text
+                        name: alt
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
+                      - label: Crop (percent of the image)
+                        name: crop
+                        widget: object
+                        fields:
+                          - label: X
+                            name: x
+                            widget: number
+                            value_type: float
+                            min: 0
+                            max: 100
+                            required: true
+                          - label: Y
+                            name: y
+                            widget: number
+                            value_type: float
+                            min: 0
+                            max: 100
+                            required: true
+                          - label: Width
+                            name: width
+                            widget: number
+                            value_type: float
+                            min: 0
+                            max: 100
+                            required: true
+                          - label: Height
+                            name: height
+                            widget: number
+                            value_type: float
+                            min: 0
+                            max: 100
+                            required: true
+                        required: false
+                    required: true
+                  - label: Motto
+                    name: motto
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Show motto
+                    name: showMotto
+                    widget: boolean
+                    default: false
+                    required: false
+              - label: Statement
+                name: statement
+                widget: object
+                summary: "Statement: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Text
+                    name: text
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: markdown
+                        required: true
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                      - label: Deutsch
+                        name: de
+                        widget: markdown
+                        required: true
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+              - label: Stats
+                name: stats
+                widget: object
+                summary: "Stats: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Items
+                    name: items
+                    widget: list
+                    collapsed: true
+                    min: 1
+                    max: 4
+                    summary: "{{fields.label.en}}"
+                    fields:
+                      - label: Label
+                        name: label
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
+                      - label: Value
+                        name: value
+                        widget: object
+                        fields:
+                          - label: Kind
+                            name: kind
+                            widget: select
+                            options:
+                              - number
+                              - yearsSince
+                              - count
+                            hint: "number: use N. yearsSince: use Date. count: use Section ID."
+                            required: true
+                          - label: N (kind number)
+                            name: n
+                            widget: number
+                            value_type: float
+                            required: false
+                          - label: Date YYYY-MM (kind yearsSince)
+                            name: date
+                            widget: string
+                            pattern:
+                              - ^(\d{4}-(0[1-9]|1[0-2])|present)$
+                              - YYYY-MM or "present"
+                            required: false
+                          - label: Section ID (kind count)
+                            name: sectionId
+                            widget: string
+                            pattern:
+                              - ^[a-z0-9-]+$
+                              - Lowercase letters, digits and hyphens only
+                            hint: Used in links; keep it stable.
+                            required: false
+                        required: true
+                      - label: Override number
+                        name: override
+                        widget: number
+                        value_type: float
+                        required: false
+                    required: true
+              - label: Journey
+                name: journey
+                widget: object
+                summary: "Journey: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Headline above the track
+                    name: heading
+                    widget: object
+                    required: false
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Stops
+                    name: stops
+                    widget: list
+                    collapsed: true
+                    min: 1
+                    summary: "{{fields.year.en}}: {{fields.heading.en}}"
+                    fields:
+                      - label: Year
+                        name: year
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
+                      - label: Heading
+                        name: heading
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
+                      - label: Text
+                        name: text
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: markdown
+                            required: true
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                          - label: Deutsch
+                            name: de
+                            widget: markdown
+                            required: true
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                      - label: Caption (code-style)
+                        name: caption
+                        widget: string
+                        required: true
+                      - label: Marks the current position (HEAD)
+                        name: head
+                        widget: boolean
+                        default: false
+                        required: false
+                    required: true
+              - label: Contact
+                name: contact
+                widget: object
+                summary: "Contact: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Heading
+                    name: heading
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Lead text
+                    name: lead
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: markdown
+                        required: true
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                      - label: Deutsch
+                        name: de
+                        widget: markdown
+                        required: true
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                  - label: Email label
+                    name: emailLabel
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: LinkedIn label
+                    name: linkedinLabel
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: CV button label
+                    name: cvLabel
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+              - label: Timeline
+                name: timeline
+                widget: object
+                summary: "Timeline: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Compact
+                    name: compact
+                    widget: boolean
+                    default: false
+                    required: false
+                  - label: Items
+                    name: items
+                    widget: list
+                    collapsed: true
+                    summary: "{{fields.title.en}} @ {{fields.org}}"
+                    fields:
+                      - label: Title
+                        name: title
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
+                      - label: Organisation
+                        name: org
+                        widget: string
+                        required: true
+                      - label: Organisation URL
+                        name: orgUrl
+                        widget: string
+                        pattern:
+                          - ^https?://
+                          - Must start with http:// or https://
+                        required: false
+                      - label: Location
+                        name: location
+                        widget: string
+                        required: true
+                      - label: Employment
+                        name: employment
+                        widget: select
+                        options:
+                          - full-time
+                          - part-time
+                          - internship
+                        required: false
+                      - label: Start
+                        name: start
+                        widget: string
+                        pattern:
+                          - ^\d{4}(-(0[1-9]|1[0-2]))?$
+                          - YYYY or YYYY-MM
+                        required: true
+                      - label: End
+                        name: end
+                        widget: string
+                        pattern:
+                          - ^(\d{4}(-(0[1-9]|1[0-2]))?|present)$
+                          - YYYY, YYYY-MM or "present"
+                        required: true
+                      - label: Description
+                        name: description
+                        widget: object
+                        required: false
+                        fields:
+                          - label: English
+                            name: en
+                            widget: markdown
+                            required: true
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                          - label: Deutsch
+                            name: de
+                            widget: markdown
+                            required: true
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                      - label: Badge
+                        name: badge
+                        widget: string
+                        required: false
+                    required: true
+              - label: Cards
+                name: cards
+                widget: object
+                summary: "Cards: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Items
+                    name: items
+                    widget: list
+                    collapsed: true
+                    summary: "{{fields.name.en}}"
+                    fields:
+                      - label: Name
+                        name: name
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
+                      - label: Description
+                        name: description
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: markdown
+                            required: true
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                          - label: Deutsch
+                            name: de
+                            widget: markdown
+                            required: true
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                      - label: Role
+                        name: role
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
+                      - label: Technologies
+                        name: tech
+                        widget: list
+                        collapsed: true
+                        field:
+                          label: Technology
+                          name: item
+                          widget: string
+                          required: true
+                        summary: "{{fields.item}}"
+                        required: true
+                      - label: Start
+                        name: start
+                        widget: string
+                        pattern:
+                          - ^\d{4}(-(0[1-9]|1[0-2]))?$
+                          - YYYY or YYYY-MM
+                        required: false
+                      - label: End
+                        name: end
+                        widget: string
+                        pattern:
+                          - ^(\d{4}(-(0[1-9]|1[0-2]))?|present)$
+                          - YYYY, YYYY-MM or "present"
+                        required: false
+                      - label: Links
+                        name: links
+                        widget: object
+                        fields:
+                          - label: Code URL
+                            name: code
+                            widget: string
+                            pattern:
+                              - ^https?://
+                              - Must start with http:// or https://
+                            required: false
+                          - label: Live URL
+                            name: live
+                            widget: string
+                            pattern:
+                              - ^https?://
+                              - Must start with http:// or https://
+                            required: false
+                        required: false
+                      - label: Image
+                        name: image
+                        widget: object
+                        fields:
+                          - label: Image
+                            name: src
+                            widget: image
+                            required: true
+                          - label: Alt text
+                            name: alt
+                            widget: object
+                            required: true
+                            fields:
+                              - label: English
+                                name: en
+                                widget: string
+                                required: true
+                              - label: Deutsch
+                                name: de
+                                widget: string
+                                required: true
+                          - label: Crop (percent of the image)
+                            name: crop
+                            widget: object
+                            fields:
+                              - label: X
+                                name: x
+                                widget: number
+                                value_type: float
+                                min: 0
+                                max: 100
+                                required: true
+                              - label: Y
+                                name: y
+                                widget: number
+                                value_type: float
+                                min: 0
+                                max: 100
+                                required: true
+                              - label: Width
+                                name: width
+                                widget: number
+                                value_type: float
+                                min: 0
+                                max: 100
+                                required: true
+                              - label: Height
+                                name: height
+                                widget: number
+                                value_type: float
+                                min: 0
+                                max: 100
+                                required: true
+                            required: false
+                        required: false
+                      - label: Confidential
+                        name: confidential
+                        widget: boolean
+                        default: false
+                        required: false
+                    required: true
+              - label: Tags
+                name: tags
+                widget: object
+                summary: "Tags: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Groups
+                    name: groups
+                    widget: list
+                    collapsed: true
+                    summary: "{{fields.title.en}}"
+                    fields:
+                      - label: Group title
+                        name: title
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
+                      - label: Items
+                        name: items
+                        widget: list
+                        collapsed: true
+                        summary: "{{fields.label}}"
+                        fields:
+                          - label: Label
+                            name: label
+                            widget: string
+                            required: true
+                          - label: Level
+                            name: level
+                            widget: string
+                            required: false
+                            hint: Plain text. Existing bilingual levels (for example Native / Muttersprache) cannot be edited here yet.
+                        required: true
+                    required: true
+              - label: Text
+                name: text
+                widget: object
+                summary: "Text: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Paragraphs
+                    name: paragraphs
+                    widget: list
+                    collapsed: true
+                    field:
+                      label: Paragraph
+                      name: item
+                      widget: object
+                      required: true
+                      fields:
+                        - label: English
+                          name: en
+                          widget: markdown
+                          required: true
+                          hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                        - label: Deutsch
+                          name: de
+                          widget: markdown
+                          required: true
+                          hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                    summary: "{{fields.item.en}}"
+                    required: true
+              - label: Quotes
+                name: quotes
+                widget: object
+                summary: "Quotes: {{fields.title.en}}"
+                fields:
+                  - label: ID
+                    name: id
+                    widget: string
+                    pattern:
+                      - ^[a-z0-9-]+$
+                      - Lowercase letters, digits and hyphens only
+                    hint: Used in links; keep it stable.
+                    required: true
+                  - label: Title (menu label)
+                    name: title
+                    widget: object
+                    required: true
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: true
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: true
+                  - label: Visible
+                    name: visible
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In menu
+                    name: inMenu
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Animate
+                    name: animate
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: In PDF
+                    name: inPdf
+                    widget: boolean
+                    default: true
+                    required: false
+                  - label: Items
+                    name: items
+                    widget: list
+                    collapsed: true
+                    summary: "{{fields.name}}"
+                    fields:
+                      - label: Quote
+                        name: quote
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: markdown
+                            required: true
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                          - label: Deutsch
+                            name: de
+                            widget: markdown
+                            required: true
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                      - label: Name
+                        name: name
+                        widget: string
+                        required: true
+                      - label: Role
+                        name: role
+                        widget: object
+                        required: true
+                        fields:
+                          - label: English
+                            name: en
+                            widget: string
+                            required: true
+                          - label: Deutsch
+                            name: de
+                            widget: string
+                            required: true
+                      - label: Photo
+                        name: photo
+                        widget: object
+                        fields:
+                          - label: Image
+                            name: src
+                            widget: image
+                            required: true
+                          - label: Alt text
+                            name: alt
+                            widget: object
+                            required: true
+                            fields:
+                              - label: English
+                                name: en
+                                widget: string
+                                required: true
+                              - label: Deutsch
+                                name: de
+                                widget: string
+                                required: true
+                          - label: Crop (percent of the image)
+                            name: crop
+                            widget: object
+                            fields:
+                              - label: X
+                                name: x
+                                widget: number
+                                value_type: float
+                                min: 0
+                                max: 100
+                                required: true
+                              - label: Y
+                                name: y
+                                widget: number
+                                value_type: float
+                                min: 0
+                                max: 100
+                                required: true
+                              - label: Width
+                                name: width
+                                widget: number
+                                value_type: float
+                                min: 0
+                                max: 100
+                                required: true
+                              - label: Height
+                                name: height
+                                widget: number
+                                value_type: float
+                                min: 0
+                                max: 100
+                                required: true
+                            required: false
+                        required: false
+                    required: true
+            required: true
+      - name: legal
+        label: Legal pages
+        file: src/content/data/legal.yml
+        format: yaml
+        fields:
+          - label: Privacy
+            name: privacy
+            widget: object
+            fields:
+              - label: Visible
+                name: visible
+                widget: boolean
+                default: true
+                required: false
+              - label: Title
+                name: title
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Body
+                name: body
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: markdown
+                    required: true
+                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                  - label: Deutsch
+                    name: de
+                    widget: markdown
+                    required: true
+                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+            required: true
+          - label: Impressum
+            name: impressum
+            widget: object
+            fields:
+              - label: Visible
+                name: visible
+                widget: boolean
+                default: false
+                required: false
+              - label: Title
+                name: title
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
+              - label: Body
+                name: body
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: markdown
+                    required: true
+                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                  - label: Deutsch
+                    name: de
+                    widget: markdown
+                    required: true
+                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+            required: true

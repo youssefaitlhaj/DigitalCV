@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Content Manager</title>
+    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+  </head>
+  <body>
+    <!-- Same-origin only: the bundle is vendored by scripts/vendor-admin.ts, so no CDN and no SRI. -->
+    <script src="/admin/vendor/sveltia/sveltia-cms.js"></script>
+    <script type="module" src="/admin/extensions.js"></script>
+  </body>
+</html>
