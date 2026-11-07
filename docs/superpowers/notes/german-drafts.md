@@ -79,7 +79,7 @@ Other label strings (`present`, `year`, `years`, `month`, `months`, `employment.
 
 ## src/content/data/legal.yml
 
-- `privacy.title.de` and the whole `privacy.body.de` (Datenschutzerklärung). **Needs Youssef's review; this is a plain-language draft and not legal advice.** It names Cloudflare Pages (hosting, server logs), Umami Cloud (cookieless analytics, no personal profiles, limited retention), says no cookies are set, lists the GDPR rights and points to the email address. It deliberately contains no postal address or phone number. The English counterpart is `privacy.body.en`. Check the data retention wording against the Umami plan actually used.
+- `privacy.title.de` and the whole `privacy.body.de` (Datenschutzerklärung). **Needs Youssef's review; this is a plain-language draft and not legal advice.** It names Vercel (hosting, server logs; changed from Cloudflare Pages on 2026-11-07), Umami Cloud (cookieless analytics, no personal profiles, limited retention), says no cookies are set, lists the GDPR rights and points to the email address. It deliberately contains no postal address or phone number. The English counterpart is `privacy.body.en`. Check the data retention wording against the Umami plan actually used.
 - `impressum.body.de`: "Diese Seite wird bewusst nicht veröffentlicht." (placeholder, `impressum.visible: false`). The privacy page has no `visible` switch: it is always published.
 
 ## Notes

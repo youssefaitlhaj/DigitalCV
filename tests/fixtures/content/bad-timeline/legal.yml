@@ -8,7 +8,7 @@ privacy:
 
       ## Hosting
 
-      The site is hosted on Cloudflare Pages (Cloudflare, Inc.). When you open a page, Cloudflare processes technical data such as your IP address, the requested page and the time of the request in server logs, so that the site can be delivered and kept secure.
+      The site is hosted on Vercel (Vercel Inc., USA). When you open a page, Vercel processes technical data such as your IP address, the requested page and the time of the request in server logs, so that the site can be delivered and kept secure.
 
       ## Analytics
 
@@ -30,7 +30,7 @@ privacy:
 
       ## Hosting
 
-      Die Website wird bei Cloudflare Pages (Cloudflare, Inc.) gehostet. Beim Aufruf einer Seite verarbeitet Cloudflare technische Daten wie Ihre IP-Adresse, die angeforderte Seite und den Zeitpunkt der Anfrage in Server-Logs, damit die Website ausgeliefert und abgesichert werden kann.
+      Die Website wird bei Vercel (Vercel Inc., USA) gehostet. Beim Aufruf einer Seite verarbeitet Vercel technische Daten wie Ihre IP-Adresse, die angeforderte Seite und den Zeitpunkt der Anfrage in Server-Logs, damit die Website ausgeliefert und abgesichert werden kann.
 
       ## Analyse
 
