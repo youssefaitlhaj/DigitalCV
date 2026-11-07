@@ -3,7 +3,8 @@ backend:
   name: github
   repo: youssefaitlhaj/DigitalCV
   branch: main
-  base_url: https://sveltia-auth.invalid
+  # Sign in with a GitHub fine-grained access token only (docs/SETUP.md). There is no OAuth client.
+  auth_methods: [token]
   preview_context: preview/deploy
 publish_mode:
   type: preview

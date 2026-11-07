@@ -26,8 +26,10 @@ describe("admin headers", () => {
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).not.toMatch(/script-src[^;]*(unsafe|https:)/);
   });
-  it("allows the auth origin that config.yml uses", () => {
-    const base = /base_url:\s*(\S+)/.exec(readFileSync("public/admin/config.yml", "utf8"))![1].replace(/["']/g, "");
-    expect(csp).toContain(base);
+  it("lets the admin reach GitHub's API and no OAuth helper", () => {
+    const connect = /connect-src ([^;]*)/.exec(csp)![1].split(/\s+/);
+    expect(connect).toContain("https://api.github.com");
+    expect(csp).not.toMatch(/sveltia-auth|workers\.dev|\.invalid/);
+    expect(readFileSync("public/admin/config.yml", "utf8")).not.toMatch(/base_url/);
   });
 });

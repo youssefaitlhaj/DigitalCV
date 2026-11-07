@@ -1,7 +1,7 @@
-# Cloudflare Pages response headers.
-# The auth origin below (sveltia-auth.invalid) is a placeholder: docs/SETUP.md must replace it
-# with the real OAuth worker origin, here and in public/admin/config.yml (backend.base_url).
+# Response headers. scripts/vercel-output.ts turns each block into a Vercel route
+# (.vercel/output/config.json); "/admin/*" also covers "/admin" itself.
+# The admin signs in with a GitHub access token, so it talks only to GitHub's API.
 /admin/*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; connect-src 'self' data: blob: https://api.github.com https://github.com https://sveltia-auth.invalid https://unpkg.com https://www.githubstatus.com; font-src 'self' https://cdn.jsdelivr.net data:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; connect-src 'self' data: blob: https://api.github.com https://github.com https://unpkg.com https://www.githubstatus.com; font-src 'self' https://cdn.jsdelivr.net data:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: same-origin

@@ -247,7 +247,9 @@ describe("Sveltia config contract", () => {
       branch: "main",
       preview_context: "preview/deploy",
     });
-    expect(config.backend.base_url).toMatch(/^https:\/\//);
+    // Sign-in is by GitHub access token only: no OAuth client, so no base_url (absent, Sveltia would offer Netlify's).
+    expect(config.backend.base_url).toBeUndefined();
+    expect(config.backend.auth_methods).toEqual(["token"]);
   });
 
   it("every rich text (markdown) field documents underline and the four colour spans in its hint", () => {
@@ -351,13 +353,6 @@ describe("Sveltia config contract", () => {
     const problems: string[] = [];
     checkValue("tags", { type: "tags", groups: [{ title: { en: "a", de: "b" }, items: [{ label: "Java" }] }] }, tags, problems, ["type"]);
     expect(problems.join()).toContain("expected an object");
-  });
-
-  it("base_url is a safe placeholder or a concrete workers.dev host", () => {
-    const url: string = config.backend.base_url;
-    const concrete = /^https:\/\/[a-z0-9-]+\.[a-z0-9-]+\.workers\.dev$/;
-    const ok = url === "https://sveltia-auth.invalid" || (concrete.test(url) && !/replace|example|placeholder/i.test(url));
-    expect(ok, url).toBe(true);
   });
 
   it("omits empty optional fields", () => {
