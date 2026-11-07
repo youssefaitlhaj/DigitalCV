@@ -1,7 +1,7 @@
 // "imageref" custom field type: the whole image object { src, alt: { en, de }, crop? } in one control.
 // It wraps the whole object (not only `crop`) because a custom control in Sveltia 0.252.0 receives its own
 // value and the entry, but not its path inside the entry, so it cannot find a sibling `src` by itself.
-import { mergeImageRef, percentToPixels, pixelsToPercentCrop, validateImageRef } from "./crop-math.js";
+import { isLibraryPath, mergeImageRef, NOT_UPLOADED_MESSAGE, percentToPixels, pixelsToPercentCrop, validateImageRef } from "./crop-math.js";
 
 const plain = (v) => (v && typeof v.toJS === "function" ? v.toJS() : v) ?? {};
 
@@ -62,7 +62,9 @@ export function registerCropWidget(CMS) {
       setError("");
       try {
         const picked = await pickFile({ kind: "image", accept: "image/*", allowURL: false });
-        if (picked) {
+        if (picked && !isLibraryPath(picked.value)) {
+          setError(NOT_UPLOADED_MESSAGE);
+        } else if (picked) {
           setCropping(false);
           // A different picture makes the old crop meaningless.
           commit({ src: picked.value, crop: undefined });

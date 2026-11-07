@@ -37,6 +37,11 @@ export function percentToPixels(crop, W, H) {
   };
 }
 
+export const LIBRARY_PREFIX = "/src/assets/uploads/";
+/** Only images already committed to the media library are accepted (a fresh upload would arrive as a blob: URL). */
+export const isLibraryPath = (src) => typeof src === "string" && src.startsWith(LIBRARY_PREFIX) && src.length > LIBRARY_PREFIX.length;
+export const NOT_UPLOADED_MESSAGE = "This image isn't uploaded yet. Open the Assets/Media library, upload it there, then choose it here.";
+
 /** True for a usable image value: a non-empty src string. */
 const hasSrc = (v) => Boolean(v && typeof v.src === "string" && v.src !== "");
 
@@ -46,6 +51,7 @@ const hasSrc = (v) => Boolean(v && typeof v.src === "string" && v.src !== "");
  */
 export function validateImageRef(value, required) {
   if (!hasSrc(value)) return required ? { error: { message: "Choose an image" } } : true;
+  if (!isLibraryPath(value.src)) return { error: { message: NOT_UPLOADED_MESSAGE } };
   if (!value.alt?.en?.trim() || !value.alt?.de?.trim()) return { error: { message: "Alt text is required in English and German" } };
   return true;
 }

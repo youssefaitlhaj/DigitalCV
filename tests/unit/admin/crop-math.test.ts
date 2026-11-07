@@ -71,7 +71,7 @@ describe("a helper-produced crop round trips through imageRef and cropAll", () =
   });
 });
 
-import { mergeImageRef, validateImageRef } from "../../../public/admin/crop-math.js";
+import { isLibraryPath, mergeImageRef, validateImageRef } from "../../../public/admin/crop-math.js";
 
 describe("imageref value logic", () => {
   const ok = { src: "/src/assets/uploads/a.jpg", alt: { en: "a", de: "b" } };
@@ -94,5 +94,16 @@ describe("imageref value logic", () => {
   it("without a src nothing is kept (no stray alt or crop)", () => {
     expect(mergeImageRef(undefined, { alt: { en: "a", de: "" } })).toBeNull();
     expect(mergeImageRef({}, { crop: { x: 0, y: 0, width: 1, height: 1 } })).toBeNull();
+  });
+});
+
+describe("library-only images", () => {
+  const alt = { en: "a", de: "b" };
+  it("rejects a blob: src and external urls, accepts a library path", () => {
+    expect(validateImageRef({ src: "blob:http://localhost/abc", alt }, true)).toMatchObject({ error: { message: expect.stringContaining("isn't uploaded yet") } });
+    expect(validateImageRef({ src: "https://example.com/a.jpg", alt }, false)).toMatchObject({ error: expect.anything() });
+    expect(validateImageRef({ src: "/src/assets/uploads/a.jpg", alt }, true)).toBe(true);
+    expect(isLibraryPath("/src/assets/uploads/")).toBe(false);
+    expect(isLibraryPath("blob:x")).toBe(false);
   });
 });
