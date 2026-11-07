@@ -38,7 +38,8 @@ describe("ci workflows", () => {
     expect(idx(steps, "playwright install --with-deps chromium")).toBeGreaterThan(-1);
     expect(steps.some((s) => s.includes("wrangler"))).toBe(false);
     expect(triggers(ci).pull_request).toBeDefined();
-    expect(triggers(ci).push.branches).toEqual(["main"]);
+    expect(triggers(ci).pull_request).toBeDefined();
+    expect(triggers(ci).push).toBeUndefined();
   });
 
   it("the required check job is named ci", () => {
@@ -54,7 +55,7 @@ describe("ci workflows", () => {
     const ctx = adminConfig.backend.preview_context;
     expect(ctx).toBe("preview/deploy");
     const text = read(".github/workflows/ci.yml");
-    expect(text.split(`context=${ctx}`).length - 1).toBe(2);
+    expect(text.split(`context=${ctx}`).length - 1).toBe(3);
     const preview = ci.jobs.preview;
     expect(preview.needs).toContain("ci");
     expect(preview.if).toContain("github.event.pull_request.head.repo.full_name == github.repository");
@@ -62,6 +63,11 @@ describe("ci workflows", () => {
     const steps = runs(preview).join("\n");
     expect(steps).toContain("wrangler pages deploy dist");
     expect(steps).toContain("--branch=\"$HEAD_REF\"");
+    expect(steps).toContain("set -o pipefail");
+    expect(preview.if).toContain("dependabot[bot]");
+    const last = preview.steps[preview.steps.length - 1];
+    expect(last.if).toContain("failure()");
+    expect(last.run).toContain("state=failure");
     expect(text).toContain("github.event.pull_request.head.sha");
     expect(text).toContain("target_url");
     // failure path posts failure on the same context
@@ -80,20 +86,40 @@ describe("ci workflows", () => {
     expect(withStatuses.sort()).toEqual(["preview", "preview-failed"]);
   });
 
-  it("deploy only runs after tests, in the same job, on main", () => {
+  it("deploy only runs after check, unit, build and pdf tests in a separate secret-bearing job", () => {
     expect(triggers(deploy).push.branches).toEqual(["main"]);
     expect(triggers(deploy).workflow_call).toBeDefined();
-    const jobs = Object.values(deploy.jobs) as any[];
-    expect(jobs).toHaveLength(1);
-    const steps = runs(jobs[0]);
-    const d = idx(steps, "wrangler pages deploy dist");
-    expect(d).toBeGreaterThan(-1);
-    for (const n of ["astro check", "npm test", "npm run build", "npm run test:pdf", "playwright test"]) {
-      expect(idx(steps, n)).toBeGreaterThan(-1);
-      expect(idx(steps, n)).toBeLessThan(d);
+    expect(deploy.jobs.deploy.needs).toBe("build");
+    const b = runs(deploy.jobs.build);
+    for (const n of ["astro check", "npm test", "npm run build", "npm run test:pdf"]) {
+      expect(idx(b, n)).toBeGreaterThan(-1);
     }
-    expect(steps[d]).toContain("--branch=main");
+    expect(idx(b, "npm run test:pdf")).toBeGreaterThan(idx(b, "npm run build"));
+    expect(b.some((x) => x.includes("wrangler"))).toBe(false);
+    expect(b.some((x) => x.includes("playwright test"))).toBe(false);
+    const d = runs(deploy.jobs.deploy);
+    expect(d.some((x) => x.includes("wrangler pages deploy dist") && x.includes("--branch=main"))).toBe(true);
     expect(deploy.concurrency["cancel-in-progress"]).toBe(false);
+  });
+
+  it("Cloudflare secrets are never visible to install, build or test code", () => {
+    for (const [name, wf] of [["ci", ci], ["deploy", deploy]] as const) {
+      for (const [id, job] of Object.entries<any>(wf.jobs)) {
+        const jobEnv = JSON.stringify(job.env ?? {});
+        expect(jobEnv, `${name}/${id} job env`).not.toMatch(/CLOUDFLARE|secrets\./);
+        expect(JSON.stringify(wf.env ?? {})).not.toMatch(/CLOUDFLARE/);
+        const steps: any[] = job.steps ?? [];
+        const withSecrets = steps.filter((s) => JSON.stringify(s).includes("secrets.CLOUDFLARE"));
+        const runsInstallBuildTest = steps.some((s) => /npm ci(?! --ignore-scripts)|npm run|npm test|playwright|astro check/.test(s.run ?? ""));
+        if (runsInstallBuildTest) expect(withSecrets, `${name}/${id}`).toHaveLength(0);
+        for (const s of withSecrets) {
+          expect(s.run, `${name}/${id}`).toContain("wrangler pages deploy");
+          expect(s.run).not.toMatch(/npm (ci|run|test)|playwright/);
+        }
+      }
+    }
+    expect(JSON.stringify(deploy.jobs.deploy.steps)).toContain("npm ci --ignore-scripts");
+    expect(JSON.stringify(ci.jobs.preview.steps)).toContain("npm ci --ignore-scripts");
   });
 
   it("scheduled rebuild is weekly and calls deploy.yml", () => {

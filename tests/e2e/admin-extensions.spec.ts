@@ -77,7 +77,9 @@ test("real Sveltia imports immutable.js same-origin under the admin CSP", async 
   await page.goto("/admin/");
   expect((await loaded).status()).toBe(200);
   // The module itself must also import cleanly under the CSP.
-  expect(await page.evaluate(async () => typeof (await import("/admin/vendor/immutable/immutable.es.js")).Map)).toBe("function");
+  // Variable specifier: the file only exists at runtime, so TypeScript cannot resolve it.
+  const moduleUrl = "/admin/vendor/immutable/immutable.es.js";
+  expect(await page.evaluate(async (u) => typeof (await import(/* @vite-ignore */ u)).Map, moduleUrl)).toBe("function");
   expect(unpkg).toEqual([]);
   expect(violations).toEqual([]);
 });
