@@ -1,0 +1,16 @@
+---
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+/**
+ * The journey is not printed. It is the website's scroll story of the same
+ * path that the experience and education sections list in full, so on paper
+ * it would only repeat them and lengthen the CV.
+ */
+interface Props {
+  section: SectionOf<"journey">;
+  locale: Locale;
+  content: Content;
+}
+---

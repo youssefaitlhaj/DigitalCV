@@ -1,0 +1,192 @@
+/* ---------------------------------------------------------------------------
+   Print route (/cv/print, /de/cv/print): the source of the PDF CV.
+   The site's look on A4: same fonts, palette tokens (light mode only), the
+   `// label` section headings and the accent used sparingly. The sheet is laid
+   out the same on screen, so the route previews what the PDF will show.
+--------------------------------------------------------------------------- */
+
+@page {
+  size: A4;
+  margin: 14mm 14mm 16mm;
+  /* The sheet colour runs to the paper edge, not just inside the margins. */
+  background: var(--bg);
+}
+
+html:has(body.print) {
+  scroll-behavior: auto;
+  background: var(--bg);
+}
+
+body.print {
+  font-size: 9.5pt;
+  line-height: 1.45;
+  overflow-x: visible;
+  transition: none;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/*
+ * No ligatures or contextual alternates: JetBrains Mono draws `//` and `://`
+ * as single glyphs, which would turn into the wrong text when the PDF is
+ * copied from or parsed by an ATS.
+ */
+.print,
+.print * {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+.sheet {
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 14mm 14mm 16mm;
+}
+
+@media print {
+  .sheet {
+    max-width: none;
+    padding: 0;
+  }
+}
+
+/* ---- sections and items ------------------------------------------------ */
+
+.p-sec {
+  margin-top: 4.5mm;
+  padding-top: 3mm;
+  border-top: 0.75pt solid var(--line);
+}
+
+/* Section heading, the site's code-comment label: `// experience`. */
+.p-head {
+  font-family: var(--font-mono);
+  font-size: 9pt;
+  font-weight: 700;
+  line-height: 1.3;
+  text-transform: lowercase;
+  color: var(--ink);
+  margin: 0 0 2.5mm;
+  break-after: avoid;
+}
+.p-head > span {
+  color: var(--accent-text);
+  font-weight: 400;
+}
+
+/* Every item stays on one page. */
+.p-item {
+  break-inside: avoid;
+}
+
+.p-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.p-meta {
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  color: var(--muted);
+}
+.p-meta time,
+.p-meta .p-nowrap {
+  white-space: nowrap;
+}
+
+.p-muted {
+  color: var(--muted);
+}
+
+/* Rich text inside print components. */
+.p-rich p {
+  margin: 0;
+}
+.p-rich p + p {
+  margin-top: 1.5mm;
+}
+.p-rich ul,
+.p-rich ol {
+  margin: 1mm 0 0;
+  padding-inline-start: 4.5mm;
+}
+
+/* Pill badge (`HEAD`, `first commit`, `confidential`) and employment tag. */
+.p-ref {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 6.5pt;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--accent-text);
+  border: 0.75pt solid var(--accent);
+  border-radius: 999px;
+  padding: 0 1.6mm;
+  margin-inline-start: 1.5mm;
+  vertical-align: 1pt;
+  white-space: nowrap;
+}
+.p-tag {
+  display: inline-block;
+  font-size: 7pt;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--muted);
+  background: var(--soft);
+  border: 0.75pt solid var(--line);
+  border-radius: 1mm;
+  padding: 0 1.5mm;
+  margin-inline-start: 1.5mm;
+  vertical-align: 1pt;
+  white-space: nowrap;
+}
+
+/* Chips (skills, project technologies). */
+.p-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2mm;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.p-chip {
+  font-size: 8pt;
+  line-height: 1.45;
+  background: var(--soft);
+  border: 0.75pt solid var(--line);
+  border-radius: 1.2mm;
+  padding: 0.3mm 1.8mm;
+}
+.p-chip i {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 7pt;
+  font-weight: 700;
+  color: var(--accent-text);
+  margin-inline-start: 1mm;
+}
+
+/* ---- links: readable on paper ----------------------------------------- */
+
+.print a {
+  color: inherit;
+  text-decoration: none;
+}
+.print .p-rich a,
+.print a.p-link {
+  color: var(--accent-text);
+}
+/* The URL follows the link text, unless the text already is the URL. */
+.print a[href^="http"]::after {
+  content: " (" attr(href) ")";
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  font-weight: 400;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.print a[href^="http"][data-bare-url]::after {
+  content: none;
+}

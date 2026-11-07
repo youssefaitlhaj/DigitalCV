@@ -95,7 +95,7 @@ test.describe("fixed sections, JavaScript disabled", () => {
 
   test("email address not present as one string in HTML source", async ({ page, request }) => {
     const address = `${site.email.user}@${site.email.domain}`;
-    for (const path of ["/", "/de/"]) {
+    for (const path of ["/", "/de/", "/cv/print", "/de/cv/print"]) {
       const html = await (await request.get(path)).text();
       expect(html).not.toContain(address);
     }

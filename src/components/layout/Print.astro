@@ -1,0 +1,51 @@
+---
+import "../../styles/global.css";
+import "../../styles/print.css";
+import { getContent } from "../../content/repository";
+import { paletteCss } from "../../lib/palettes";
+import { dirFor, type Locale } from "../../i18n/locales";
+
+/**
+ * The layout of the print route, the page the PDF CV is printed from. Kept
+ * apart from Base.astro on purpose: it is light theme only (`data-theme` is
+ * fixed and no theme script runs), loads no motion layer and no analytics,
+ * and is not meant for search engines.
+ *
+ * The email address ships as two halves like everywhere else; the script
+ * below joins them and then sets `data-email-ready` on <html>, the signal the
+ * PDF generator waits for before printing.
+ */
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+}
+
+const { locale, title, description } = Astro.props;
+const { site } = getContent();
+const css = paletteCss(site.palette.accent, site.palette.background);
+---
+
+<!doctype html>
+<html lang={locale} dir={dirFor(locale)} data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style is:inline set:html={css}></style>
+  </head>
+  <body class="print">
+    <main id="main" class="sheet">
+      <slot />
+    </main>
+    <script>
+      import { hydrateEmailLinks } from "../../scripts/email";
+      hydrateEmailLinks();
+      document.documentElement.dataset.emailReady = "true";
+    </script>
+  </body>
+</html>

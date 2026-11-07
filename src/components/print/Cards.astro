@@ -1,0 +1,107 @@
+---
+import Frame from "./Frame.astro";
+import DateRange from "../layout/DateRange.astro";
+import RichText from "../layout/RichText.astro";
+import { pick } from "../../lib/localize";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"cards">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale, content } = Astro.props;
+const { labels } = content.site;
+const now = new Date();
+---
+
+{/*
+  Project cards without screenshots (the CV stays compact). A confidential
+  card is description-only: no links and a `confidential` badge, as on the site.
+*/}
+<Frame section={section} locale={locale}>
+  <ul class="p-list cards">
+    {
+      section.items.map((item) => {
+        const links = item.confidential ? undefined : item.links;
+        return (
+          <li class="card p-item">
+            {(item.start || item.end || item.confidential) && (
+              <div class="p-meta meta">
+                <span>
+                  <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} />
+                </span>
+                {item.confidential && <span class="p-ref">{pick(labels.confidential, locale)}</span>}
+              </div>
+            )}
+            <h3>{pick(item.name, locale)}</h3>
+            <div class="role p-muted">{pick(item.role, locale)}</div>
+            <div class="desc p-rich">
+              <RichText value={item.description} locale={locale} />
+            </div>
+            {item.tech.length > 0 && (
+              <ul class="p-chips tech">
+                {item.tech.map((t) => (
+                  <li class="p-chip">{t}</li>
+                ))}
+              </ul>
+            )}
+            {(links?.code || links?.live) && (
+              <div class="links">
+                {links.code && <a class="p-link" href={links.code}>{pick(labels.codeLink, locale)}</a>}
+                {links.live && <a class="p-link" href={links.live}>{pick(labels.liveLink, locale)}</a>}
+              </div>
+            )}
+          </li>
+        );
+      })
+    }
+  </ul>
+</Frame>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3mm;
+  }
+  .card {
+    background: var(--panel);
+    border: 0.75pt solid var(--line);
+    border-radius: 2mm;
+    padding: 3mm 3.5mm;
+    overflow-wrap: anywhere;
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2mm;
+    margin-bottom: 0.8mm;
+  }
+  h3 {
+    margin: 0;
+    font-size: 10.5pt;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .role {
+    font-size: 8.5pt;
+  }
+  .desc {
+    margin-top: 1.2mm;
+  }
+  .tech {
+    margin-top: 2mm;
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2mm;
+    font-family: var(--font-mono);
+    font-size: 7.5pt;
+  }
+</style>

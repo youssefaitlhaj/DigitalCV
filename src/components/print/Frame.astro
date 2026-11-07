@@ -1,0 +1,24 @@
+---
+import { anchorFor } from "../../lib/sections";
+import { pick } from "../../lib/localize";
+import type { Section } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+/**
+ * The shared frame of every titled print section: the section root and its
+ * `// title` heading, stacked above the content (the site's phone layout,
+ * which suits a narrow A4 column and keeps the heading with its first item).
+ */
+interface Props {
+  section: Section;
+  locale: Locale;
+}
+
+const { section, locale } = Astro.props;
+const id = anchorFor(section.id);
+---
+
+<section id={id} data-section={section.type} class="p-sec" aria-labelledby={`${id}-title`}>
+  <h2 class="p-head" id={`${id}-title`}><span aria-hidden="true">//</span> {pick(section.title, locale)}</h2>
+  <slot />
+</section>

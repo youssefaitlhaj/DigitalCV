@@ -9,4 +9,4 @@ const { section, locale, content, mode = "web" } = Astro.props;
 const Component = componentFor(section.type, mode);
 ---
 
-{Component && <Component section={section} locale={locale} content={content} />}
+<Component section={section} locale={locale} content={content} />

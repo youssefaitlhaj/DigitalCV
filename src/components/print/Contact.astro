@@ -1,0 +1,15 @@
+---
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+/**
+ * The contact section is not printed: its email and LinkedIn are already in
+ * the CV header (print/Hero.astro), and its buttons mean nothing on paper.
+ */
+interface Props {
+  section: SectionOf<"contact">;
+  locale: Locale;
+  content: Content;
+}
+---

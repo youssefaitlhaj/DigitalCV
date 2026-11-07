@@ -1,0 +1,65 @@
+---
+import Frame from "./Frame.astro";
+import RichText from "../layout/RichText.astro";
+import { pick } from "../../lib/localize";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"quotes">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale } = Astro.props;
+---
+
+{/* Quotes without photos (the CV stays compact). */}
+<Frame section={section} locale={locale}>
+  <ul class="p-list quotes">
+    {
+      section.items.map((item) => (
+        <li class="p-item">
+          <figure class="quote">
+            <blockquote class="p-rich">
+              <RichText value={item.quote} locale={locale} />
+            </blockquote>
+            <figcaption>
+              <span class="name">{item.name}</span>
+              <span class="p-meta">{pick(item.role, locale)}</span>
+            </figcaption>
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+</Frame>
+
+<style>
+  .quotes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3mm;
+  }
+  .quote {
+    height: 100%;
+    margin: 0;
+    padding: 3mm 3.5mm;
+    background: var(--panel);
+    border: 0.75pt solid var(--line);
+    border-inline-start: 2pt solid var(--accent);
+    border-radius: 2mm;
+  }
+  blockquote {
+    margin: 0;
+  }
+  figcaption {
+    margin-top: 2mm;
+  }
+  .name {
+    display: block;
+    font-weight: 700;
+    font-size: 8.5pt;
+  }
+</style>

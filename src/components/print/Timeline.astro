@@ -1,0 +1,148 @@
+---
+import Frame from "./Frame.astro";
+import DateRange from "../layout/DateRange.astro";
+import RichText from "../layout/RichText.astro";
+import { pick } from "../../lib/localize";
+import { formatDuration, monthsBetween } from "../../lib/dates";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"timeline">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale, content } = Astro.props;
+const { labels } = content.site;
+const now = new Date();
+---
+
+{/*
+  Full timelines keep the site's commit rail in its final state (every node
+  lit, the first one HEAD). The rail is drawn per item, so it breaks cleanly
+  between pages. Compact timelines are date rows, as on the site.
+*/}
+<Frame section={section} locale={locale}>
+  {
+    section.compact ? (
+      <ol class="p-list rows">
+        {section.items.map((item) => (
+          <li class="row p-item">
+            <div class="p-meta d">
+              <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} />
+            </div>
+            <div>
+              <h3>
+                {pick(item.title, locale)}
+                {item.employment && <span class="p-tag">{pick(labels.employment[item.employment], locale)}</span>}
+                {item.badge && <span class="p-ref">{item.badge}</span>}
+              </h3>
+              <div class="org">
+                {item.orgUrl ? <a class="p-link" href={item.orgUrl}>{item.org}</a> : item.org} · {item.location}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    ) : (
+      <ol class="p-list commits">
+        {section.items.map((item, i) => (
+          <li class:list={["commit p-item", i === 0 && "head"]}>
+            <div class="p-meta">
+              <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} /> ·{" "}
+              <span class="p-nowrap">{formatDuration(monthsBetween(item.start, item.end, now), locale, labels)}</span>
+              {item.badge && <span class="p-ref">{item.badge}</span>}
+            </div>
+            <h3>
+              {pick(item.title, locale)}
+              {item.employment && <span class="p-tag">{pick(labels.employment[item.employment], locale)}</span>}
+            </h3>
+            <div class="org">
+              {item.orgUrl ? <a class="p-link" href={item.orgUrl}>{item.org}</a> : item.org} · {item.location}
+            </div>
+            {item.description && (
+              <div class="desc p-rich">
+                <RichText value={item.description} locale={locale} />
+              </div>
+            )}
+          </li>
+        ))}
+      </ol>
+    )
+  }
+</Frame>
+
+<style>
+  h3 {
+    margin: 0.4mm 0 0;
+    font-size: 10.5pt;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .org {
+    color: var(--muted);
+    font-size: 8.5pt;
+  }
+  .org .p-link {
+    font-weight: 500;
+  }
+  .desc {
+    margin-top: 1mm;
+  }
+
+  /*
+   * Commit rail: the line is a background of each item and the node an
+   * in-flow grid cell, never a positioned box, so the PDF's text stays in
+   * reading order (positioned boxes paint, and therefore extract, after the
+   * rest of the page).
+   */
+  .commit {
+    display: grid;
+    grid-template-columns: 3.2mm minmax(0, 1fr);
+    column-gap: 3.3mm;
+    padding-bottom: 3.5mm;
+    background: linear-gradient(var(--line), var(--line)) calc(1.6mm - 0.375pt) 0 / 0.75pt 100% no-repeat;
+  }
+  .commit > * {
+    grid-column: 2;
+  }
+  .commit::before {
+    content: "";
+    grid-column: 1;
+    grid-row: 1;
+    width: 3.2mm;
+    height: 3.2mm;
+    margin-top: 0.6mm;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1.25pt solid var(--accent);
+  }
+  .commit.head::before {
+    background: var(--accent);
+  }
+  .commit:last-child {
+    padding-bottom: 0;
+  }
+
+  /* Compact rows */
+  .row {
+    display: grid;
+    grid-template-columns: 30mm minmax(0, 1fr);
+    gap: 4mm;
+    padding: 2mm 0;
+    border-top: 0.75pt solid var(--line);
+  }
+  .row:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .row h3 {
+    margin: 0;
+    font-size: 10pt;
+  }
+  .d {
+    padding-top: 0.6mm;
+  }
+</style>

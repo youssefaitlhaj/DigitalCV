@@ -1,7 +1,7 @@
 /**
  * The one place section types meet their components (open/closed: a new
- * layout is its schema in the registry plus one entry here and, once print
- * exists, one in `printComponents`). The unit test
+ * layout is its schema in the registry plus one entry in `webComponents` and
+ * one in `printComponents`). The unit test
  * `tests/unit/sections/registry-complete.test.ts` keeps this in step with
  * `sectionSchemas`.
  */
@@ -18,6 +18,16 @@ import Stats from "./Stats.astro";
 import Tags from "./Tags.astro";
 import Text from "./Text.astro";
 import Timeline from "./Timeline.astro";
+import PrintCards from "../print/Cards.astro";
+import PrintContact from "../print/Contact.astro";
+import PrintHero from "../print/Hero.astro";
+import PrintJourney from "../print/Journey.astro";
+import PrintQuotes from "../print/Quotes.astro";
+import PrintStatement from "../print/Statement.astro";
+import PrintStats from "../print/Stats.astro";
+import PrintTags from "../print/Tags.astro";
+import PrintText from "../print/Text.astro";
+import PrintTimeline from "../print/Timeline.astro";
 
 /** The props every section component takes. */
 export interface SectionProps<T extends SectionType = SectionType> {
@@ -45,14 +55,25 @@ export const webComponents: SectionComponents = {
   quotes: Quotes,
 };
 
-/** Filled in by the print route (Task 12); until then no type has a print variant. */
-export const printComponents: Partial<SectionComponents> = {};
+/** The print route's components (the PDF CV). Journey and contact render nothing on paper. */
+export const printComponents: SectionComponents = {
+  hero: PrintHero,
+  statement: PrintStatement,
+  stats: PrintStats,
+  journey: PrintJourney,
+  contact: PrintContact,
+  timeline: PrintTimeline,
+  cards: PrintCards,
+  tags: PrintTags,
+  text: PrintText,
+  quotes: PrintQuotes,
+};
 
 /**
  * The component for a section in a mode. TypeScript cannot correlate
  * `section.type` with the mapped entry, so the lookup is widened once here.
  */
-export function componentFor(type: SectionType, mode: "web" | "print"): AstroComponent | undefined {
-  const registry = (mode === "print" ? printComponents : webComponents) as Partial<Record<SectionType, AstroComponent>>;
+export function componentFor(type: SectionType, mode: "web" | "print"): AstroComponent {
+  const registry = (mode === "print" ? printComponents : webComponents) as Record<SectionType, AstroComponent>;
   return registry[type];
 }

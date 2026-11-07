@@ -1,0 +1,20 @@
+---
+import Print from "../layout/Print.astro";
+import SectionRenderer from "../sections/SectionRenderer.astro";
+import { getContent } from "../../content/repository";
+import { pdfSections } from "../../lib/sections";
+import type { Locale } from "../../i18n/locales";
+
+/** The CV as printed to PDF: the visible sections marked for the PDF, in page order. */
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getContent();
+const { site, page } = content;
+---
+
+<Print locale={locale} title={site.meta.title[locale]} description={site.meta.description[locale]}>
+  {pdfSections(page.sections).map((section) => <SectionRenderer section={section} locale={locale} content={content} mode="print" />)}
+</Print>

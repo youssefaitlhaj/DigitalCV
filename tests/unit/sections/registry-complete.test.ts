@@ -8,8 +8,8 @@ describe("section component registry", () => {
     for (const component of Object.values(webComponents)) expect(typeof component).toBe("function");
   });
 
-  it("print components only use known section types", () => {
-    const known = Object.keys(sectionSchemas);
-    for (const key of Object.keys(printComponents)) expect(known).toContain(key);
+  it("every section type has a print component", () => {
+    expect(Object.keys(printComponents).sort()).toEqual(Object.keys(sectionSchemas).sort());
+    for (const component of Object.values(printComponents)) expect(typeof component).toBe("function");
   });
 });

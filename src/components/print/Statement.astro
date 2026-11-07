@@ -1,0 +1,35 @@
+---
+import RichText from "../layout/RichText.astro";
+import { anchorFor } from "../../lib/sections";
+import type { Content } from "../../content/repository";
+import type { SectionOf } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  section: SectionOf<"statement">;
+  locale: Locale;
+  content: Content;
+}
+
+const { section, locale } = Astro.props;
+---
+
+{/* A short summary line under the header; colour swatches in the text are kept. */}
+<section id={anchorFor(section.id)} data-section={section.type} class="p-statement p-item">
+  <p class="p-rich"><RichText value={section.text} locale={locale} inline /></p>
+</section>
+
+<style>
+  .p-statement {
+    border-inline-start: 2pt solid var(--accent);
+    padding-inline-start: 3.5mm;
+    margin-top: 1mm;
+  }
+  p {
+    font-size: 11.5pt;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+</style>
