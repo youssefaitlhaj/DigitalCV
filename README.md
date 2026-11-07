@@ -1,9 +1,11 @@
 # youssefaitlhaj.dev
 
-Personal brand site for Youssef Ait Lhaj. Static Astro build, English and German,
-warm ivory and champagne-gold design with a restrained GSAP motion layer.
+Personal brand site for Youssef Ait Lhaj. A static Astro build in English (`/`) and German (`/de/`),
+with a CV that is also generated as two PDFs, and a browser-based editor at `/admin`.
 
-Design spec: [`docs/superpowers/specs/2026-07-24-personal-brand-site-design.md`](docs/superpowers/specs/2026-07-24-personal-brand-site-design.md)
+Design spec: [`docs/superpowers/specs/2026-11-06-redesign-and-admin-design.md`](docs/superpowers/specs/2026-11-06-redesign-and-admin-design.md)
+
+Accounts, deployment and the launch checklist: [`docs/SETUP.md`](docs/SETUP.md)
 
 ## Commands
 
@@ -11,65 +13,34 @@ Design spec: [`docs/superpowers/specs/2026-07-24-personal-brand-site-design.md`]
 | :-- | :-- |
 | `npm install` | Install dependencies |
 | `npm run dev` | Dev server at `localhost:4321` |
-| `npm run build` | Production build to `./dist/` |
-| `npm run preview` | Serve the production build |
+| `npm test` | Unit tests (Vitest) |
+| `npm run build` | Production build to `./dist/` (also generates the PDFs) |
+| `npm run test:pdf` | Tests on the generated PDFs (run after a build) |
+| `npx playwright test` | End-to-end tests, all viewport projects (slow) |
 | `npx astro check` | Type-check `.astro` and `.ts` |
+
+## Structure
+
+- `src/content/data/*.yml`: all content (`site.yml`, `page.yml`, `legal.yml`). Every visible string is `{ en, de }`; both are required.
+- `src/lib/`: content loading, validation (zod schemas), derived data, palettes, images, rich-text sanitising. Components do not load or compute.
+- `src/components/`: section components (web and print variants), registered in one place.
+- `src/pages/`: English and German routes, print routes used for the PDFs.
+- `src/scripts/`: motion and small runtime scripts.
+- `public/admin/`: the Sveltia CMS configuration and the custom image and crop widgets.
+- `scripts/`: build helpers (image crops, PDF generation, admin vendoring).
+- `tests/`: unit, PDF and Playwright end-to-end tests.
+- `.github/workflows/`: CI, preview deploys, production deploy.
 
 ## Editing content
 
-Content is split by whether it is translatable. Keep that split — it is what
-stops the two languages drifting apart.
+Use the editor at `/admin` (log in with GitHub). Saving creates a pull request and a protected preview;
+Publish merges it and the live site updates in about 5 minutes. See [`docs/SETUP.md`](docs/SETUP.md) for setup.
 
-**`src/content/career.ts`** — locale-neutral facts: employers, ISO dates,
-locations, and the stable `id` of every role. Editing a date here changes it in
-both languages at once. Validated by zod at build time, so a malformed date or a
-role ending before it starts fails the build with a clear message rather than
-rendering wrong.
+You can still edit the YAML files in `src/content/data/` by hand. The build validates them and fails with a
+clear message on a missing German string or a malformed date, so run `npm test` and `npm run build` before
+pushing.
 
-**`src/i18n/en.ts` and `src/i18n/de.ts`** — every translatable string, keyed by
-those ids. Both are typed as `Dictionary` (`src/i18n/types.ts`), so **forgetting
-a German string is a compile error, not a blank space on the live page**.
+## Deploying
 
-Write English first, then German. To add a role:
-
-1. Add an entry to `roles` in `career.ts` with a new `id`
-2. Add that `id` to `experience.titles` and `experience.descriptions` in **both**
-   `en.ts` and `de.ts`
-3. `npx astro check` — it will tell you if you missed one
-
-Company, product, and technology names are never translated. Neither is the hero
-motto, which is deliberately English in both locales.
-
-## The portrait
-
-The About section is built to work with or without a photo. Drop a file at
-`src/assets/portrait.jpg` (or `.png` / `.webp`) and it becomes a two-column
-layout with the image optimised through Astro's pipeline. With no file it falls
-back to a wider typographic treatment — that fallback is a real design, not a
-placeholder, so shipping without a photo is a legitimate choice.
-
-Use a portrait at 800px wide or better. A soft, upscaled image will look worse
-than no image at all.
-
-## Motion
-
-Every animation lives in `src/scripts/motion.ts`. Components never import GSAP —
-they mark intent with `data-reveal`, `data-reveal-text`, and `data-magnetic`
-attributes, and the motion layer binds behaviour on load. Adding a new animated
-section means adding an attribute, not writing new animation code.
-
-Six behaviours exist, deliberately: smooth scroll (Lenis), line-by-line text
-unmask, staggered reveals, magnetic hover, nav scroll-spy, and the timeline rail.
-Resist adding a seventh without a reason.
-
-`prefers-reduced-motion: reduce` is a first-class path: Lenis is never
-instantiated, no ScrollTriggers are created, and no listeners are bound. Verify
-any motion change against it via DevTools → Rendering → Emulate CSS media
-feature. The site must be complete and navigable with all motion off.
-
-## Before deploying
-
-- Set the real domain in `astro.config.mjs` (`site`). It drives canonical URLs
-  and `hreflang` alternates — wrong here means wrong in search results.
-- Open-ended role durations ("6 mos") are computed at build time. Rebuild
-  periodically or they drift.
+Pull requests build a preview; merging to `main` deploys to Cloudflare Pages via GitHub Actions. A weekly
+scheduled rebuild keeps date-driven values (such as the duration of an open-ended role) fresh.
