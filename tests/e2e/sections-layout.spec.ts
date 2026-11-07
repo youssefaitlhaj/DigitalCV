@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import { parse } from "yaml";
 import { useFixtureSite } from "./helpers/fixture-site";
+import { pageSchema } from "../../src/content/schemas/registry";
+import { visibleSections } from "../../src/lib/sections";
 
 const site = parse(readFileSync("src/content/data/site.yml", "utf8"));
 
@@ -90,21 +92,18 @@ test.describe("layout sections on the real content", () => {
   });
 
   test("page renders every visible section in order", async ({ page }) => {
+    // Expected order comes from the real content, so editing sections in /admin
+    // (showing Projects, reordering, hiding) never breaks this test.
+    const { sections } = pageSchema.parse(parse(readFileSync("src/content/data/page.yml", "utf8")));
+    const expected = visibleSections(sections).map((s) => s.id);
+    expect(expected.slice(0, 1)).toEqual(["hero"]);
     await page.goto("/");
     // Not `main > section`: on wide screens the motion layer wraps the pinned journey in a `.pin-spacer`.
     const roots = page.locator("main section[data-section]");
-    expect(await roots.evaluateAll((els) => els.map((e) => e.id))).toEqual([
-      "hero",
-      "statement",
-      "stats",
-      "journey",
-      "about",
-      "experience",
-      "skills",
-      "education",
-      "contact",
-    ]);
-    await expect(page.locator("#projects")).toHaveCount(0);
+    expect(await roots.evaluateAll((els) => els.map((e) => e.id))).toEqual(expected);
+    for (const hidden of sections.filter((s) => !expected.includes(s.id))) {
+      await expect(page.locator(`#${hidden.id}`)).toHaveCount(0);
+    }
   });
 
   test("person JSON-LD comes from content and holds no email", async ({ page, request }) => {
