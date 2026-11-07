@@ -1,7 +1,7 @@
 // "imageref" custom field type: the whole image object { src, alt: { en, de }, crop? } in one control.
 // It wraps the whole object (not only `crop`) because a custom control in Sveltia 0.252.0 receives its own
 // value and the entry, but not its path inside the entry, so it cannot find a sibling `src` by itself.
-import { percentToPixels, pixelsToPercentCrop } from "./crop-math.js";
+import { mergeImageRef, percentToPixels, pixelsToPercentCrop, validateImageRef } from "./crop-math.js";
 
 const plain = (v) => (v && typeof v.toJS === "function" ? v.toJS() : v) ?? {};
 
@@ -18,27 +18,24 @@ export function registerCropWidget(CMS) {
     const [error, setError] = useState("");
     const url = v.src ? (getAsset?.(v.src)?.url ?? v.src) : "";
 
+    // Sveltia calls isValid(value, fieldConfig) with the field config as an Immutable Map; required defaults to true.
     useImperativeHandle?.(
       ref,
       () => ({
-        isValid: (val) => {
-          const o = plain(val);
-          if (!o.src) return { error: { message: "Choose an image" } };
-          if (!o.alt?.en || !o.alt?.de) return { error: { message: "Alt text is required in English and German" } };
-          return true;
-        },
+        isValid: (val, field) => validateImageRef(plain(val), (field?.get ? field.get("required") : undefined) !== false),
       }),
       [],
     );
 
-    const commit = (patch) => {
-      const next = { ...latest.current, ...patch };
-      for (const k of Object.keys(next)) if (next[k] === undefined) delete next[k];
-      onChange(next);
-    };
+    const commit = (patch) => onChange(mergeImageRef(latest.current, patch));
 
     useEffect(() => {
-      if (!cropping || !imgEl.current || !url || !window.Cropper) return undefined;
+      if (!cropping || !imgEl.current || !url) return undefined;
+      if (!window.Cropper) {
+        setCropping(false);
+        setError("The image cropper did not load. Reload the page; if it keeps happening, tell the site maintainer.");
+        return undefined;
+      }
       const img = imgEl.current;
       const natural = () => ({ W: img.naturalWidth, H: img.naturalHeight });
       const cropper = new window.Cropper(img, {
@@ -86,12 +83,16 @@ export function registerCropWidget(CMS) {
         "div",
         null,
         h("button", { ...btn, onClick: choose }, v.src ? "Replace image" : "Choose image"),
-        v.src && h("button", { ...btn, onClick: () => setCropping(!cropping) }, cropping ? "Done cropping" : c ? "Adjust crop" : "Crop"),
+        v.src && h("button", { ...btn, onClick: () => {
+            setError("");
+            if (!cropping && !window.Cropper) return setError("The image cropper did not load. Reload the page; if it keeps happening, tell the site maintainer.");
+            setCropping(!cropping);
+          } }, cropping ? "Done cropping" : c ? "Adjust crop" : "Crop"),
         c && h("button", { ...btn, onClick: () => { setCropping(false); commit({ crop: undefined }); } }, "Reset crop"),
       ),
       c && h("div", { style: { fontSize: 12, opacity: 0.7 } }, `Crop: x ${c.x}%, y ${c.y}%, ${c.width}% x ${c.height}%`),
       error && h("div", { role: "alert", style: { color: "#b00020" } }, error),
-      ["en", "de"].map((lang) =>
+      v.src && ["en", "de"].map((lang) =>
         h(
           "label",
           { key: lang, style: { display: "grid", gap: 4 } },

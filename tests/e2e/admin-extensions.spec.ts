@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
 /** A stand-in for Sveltia that only records what the extensions register. */
@@ -58,4 +59,25 @@ test("serves the real links.json", async ({ request }) => {
 
 test("cropperjs is served same-origin", async ({ request }) => {
   for (const f of ["cropper.min.js", "cropper.min.css"]) expect((await request.get(`/admin/vendor/cropperjs/${f}`)).status()).toBe(200);
+});
+
+test("real Sveltia imports immutable.js same-origin under the admin CSP", async ({ page }) => {
+  const block = readFileSync("public/_headers", "utf8").split(/\n(?=\S)/).find((b) => b.startsWith("/admin/*"))!;
+  const csp = block.split("\n").find((l) => l.trim().startsWith("Content-Security-Policy:"))!.trim().slice("Content-Security-Policy:".length).trim();
+  await page.route("**/admin/**", async (route) => {
+    if (route.request().resourceType() !== "document") return route.continue();
+    const res = await route.fetch();
+    await route.fulfill({ response: res, headers: { ...res.headers(), "content-security-policy": csp } });
+  });
+  const violations: string[] = [];
+  const unpkg: string[] = [];
+  page.on("console", (m) => /content security policy/i.test(m.text()) && violations.push(m.text()));
+  page.on("request", (r) => /unpkg\.com\/immutable/.test(r.url()) && unpkg.push(r.url()));
+  const loaded = page.waitForResponse((r) => r.url().endsWith("/admin/vendor/immutable/immutable.es.js"), { timeout: 15_000 });
+  await page.goto("/admin/");
+  expect((await loaded).status()).toBe(200);
+  // The module itself must also import cleanly under the CSP.
+  expect(await page.evaluate(async () => typeof (await import("/admin/vendor/immutable/immutable.es.js")).Map)).toBe("function");
+  expect(unpkg).toEqual([]);
+  expect(violations).toEqual([]);
 });

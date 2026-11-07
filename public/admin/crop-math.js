@@ -36,3 +36,27 @@ export function percentToPixels(crop, W, H) {
     height: Math.round((crop.height / 100) * H),
   };
 }
+
+/** True for a usable image value: a non-empty src string. */
+const hasSrc = (v) => Boolean(v && typeof v.src === "string" && v.src !== "");
+
+/**
+ * Validation for the imageref widget. An empty value is fine unless the field is required;
+ * a chosen image needs alt text in both languages.
+ */
+export function validateImageRef(value, required) {
+  if (!hasSrc(value)) return required ? { error: { message: "Choose an image" } } : true;
+  if (!value.alt?.en?.trim() || !value.alt?.de?.trim()) return { error: { message: "Alt text is required in English and German" } };
+  return true;
+}
+
+/**
+ * Merges an edit into the stored value. Keys set to undefined are dropped. Without a src nothing is kept
+ * (no stray alt or crop), signalled by null. A different src discards the old crop.
+ */
+export function mergeImageRef(current, patch) {
+  const next = { ...(current ?? {}), ...patch };
+  if (patch && "src" in patch && patch.src !== current?.src && !("crop" in patch)) delete next.crop;
+  for (const k of Object.keys(next)) if (next[k] === undefined) delete next[k];
+  return hasSrc(next) ? next : null;
+}

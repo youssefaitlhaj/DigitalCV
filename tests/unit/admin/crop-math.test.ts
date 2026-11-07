@@ -70,3 +70,29 @@ describe("a helper-produced crop round trips through imageRef and cropAll", () =
     expect([m.width, m.height]).toEqual([2000, 1500]);
   });
 });
+
+import { mergeImageRef, validateImageRef } from "../../../public/admin/crop-math.js";
+
+describe("imageref value logic", () => {
+  const ok = { src: "/src/assets/uploads/a.jpg", alt: { en: "a", de: "b" } };
+  it("optional empty value is valid, required empty is an error", () => {
+    expect(validateImageRef(undefined, false)).toBe(true);
+    expect(validateImageRef({}, false)).toBe(true);
+    expect(validateImageRef(null, true)).toMatchObject({ error: { message: expect.any(String) } });
+  });
+  it("a chosen image needs both alt languages", () => {
+    expect(validateImageRef(ok, true)).toBe(true);
+    expect(validateImageRef({ ...ok, alt: { en: "a", de: "" } }, false)).toMatchObject({ error: expect.anything() });
+    expect(validateImageRef({ src: ok.src }, true)).toMatchObject({ error: expect.anything() });
+  });
+  it("a new src clears the crop; editing alt keeps it", () => {
+    const withCrop = { ...ok, crop: { x: 1, y: 1, width: 5, height: 5 } };
+    expect(mergeImageRef(withCrop, { src: "/src/assets/uploads/b.jpg" })).toEqual({ src: "/src/assets/uploads/b.jpg", alt: ok.alt });
+    expect(mergeImageRef(withCrop, { alt: { en: "x", de: "y" } })?.crop).toEqual(withCrop.crop);
+    expect(mergeImageRef(withCrop, { crop: undefined })).toEqual(ok);
+  });
+  it("without a src nothing is kept (no stray alt or crop)", () => {
+    expect(mergeImageRef(undefined, { alt: { en: "a", de: "" } })).toBeNull();
+    expect(mergeImageRef({}, { crop: { x: 0, y: 0, width: 1, height: 1 } })).toBeNull();
+  });
+});
