@@ -33,8 +33,9 @@ const now = new Date();
     display: grid;
     grid-template-columns: repeat(var(--cols, 4), 1fr);
     margin-top: 4.5mm;
-    border-top: 0.75pt solid var(--line);
-    border-bottom: 0.75pt solid var(--line);
+    background: var(--soft);
+    border: 0.75pt solid var(--line);
+    border-radius: 2mm;
   }
   .stat {
     display: flex;
@@ -44,7 +45,6 @@ const now = new Date();
   }
   .stat:first-child {
     border-inline-start: 0;
-    padding-inline-start: 0;
   }
   .n {
     font-family: var(--font-mono);

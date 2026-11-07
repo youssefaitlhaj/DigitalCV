@@ -23,6 +23,7 @@ const now = new Date();
   Full timelines keep the site's commit rail in its final state (every node
   lit, the first one HEAD). The rail is drawn per item, so it breaks cleanly
   between pages. Compact timelines are date rows, as on the site.
+  Organisation names stay clickable links but print without their URL.
 */}
 <Frame section={section} locale={locale}>
   {
@@ -40,7 +41,7 @@ const now = new Date();
                 {item.badge && <span class="p-ref">{item.badge}</span>}
               </h3>
               <div class="org">
-                {item.orgUrl ? <a class="p-link" href={item.orgUrl}>{item.org}</a> : item.org} · {item.location}
+                {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {item.location}
               </div>
             </div>
           </li>
@@ -60,7 +61,7 @@ const now = new Date();
               {item.employment && <span class="p-tag">{pick(labels.employment[item.employment], locale)}</span>}
             </h3>
             <div class="org">
-              {item.orgUrl ? <a class="p-link" href={item.orgUrl}>{item.org}</a> : item.org} · {item.location}
+              {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {item.location}
             </div>
             {item.description && (
               <div class="desc p-rich">

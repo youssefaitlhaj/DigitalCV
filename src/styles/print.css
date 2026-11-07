@@ -3,21 +3,30 @@
    The site's look on A4: same fonts, palette tokens (light mode only), the
    `// label` section headings and the accent used sparingly. The sheet is laid
    out the same on screen, so the route previews what the PDF will show.
+
+   The sheet is white, not the site's tinted background: recruiters print CVs,
+   and a full-bleed tint prints badly. The palette's soft and panel tones stay
+   on small surfaces (chips, tags, the stats strip, cards).
 --------------------------------------------------------------------------- */
+
+:root {
+  --paper: #FFFFFF;
+}
 
 @page {
   size: A4;
   margin: 14mm 14mm 16mm;
-  /* The sheet colour runs to the paper edge, not just inside the margins. */
-  background: var(--bg);
 }
 
 html:has(body.print) {
   scroll-behavior: auto;
-  background: var(--bg);
+  background: var(--paper);
 }
 
 body.print {
+  /* Everything drawn "in the page colour" (e.g. hollow rail nodes) uses the sheet. */
+  --bg: var(--paper);
+  background: var(--paper);
   font-size: 9.5pt;
   line-height: 1.45;
   overflow-x: visible;
@@ -178,7 +187,10 @@ body.print {
 .print a.p-link {
   color: var(--accent-text);
 }
-/* The URL follows the link text, unless the text already is the URL. */
+/*
+ * The URL follows the link text, except where the text already is the URL or
+ * the link is an organisation name (`data-bare-url` on both).
+ */
 .print a[href^="http"]::after {
   content: " (" attr(href) ")";
   font-family: var(--font-mono);

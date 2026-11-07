@@ -71,14 +71,30 @@ test.describe("print route", () => {
     }
   });
 
-  test("links print their URL unless the text is the URL", async ({ page }) => {
+  test("links print their URL, except org names and URL texts", async ({ page }) => {
     await page.goto("/cv/print");
     await page.emulateMedia({ media: "print" });
-    const org = page.locator('[data-section="timeline"] a[href="https://www.imbus.de/"]').first();
+    const after = (sel: string) => page.locator(sel).first().evaluate((a) => getComputedStyle(a, "::after").content);
+    // Organisation names stay clickable links but print no URL after them.
+    await expect(page.locator('[data-section="timeline"] a[href="https://www.imbus.de/"]').first()).toBeVisible();
+    expect(await after('[data-section="timeline"] a[href="https://www.imbus.de/"]')).toBe("none");
+    expect(await after('[data-section="timeline"] a[href="https://www.uni-bamberg.de/"]')).toBe("none");
+    expect(await after('[data-section="hero"] a[href^="https://www.linkedin.com"]')).toBe("none");
+    // Any other external link (project links, links in rich text) prints its URL.
+    await page.evaluate(() => {
+      const a = Object.assign(document.createElement("a"), { href: "https://example.com/x", textContent: "x", id: "probe" });
+      document.querySelector("main")!.append(a);
+    });
     // Chromium reports either the resolved string or the `attr(href)` expression.
-    expect(await org.evaluate((a) => getComputedStyle(a, "::after").content)).toMatch(/attr\(href\)|https:\/\/www\.imbus\.de\//);
-    const linkedin = page.locator('[data-section="hero"] a[href^="https://www.linkedin.com"]');
-    expect(await linkedin.evaluate((a) => getComputedStyle(a, "::after").content)).toBe("none");
+    expect(await after("#probe")).toMatch(/attr\(href\)|https:\/\/example\.com\/x/);
+  });
+
+  test("the sheet is white for printing", async ({ page }) => {
+    await page.goto("/cv/print");
+    await page.emulateMedia({ media: "print" });
+    for (const el of ["html", "body"]) {
+      expect(await page.locator(el).evaluate((e) => getComputedStyle(e).backgroundColor)).toBe("rgb(255, 255, 255)");
+    }
   });
 
   test("items never split and headings stay with the next item", async ({ page }) => {
