@@ -537,58 +537,7 @@ collections:
                     required: true
                   - label: Portrait
                     name: portrait
-                    widget: object
-                    fields:
-                      - label: Image
-                        name: src
-                        widget: image
-                        required: true
-                      - label: Alt text
-                        name: alt
-                        widget: object
-                        required: true
-                        fields:
-                          - label: English
-                            name: en
-                            widget: string
-                            required: true
-                          - label: Deutsch
-                            name: de
-                            widget: string
-                            required: true
-                      - label: Crop (percent of the image)
-                        name: crop
-                        widget: object
-                        fields:
-                          - label: X
-                            name: x
-                            widget: number
-                            value_type: float
-                            min: 0
-                            max: 100
-                            required: true
-                          - label: Y
-                            name: y
-                            widget: number
-                            value_type: float
-                            min: 0
-                            max: 100
-                            required: true
-                          - label: Width
-                            name: width
-                            widget: number
-                            value_type: float
-                            min: 0
-                            max: 100
-                            required: true
-                          - label: Height
-                            name: height
-                            widget: number
-                            value_type: float
-                            min: 0
-                            max: 100
-                            required: true
-                        required: false
+                    widget: imageref
                     required: true
                   - label: Motto
                     name: motto
@@ -663,12 +612,12 @@ collections:
                         name: en
                         widget: markdown
                         required: true
-                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Deutsch
                         name: de
                         widget: markdown
                         required: true
-                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
               - label: Stats
                 name: stats
                 widget: object
@@ -877,12 +826,12 @@ collections:
                             name: en
                             widget: markdown
                             required: true
-                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                           - label: Deutsch
                             name: de
                             widget: markdown
                             required: true
-                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Caption (code-style)
                         name: caption
                         widget: string
@@ -961,12 +910,12 @@ collections:
                         name: en
                         widget: markdown
                         required: true
-                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Deutsch
                         name: de
                         widget: markdown
                         required: true
-                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                   - label: Email label
                     name: emailLabel
                     widget: object
@@ -1122,12 +1071,12 @@ collections:
                             name: en
                             widget: markdown
                             required: true
-                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                           - label: Deutsch
                             name: de
                             widget: markdown
                             required: true
-                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Badge
                         name: badge
                         widget: string
@@ -1207,12 +1156,12 @@ collections:
                             name: en
                             widget: markdown
                             required: true
-                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                           - label: Deutsch
                             name: de
                             widget: markdown
                             required: true
-                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Role
                         name: role
                         widget: object
@@ -1272,58 +1221,7 @@ collections:
                         required: false
                       - label: Image
                         name: image
-                        widget: object
-                        fields:
-                          - label: Image
-                            name: src
-                            widget: image
-                            required: true
-                          - label: Alt text
-                            name: alt
-                            widget: object
-                            required: true
-                            fields:
-                              - label: English
-                                name: en
-                                widget: string
-                                required: true
-                              - label: Deutsch
-                                name: de
-                                widget: string
-                                required: true
-                          - label: Crop (percent of the image)
-                            name: crop
-                            widget: object
-                            fields:
-                              - label: X
-                                name: x
-                                widget: number
-                                value_type: float
-                                min: 0
-                                max: 100
-                                required: true
-                              - label: Y
-                                name: y
-                                widget: number
-                                value_type: float
-                                min: 0
-                                max: 100
-                                required: true
-                              - label: Width
-                                name: width
-                                widget: number
-                                value_type: float
-                                min: 0
-                                max: 100
-                                required: true
-                              - label: Height
-                                name: height
-                                widget: number
-                                value_type: float
-                                min: 0
-                                max: 100
-                                required: true
-                            required: false
+                        widget: imageref
                         required: false
                       - label: Confidential
                         name: confidential
@@ -1492,12 +1390,12 @@ collections:
                           name: en
                           widget: markdown
                           required: true
-                          hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                          hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                         - label: Deutsch
                           name: de
                           widget: markdown
                           required: true
-                          hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                          hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                     summary: "{{fields.item.en}}"
                     required: true
               - label: Quotes
@@ -1561,12 +1459,12 @@ collections:
                             name: en
                             widget: markdown
                             required: true
-                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                           - label: Deutsch
                             name: de
                             widget: markdown
                             required: true
-                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                       - label: Name
                         name: name
                         widget: string
@@ -1586,58 +1484,7 @@ collections:
                             required: true
                       - label: Photo
                         name: photo
-                        widget: object
-                        fields:
-                          - label: Image
-                            name: src
-                            widget: image
-                            required: true
-                          - label: Alt text
-                            name: alt
-                            widget: object
-                            required: true
-                            fields:
-                              - label: English
-                                name: en
-                                widget: string
-                                required: true
-                              - label: Deutsch
-                                name: de
-                                widget: string
-                                required: true
-                          - label: Crop (percent of the image)
-                            name: crop
-                            widget: object
-                            fields:
-                              - label: X
-                                name: x
-                                widget: number
-                                value_type: float
-                                min: 0
-                                max: 100
-                                required: true
-                              - label: Y
-                                name: y
-                                widget: number
-                                value_type: float
-                                min: 0
-                                max: 100
-                                required: true
-                              - label: Width
-                                name: width
-                                widget: number
-                                value_type: float
-                                min: 0
-                                max: 100
-                                required: true
-                              - label: Height
-                                name: height
-                                widget: number
-                                value_type: float
-                                min: 0
-                                max: 100
-                                required: true
-                            required: false
+                        widget: imageref
                         required: false
                     required: true
             required: true
@@ -1677,12 +1524,12 @@ collections:
                     name: en
                     widget: markdown
                     required: true
-                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                   - label: Deutsch
                     name: de
                     widget: markdown
                     required: true
-                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
             required: true
           - label: Impressum
             name: impressum
@@ -1715,10 +1562,10 @@ collections:
                     name: en
                     widget: markdown
                     required: true
-                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                   - label: Deutsch
                     name: de
                     widget: markdown
                     required: true
-                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>, <span class=\"c-accent\">accent</span>, <span class=\"c-muted\">muted</span>, <span class=\"c-highlight\">highlight</span>, <span class=\"c-positive\">positive</span>."
+                    hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
             required: true

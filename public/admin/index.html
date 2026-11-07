@@ -6,10 +6,12 @@
     <meta name="robots" content="noindex" />
     <title>Content Manager</title>
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+    <link rel="stylesheet" href="/admin/vendor/cropperjs/cropper.min.css" />
   </head>
   <body>
     <!-- Same-origin only: the bundle is vendored by scripts/vendor-admin.ts, so no CDN and no SRI. -->
     <script src="/admin/vendor/sveltia/sveltia-cms.js"></script>
+    <script src="/admin/vendor/cropperjs/cropper.min.js"></script>
     <script type="module" src="/admin/extensions.js"></script>
   </body>
 </html>

@@ -44,6 +44,7 @@ function unwrap(schema: Zod): { inner: Zod; optional: boolean } {
 }
 
 const isBilingual = (inner: Zod) => inner.def.type === "object" && Object.keys(inner.def.shape).sort().join() === "de,en";
+const isImageRef = (inner: Zod) => inner.def.type === "object" && Object.keys(inner.def.shape).sort().join() === "alt,crop,src";
 const isUnion = (inner: Zod) => inner.def.type === "union";
 /** A plain union of strings and string literals (e.g. "YYYY" | "present") is one text input. */
 const isStringUnion = (inner: Zod) =>
@@ -112,6 +113,12 @@ function compare(path: string, schema: Zod, cms: Cms | undefined, problems: stri
     for (const k of kids) if (k.required !== true) problems.push(`${path}.${k.name}: must be required`);
     return;
   }
+  if (isImageRef(inner)) {
+    // The whole image object (src + alt + crop) is edited by the custom imageref widget; see public/admin/crop-widget.js.
+    if (cms.widget !== "imageref") problems.push(`${path}: image objects must use the imageref widget, got ${cms.widget}`);
+    if (cms.fields) problems.push(`${path}: the imageref widget has no subfields`);
+    return;
+  }
   if (isStringUnion(inner)) {
     if (!STRINGY.includes(cms.widget ?? "")) problems.push(`${path}: expected a string-like widget, got ${cms.widget}`);
     return;
@@ -159,6 +166,14 @@ function checkValue(path: string, value: unknown, cms: Cms, problems: string[], 
         } else if (cms.field) checkValue(`${path}[${i}]`, item, cms.field, problems);
         else checkValue(`${path}[${i}]`, item, { name: "item", widget: "object", fields: cms.fields }, problems);
       });
+      return;
+    }
+    case "imageref": {
+      const ok = (v: unknown) => typeof v === "string" && v !== "";
+      const o = value as { src?: unknown; alt?: { en?: unknown; de?: unknown }; crop?: Record<string, unknown> };
+      if (!plain(value) || !ok(o.src) || !ok(o.alt?.en) || !ok(o.alt?.de)) return problems.push(`${path}: expected { src, alt: { en, de } }`);
+      for (const k of Object.keys(value as object)) if (!["src", "alt", "crop"].includes(k)) problems.push(`${path}.${k}: not part of an image`);
+      if (o.crop !== undefined && !["x", "y", "width", "height"].every((k) => typeof o.crop![k] === "number")) problems.push(`${path}.crop: expected numbers`);
       return;
     }
     case "boolean":
@@ -234,12 +249,33 @@ describe("Sveltia config contract", () => {
     expect(config.backend.base_url).toMatch(/^https:\/\//);
   });
 
-  it("rich text fields use the markdown widget with a swatch hint", () => {
-    const statement = sections.find((t) => t.name === "statement")!;
-    const text = statement.fields!.find((f) => f.name === "text")!.fields!.find((f) => f.name === "en") as any;
-    expect(text.widget).toBe("markdown");
-    expect(text.hint).toContain('<span class="c-accent">');
-    expect(text.hint).toContain("<u>");
+  it("every rich text (markdown) field documents underline and the four colour spans in its hint", () => {
+    const markdown: { path: string; hint?: string }[] = [];
+    const walk = (f: Cms, path: string) => {
+      if (f.widget === "markdown") markdown.push({ path, hint: (f as Cms & { hint?: string }).hint });
+      for (const k of [...(f.fields ?? []), ...(f.types ?? []), ...(f.field ? [f.field] : [])]) walk(k, `${path}.${k.name}`);
+    };
+    for (const f of files) walk(f, f.name);
+    expect(markdown.length).toBeGreaterThan(0);
+    const labels = { "c-accent": "Accent", "c-muted": "Muted", "c-highlight": "Highlight", "c-positive": "Green" };
+    for (const { path, hint } of markdown) {
+      expect(hint, path).toContain("<u>");
+      for (const [cls, label] of Object.entries(labels)) {
+        expect(hint, `${path} ${cls}`).toContain(`<span class="${cls}">`);
+        expect(hint, `${path} ${label}`).toContain(label);
+      }
+    }
+  });
+
+  it("every image object uses the imageref widget", () => {
+    const found: Cms[] = [];
+    const walk = (f: Cms) => {
+      if (f.widget === "imageref") found.push(f);
+      for (const k of [...(f.fields ?? []), ...(f.types ?? []), ...(f.field ? [f.field] : [])]) walk(k);
+    };
+    for (const f of files) walk(f);
+    expect(found.length).toBeGreaterThan(0);
+    expect(found.every((f) => !f.fields)).toBe(true);
   });
 
   it("real content values fit the CMS widget types", () => {
