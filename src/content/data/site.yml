@@ -21,7 +21,8 @@ palette:
 pdf:
   includePortrait: true
   fileBaseName: youssef-ait-lhaj-cv
-analytics: {}
+analytics:
+  umamiWebsiteId: ece2ccaf-3e90-45b5-b402-f2718a07c654
 labels:
   present: { en: Present, de: Heute }
   year: { en: yr, de: Jahr }
