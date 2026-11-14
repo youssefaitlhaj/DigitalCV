@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { imageRef, localized } from "../primitives";
+import { imageRef, localized, pdfAlternative } from "../primitives";
 import { sectionBase } from "./base";
 
 export const heroSchema = z.object({
@@ -9,6 +9,7 @@ export const heroSchema = z.object({
   prompt: z.string().trim().min(1),
   role: localized(),
   subtitle: localized(),
+  pdfSubtitle: pdfAlternative(z.string().trim().min(1)),
   ctaPrimary: localized(),
   ctaSecondary: localized(),
   jsonCard: z.array(z.object({ key: z.string().trim().min(1), values: z.array(localized()) })),

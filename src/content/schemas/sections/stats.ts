@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { localized, month, optionalField, slugId } from "../primitives";
+import { localized, month, optionalField, pdfEntry, slugId } from "../primitives";
 import { sectionBase } from "./base";
 
 const statValue = z.discriminatedUnion("kind", [
@@ -12,7 +12,7 @@ export const statsSchema = z.object({
   ...sectionBase,
   type: z.literal("stats"),
   items: z
-    .array(z.object({ label: localized(), value: statValue, override: optionalField(z.number()) }))
+    .array(z.object({ label: localized(), value: statValue, override: optionalField(z.number()), ...pdfEntry }))
     .min(1)
     .max(4),
 });

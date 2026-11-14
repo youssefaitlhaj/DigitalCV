@@ -4,6 +4,7 @@ import { anchorFor } from "../../lib/sections";
 import { pick } from "../../lib/localize";
 import { displayUrl } from "../../lib/urls";
 import { pathFor } from "../../i18n/locales";
+import { forPdf } from "../../lib/pdf";
 import type { Content } from "../../content/repository";
 import type { SectionOf } from "../../content/schemas/registry";
 import type { Locale } from "../../i18n/locales";
@@ -32,7 +33,7 @@ const city = pick(site.location, locale).split(",")[0].trim().toLowerCase();
     <div class="prompt"><b>~/{city}</b> $ {section.prompt}</div>
     <h1>{site.name}</h1>
     <div class="role">{pick(section.role, locale)}</div>
-    <p class="sub">{pick(section.subtitle, locale)}</p>
+    <p class="sub">{pick(forPdf(section.subtitle, section.pdfSubtitle), locale)}</p>
     <ul class="contact">
       <li>{pick(site.location, locale)}</li>
       <li>

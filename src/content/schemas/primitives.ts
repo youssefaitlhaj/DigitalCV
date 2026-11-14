@@ -43,6 +43,19 @@ export function optionalField<T extends z.ZodType>(inner: T) {
   return z.preprocess((v) => (isBlank(v) ? undefined : v), inner.optional());
 }
 
+/**
+ * A shorter version of a text for the PDF CV, per language. A language left
+ * empty (or the whole field) means the PDF prints the full text.
+ */
+export function pdfAlternative<T extends z.ZodType>(inner: T) {
+  return optionalField(z.object({ en: optionalField(inner), de: optionalField(inner) }));
+}
+
+/** Spread into any list entry that can be left out of the PDF CV; the website always shows it. */
+export const pdfEntry = {
+  inPdf: z.boolean().default(true),
+};
+
 const percent = z.number().min(0).max(100);
 
 /** Crop rectangle in percent of the source image. */

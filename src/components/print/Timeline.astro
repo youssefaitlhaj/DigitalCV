@@ -1,5 +1,7 @@
 ---
 import Frame from "./Frame.astro";
+import MoreOnline from "./MoreOnline.astro";
+import { forPdf, pdfEntries } from "../../lib/pdf";
 import DateRange from "../layout/DateRange.astro";
 import RichText from "../layout/RichText.astro";
 import { pick } from "../../lib/localize";
@@ -15,8 +17,10 @@ interface Props {
 }
 
 const { section, locale, content } = Astro.props;
-const { labels } = content.site;
+const { site } = content;
+const { labels } = site;
 const now = new Date();
+const items = pdfEntries(section.items);
 ---
 
 {/*
@@ -24,56 +28,63 @@ const now = new Date();
   lit, the first one HEAD). The rail is drawn per item, so it breaks cleanly
   between pages. Compact timelines are date rows, as on the site.
   Organisation names stay clickable links but print without their URL.
+  Only the entries marked "Show in PDF" are printed, each description in its
+  short PDF version where there is one.
 */}
-<Frame section={section} locale={locale}>
-  {
-    section.compact ? (
-      <ol class="p-list rows">
-        {section.items.map((item) => (
-          <li class="row p-item">
-            <div class="p-meta d">
-              <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} />
-            </div>
-            <div>
-              <h3>
-                {pick(item.title, locale)}
-                {item.employment && <span class="p-tag">{pick(labels.employment[item.employment], locale)}</span>}
-                {item.badge && <span class="p-ref">{item.badge}</span>}
-              </h3>
-              <div class="org">
-                {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {pick(item.location, locale)}
-              </div>
-            </div>
-          </li>
-        ))}
-      </ol>
-    ) : (
-      <ol class="p-list commits">
-        {section.items.map((item, i) => (
-          <li class:list={["commit p-item", i === 0 && "head"]}>
-            <div class="p-meta">
-              <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} /> ·{" "}
-              <span class="p-nowrap">{formatDuration(monthsBetween(item.start, item.end, now), locale, labels)}</span>
-              {item.badge && <span class="p-ref">{item.badge}</span>}
-            </div>
-            <h3>
-              {pick(item.title, locale)}
-              {item.employment && <span class="p-tag">{pick(labels.employment[item.employment], locale)}</span>}
-            </h3>
-            <div class="org">
-              {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {pick(item.location, locale)}
-            </div>
-            {item.description && (
-              <div class="desc p-rich">
-                <RichText value={item.description} locale={locale} />
-              </div>
-            )}
-          </li>
-        ))}
-      </ol>
-    )
-  }
-</Frame>
+{
+  items.length > 0 && (
+    <Frame section={section} locale={locale}>
+      {
+        section.compact ? (
+          <ol class="p-list rows">
+            {items.map((item) => (
+              <li class="row p-item">
+                <div class="p-meta d">
+                  <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} />
+                </div>
+                <div>
+                  <h3>
+                    {pick(item.title, locale)}
+                    {item.employment && <span class="p-tag">{pick(labels.employment[item.employment], locale)}</span>}
+                    {item.badge && <span class="p-ref">{item.badge}</span>}
+                  </h3>
+                  <div class="org">
+                    {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {pick(item.location, locale)}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <ol class="p-list commits">
+            {items.map((item, i) => (
+              <li class:list={["commit p-item", i === 0 && "head"]}>
+                <div class="p-meta">
+                  <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} /> ·{" "}
+                  <span class="p-nowrap">{formatDuration(monthsBetween(item.start, item.end, now), locale, labels)}</span>
+                  {item.badge && <span class="p-ref">{item.badge}</span>}
+                </div>
+                <h3>
+                  {pick(item.title, locale)}
+                  {item.employment && <span class="p-tag">{pick(labels.employment[item.employment], locale)}</span>}
+                </h3>
+                <div class="org">
+                  {item.orgUrl ? <a class="p-link" href={item.orgUrl} data-bare-url>{item.org}</a> : item.org} · {pick(item.location, locale)}
+                </div>
+                {item.description && (
+                  <div class="desc p-rich">
+                    <RichText value={forPdf(item.description, item.pdfDescription)} locale={locale} />
+                  </div>
+                )}
+              </li>
+            ))}
+          </ol>
+        )
+      }
+      <MoreOnline section={section} locale={locale} site={site} shown={items.length} total={section.items.length} />
+    </Frame>
+  )
+}
 
 <style>
   h3 {

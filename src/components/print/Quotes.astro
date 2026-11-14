@@ -1,5 +1,7 @@
 ---
 import Frame from "./Frame.astro";
+import MoreOnline from "./MoreOnline.astro";
+import { forPdf, pdfEntries } from "../../lib/pdf";
 import RichText from "../layout/RichText.astro";
 import { pick } from "../../lib/localize";
 import type { Content } from "../../content/repository";
@@ -12,29 +14,35 @@ interface Props {
   content: Content;
 }
 
-const { section, locale } = Astro.props;
+const { section, locale, content } = Astro.props;
+const items = pdfEntries(section.items);
 ---
 
-{/* Quotes without photos (the CV stays compact). */}
-<Frame section={section} locale={locale}>
-  <ul class="p-list quotes">
-    {
-      section.items.map((item) => (
-        <li class="p-item">
-          <figure class="quote">
-            <blockquote class="p-rich">
-              <RichText value={item.quote} locale={locale} />
-            </blockquote>
-            <figcaption>
-              <span class="name">{item.name}</span>
-              <span class="p-meta">{pick(item.role, locale)}</span>
-            </figcaption>
-          </figure>
-        </li>
-      ))
-    }
-  </ul>
-</Frame>
+{/* Quotes marked "Show in PDF", without photos (the CV stays compact), each in its short PDF version where there is one. */}
+{
+  items.length > 0 && (
+    <Frame section={section} locale={locale}>
+      <ul class="p-list quotes">
+        {
+          items.map((item) => (
+            <li class="p-item">
+              <figure class="quote">
+                <blockquote class="p-rich">
+                  <RichText value={forPdf(item.quote, item.pdfQuote)} locale={locale} />
+                </blockquote>
+                <figcaption>
+                  <span class="name">{item.name}</span>
+                  <span class="p-meta">{pick(item.role, locale)}</span>
+                </figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
+      <MoreOnline section={section} locale={locale} site={content.site} shown={items.length} total={section.items.length} />
+    </Frame>
+  )
+}
 
 <style>
   .quotes {

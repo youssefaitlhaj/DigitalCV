@@ -1,11 +1,11 @@
 ---
 import Frame from "./Frame.astro";
+import MoreOnline from "./MoreOnline.astro";
 import DateRange from "../layout/DateRange.astro";
 import RichText from "../layout/RichText.astro";
 import { pick } from "../../lib/localize";
 import { displayUrl } from "../../lib/urls";
-import { anchorFor } from "../../lib/sections";
-import { pathFor } from "../../i18n/locales";
+import { forPdf, pdfEntries } from "../../lib/pdf";
 import type { Content } from "../../content/repository";
 import type { SectionOf } from "../../content/schemas/registry";
 import type { Locale } from "../../i18n/locales";
@@ -17,91 +17,80 @@ interface Props {
 }
 
 const { section, locale, content } = Astro.props;
-const { labels, siteUrl } = content.site;
+const { site } = content;
+const { labels } = site;
 const now = new Date();
-const items = section.items.filter((item) => item.inPdf);
-/** The short PDF text where that language has one, otherwise the full description. */
-const printedDescription = ({ description, pdfDescription }: (typeof items)[number]) => ({
-  en: pdfDescription?.en ?? description.en,
-  de: pdfDescription?.de ?? description.de,
-});
-// Some projects are left out of the PDF: point to the section on the website.
-const moreUrl = items.length < section.items.length ? new URL(`${pathFor(locale)}#${anchorFor(section.id)}`, siteUrl).href : undefined;
+const items = pdfEntries(section.items);
 ---
 
 {/*
-  Project cards without screenshots (the CV stays compact). Only the projects
-  marked "Show in PDF" are printed, each with its short PDF description when
-  that language has one; if any are left out, a line links to the section on
-  the website. A confidential card is description-only: no links and a
-  `confidential` badge, as on the site.
+  Projects as a compact list, not the site's cards: per project a line with
+  name, role and dates, the description (its short PDF version where there is
+  one), then the technologies and links in small type. Only the projects
+  marked "Show in PDF" are printed. A confidential project prints no links and
+  a `confidential` badge, as on the site.
 */}
-<Frame section={section} locale={locale}>
-  <ul class="p-list cards">
-    {
-      items.map((item) => {
-        const links = item.confidential ? undefined : item.links;
-        return (
-          <li class="card p-item">
-            {(item.start || item.end || item.confidential) && (
-              <div class="p-meta meta">
-                <span>
-                  <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} />
-                </span>
+{
+  items.length > 0 && (
+    <Frame section={section} locale={locale}>
+      <ul class="p-list projects">
+        {items.map((item) => {
+          const links = item.confidential ? undefined : item.links;
+          return (
+            <li class="project p-item">
+              <div class="top">
+                <h3>{pick(item.name, locale)}</h3>
+                <span class="role p-muted">{pick(item.role, locale)}</span>
                 {item.confidential && <span class="p-ref">{pick(labels.confidential, locale)}</span>}
+                {(item.start || item.end) && (
+                  <span class="p-meta date">
+                    <DateRange start={item.start} end={item.end} locale={locale} labels={labels} now={now} />
+                  </span>
+                )}
               </div>
-            )}
-            <h3>{pick(item.name, locale)}</h3>
-            <div class="role p-muted">{pick(item.role, locale)}</div>
-            <div class="desc p-rich">
-              <RichText value={printedDescription(item)} locale={locale} />
-            </div>
-            {item.tech.length > 0 && (
-              <ul class="p-chips tech">
-                {item.tech.map((t) => (
-                  <li class="p-chip">{t}</li>
-                ))}
-              </ul>
-            )}
-            {(links?.code || links?.live) && (
-              <div class="links">
-                {links.code && <a class="p-link" href={links.code}>{pick(labels.codeLink, locale)}</a>}
-                {links.live && <a class="p-link" href={links.live}>{pick(labels.liveLink, locale)}</a>}
+              <div class="desc p-rich">
+                <RichText value={forPdf(item.description, item.pdfDescription)} locale={locale} />
               </div>
-            )}
-          </li>
-        );
-      })
-    }
-  </ul>
-  {
-    moreUrl && (
-      <p class="more" data-more-online>
-        {pick(labels.moreOnline, locale)}: <a href={moreUrl} data-bare-url>{displayUrl(moreUrl)}</a>
-      </p>
-    )
-  }
-</Frame>
+              {(item.tech.length > 0 || links?.code || links?.live) && (
+                <div class="foot p-meta">
+                  {item.tech.length > 0 && <span>{item.tech.join(" · ")}</span>}
+                  {links?.code && (
+                    <span>
+                      {pick(labels.codeLink, locale)}{" "}
+                      <a class="p-link" href={links.code} data-bare-url>{displayUrl(links.code)}</a>
+                    </span>
+                  )}
+                  {links?.live && (
+                    <span>
+                      {pick(labels.liveLink, locale)}{" "}
+                      <a class="p-link" href={links.live} data-bare-url>{displayUrl(links.live)}</a>
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      <MoreOnline section={section} locale={locale} site={site} shown={items.length} total={section.items.length} />
+    </Frame>
+  )
+}
 
 <style>
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 3mm;
+  .projects {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5mm;
   }
-  .card {
-    background: var(--panel);
-    border: 0.75pt solid var(--line);
-    border-radius: 2mm;
-    padding: 3mm 3.5mm;
+  .project {
     overflow-wrap: anywhere;
   }
-  .meta {
+  .top {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2mm;
-    margin-bottom: 0.8mm;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 2mm;
   }
   h3 {
     margin: 0;
@@ -112,26 +101,22 @@ const moreUrl = items.length < section.items.length ? new URL(`${pathFor(locale)
   .role {
     font-size: 8.5pt;
   }
-  .desc {
-    margin-top: 1.2mm;
-  }
-  .tech {
-    margin-top: 2mm;
-  }
-  .more {
-    margin: 2.5mm 0 0;
-    font-size: 8.5pt;
-    color: var(--muted);
-  }
-  .more a {
-    font-family: var(--font-mono);
+  .role::before {
+    content: "·";
+    margin-inline-end: 2mm;
     color: var(--accent-text);
   }
-  .links {
+  .date {
+    margin-inline-start: auto;
+    white-space: nowrap;
+  }
+  .desc {
+    margin-top: 0.6mm;
+  }
+  .foot {
     display: flex;
-    flex-direction: column;
-    margin-top: 2mm;
-    font-family: var(--font-mono);
-    font-size: 7.5pt;
+    flex-wrap: wrap;
+    gap: 0 4mm;
+    margin-top: 0.8mm;
   }
 </style>

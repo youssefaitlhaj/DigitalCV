@@ -66,3 +66,13 @@ describe("renderRichText", () => {
     expect(out).not.toContain("## ");
   });
 });
+
+describe("links whose text is their address", () => {
+  it("are marked so the PDF does not print the address twice", () => {
+    expect(renderRichText("[https://expenger.vercel.app/](https://expenger.vercel.app/)")).toContain("data-bare-url");
+    expect(renderRichText("[expenger.vercel.app](https://expenger.vercel.app/)", { inline: true })).toContain("data-bare-url");
+  });
+  it("other links are not", () => {
+    expect(renderRichText("[Expenger](https://expenger.vercel.app/)")).not.toContain("data-bare-url");
+  });
+});

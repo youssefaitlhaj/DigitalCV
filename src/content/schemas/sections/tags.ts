@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { localized, optionalField } from "../primitives";
+import { localized, optionalField, pdfEntry } from "../primitives";
 import { sectionBase } from "./base";
 
 export const tagsSchema = z.object({
@@ -8,7 +8,8 @@ export const tagsSchema = z.object({
   groups: z.array(
     z.object({
       title: localized(),
-      items: z.array(z.object({ label: localized(), level: optionalField(localized()) })),
+      items: z.array(z.object({ label: localized(), level: optionalField(localized()), ...pdfEntry })),
+      ...pdfEntry,
     }),
   ),
 });

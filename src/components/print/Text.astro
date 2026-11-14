@@ -12,12 +12,14 @@ interface Props {
 }
 
 const { section, locale } = Astro.props;
+// The short PDF text, where this language has one, replaces all paragraphs.
+const short = section.pdfText?.[locale];
 ---
 
 <Frame section={section} locale={locale}>
   <div class="prose">
     {
-      section.paragraphs.map((paragraph) => (
+      (short ? [{ en: short, de: short }] : section.paragraphs).map((paragraph) => (
         <div class="p-item p-rich">
           <RichText value={paragraph} locale={locale} />
         </div>

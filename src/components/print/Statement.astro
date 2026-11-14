@@ -1,5 +1,6 @@
 ---
 import RichText from "../layout/RichText.astro";
+import { forPdf } from "../../lib/pdf";
 import { anchorFor } from "../../lib/sections";
 import type { Content } from "../../content/repository";
 import type { SectionOf } from "../../content/schemas/registry";
@@ -16,7 +17,7 @@ const { section, locale } = Astro.props;
 
 {/* A short summary line under the header; colour swatches in the text are kept. */}
 <section id={anchorFor(section.id)} data-section={section.type} class="p-statement p-item">
-  <p class="p-rich"><RichText value={section.text} locale={locale} inline /></p>
+  <p class="p-rich"><RichText value={forPdf(section.text, section.pdfText)} locale={locale} inline /></p>
 </section>
 
 <style>

@@ -279,7 +279,7 @@ describe("Sveltia config contract", () => {
     const INLINE = ["bold", "italic", "strikethrough", "code", "link"];
     const BLOCK = [...INLINE, "bulleted-list", "numbered-list"];
     const LEGAL = [...BLOCK, "heading-two", "heading-three"];
-    const inlinePaths = ["page.sections.statement.text", "page.sections.journey.stops.text"];
+    const inlinePaths = ["page.sections.statement.text", "page.sections.statement.pdfText", "page.sections.journey.stops.text"];
     const markdown: { path: string; buttons?: unknown; components?: unknown }[] = [];
     const walk = (f: Cms & { buttons?: unknown; editor_components?: unknown }, path: string) => {
       if (f.widget === "markdown") markdown.push({ path, buttons: f.buttons, components: f.editor_components });
@@ -302,9 +302,16 @@ describe("Sveltia config contract", () => {
     // If a new component renders a field inline, add it to inlinePaths above and update this list.
     const astro = (readdirSync("src/components", { recursive: true }) as string[]).filter((f) => f.endsWith(".astro"));
     const inlineUses = astro.flatMap((f) =>
-      [...readFileSync(`src/components/${f}`, "utf8").matchAll(/<RichText value=\{([\w.]+)\}[^>]*\binline\b/g)].map((m) => `${f.split("/").pop()}:${m[1]}`),
+      [...readFileSync(`src/components/${f}`, "utf8").matchAll(/<RichText value=\{([\w.]+|forPdf\([\w.]+, [\w.]+\))\}[^>]*\binline\b/g)].map(
+        (m) => `${f.split("/").pop()}:${m[1]}`,
+      ),
     );
-    expect(inlineUses.sort()).toEqual(["Journey.astro:stop.text", "Statement.astro:section.text", "Statement.astro:section.text"]);
+    // The PDF statement prints `pdfText` (also inline) where there is one.
+    expect(inlineUses.sort()).toEqual([
+      "Journey.astro:stop.text",
+      "Statement.astro:forPdf(section.text, section.pdfText)",
+      "Statement.astro:section.text",
+    ]);
   });
 
   it("every section id field rejects the ids the schema reserves", () => {

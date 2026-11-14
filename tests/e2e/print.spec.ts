@@ -160,6 +160,10 @@ test.describe("projects in the PDF", () => {
   const fixture = useFixtureSite("print-projects", ({ page }) => {
     const p = page.sections.find((x) => x.id === "projects")!;
     p.items[0].inPdf = false;
+    p.items[1].description = {
+      en: "Full text for the web. [example.com](https://example.com/)",
+      de: "Voller Text für das Web. [example.com](https://example.com/)",
+    };
     p.items[1].pdfDescription = { en: "A short line for paper.", de: "" };
   });
   const cards = (page: Page) => page.locator('main [data-section="cards"]');
@@ -183,19 +187,91 @@ test.describe("projects in the PDF", () => {
   test("the short PDF description replaces the long one, per language", async ({ page }) => {
     await page.goto(fixture.url("/cv/print"));
     await expect(cards(page)).toContainText("A short line for paper.");
-    await expect(cards(page)).not.toContainText("Expenses Manager");
+    await expect(cards(page)).not.toContainText("Full text for the web.");
     // No German short text: the German PDF keeps the full description.
     await page.goto(fixture.url("/de/cv/print"));
     await expect(cards(page)).not.toContainText("A short line for paper.");
-    await expect(cards(page)).toContainText("Expenses Manager");
+    await expect(cards(page)).toContainText("Voller Text für das Web.");
     // The website never shows the short text.
     await page.goto(fixture.url("/"));
     await expect(page.locator('section[data-section="cards"]')).not.toContainText("A short line for paper.");
+  });
+
+  test("a link whose text is its address prints the address once", async ({ page }) => {
+    await page.goto(fixture.url("/de/cv/print"));
+    await page.emulateMedia({ media: "print" });
+    const link = cards(page).locator('.p-rich a[href="https://example.com/"]');
+    await expect(link).toHaveAttribute("data-bare-url", "");
+    expect(await link.evaluate((el) => getComputedStyle(el, "::after").content)).toBe("none");
   });
 
   test("with every project in the PDF there is no link line", async ({ page }) => {
     await page.goto("/cv/print");
     await expect(cards(page)).toContainText(first.name.en);
     await expect(cards(page).locator("[data-more-online]")).toHaveCount(0);
+  });
+});
+
+test.describe("PDF options on every printed section", () => {
+  const content = parse(readFileSync("src/content/data/page.yml", "utf8"));
+  const byId = (id: string) => content.sections.find((x: { id: string }) => x.id === id);
+  const experience = byId("experience").items;
+  const stats = byId("stats").items;
+  const groups = byId("skills").groups;
+
+  const fixture = useFixtureSite("print-pdf-options", ({ page }) => {
+    const s = (id: string) => page.sections.find((x) => x.id === id)!;
+    s("hero").pdfSubtitle = { en: "Short subtitle for paper." };
+    s("statement").pdfText = { en: "Short statement for paper." };
+    s("stats").items[0].inPdf = false;
+    s("about").paragraphs = [{ en: "Long about, first paragraph.", de: "Langer Text, erster Absatz." }, { en: "Second.", de: "Zweiter." }];
+    s("about").pdfText = { en: "Short about for paper." };
+    s("experience").items[2].inPdf = false;
+    s("experience").items[0].pdfDescription = { en: "Short job for paper." };
+    s("skills").groups[1].inPdf = false;
+    s("skills").groups[0].items[0].inPdf = false;
+    for (const item of s("education").items) item.inPdf = false;
+  });
+  const sec = (page: Page, id: string) => page.locator(`main #${id}`);
+
+  test("short texts replace the long ones in that language only", async ({ page }) => {
+    await page.goto(fixture.url("/cv/print"));
+    await expect(sec(page, "hero")).toContainText("Short subtitle for paper.");
+    await expect(sec(page, "statement")).toHaveText("Short statement for paper.");
+    await expect(sec(page, "about")).toContainText("Short about for paper.");
+    await expect(sec(page, "about")).not.toContainText("Long about, first paragraph.");
+    await expect(sec(page, "experience")).toContainText("Short job for paper.");
+    // German has no short texts here: the German PDF prints the full ones.
+    await page.goto(fixture.url("/de/cv/print"));
+    await expect(sec(page, "about")).not.toContainText("Short about for paper.");
+    await expect(sec(page, "about")).toContainText("Langer Text, erster Absatz.");
+    await expect(sec(page, "statement")).not.toContainText("Short statement for paper.");
+  });
+
+  test("entries switched off are left out, with a link to the section on the website", async ({ page }) => {
+    await page.goto(fixture.url("/cv/print"));
+    await expect(sec(page, "stats").locator(".stat")).toHaveCount(stats.length - 1);
+    await expect(sec(page, "stats")).not.toContainText(stats[0].label.en);
+    await expect(sec(page, "experience").locator(".commit")).toHaveCount(experience.length - 1);
+    await expect(sec(page, "experience").locator(`a[href="${site.siteUrl}/#experience"]`)).toBeVisible();
+    await expect(sec(page, "skills")).not.toContainText(groups[1].title.en);
+    await expect(sec(page, "skills").getByText(groups[0].items[0].label.en, { exact: true })).toHaveCount(0);
+    await expect(sec(page, "skills").getByText(groups[0].items[1].label.en, { exact: true })).toHaveCount(1);
+    await expect(sec(page, "skills").locator(`a[href="${site.siteUrl}/#skills"]`)).toBeVisible();
+    // Stats print no link line.
+    await expect(sec(page, "stats").locator("[data-more-online]")).toHaveCount(0);
+  });
+
+  test("a section with every entry switched off is not printed at all", async ({ page }) => {
+    await page.goto(fixture.url("/cv/print"));
+    await expect(sec(page, "education")).toHaveCount(0);
+  });
+
+  test("the website is unchanged", async ({ page }) => {
+    await page.goto(fixture.url("/"));
+    await expect(page.locator("#education")).toBeVisible();
+    await expect(page.locator("#experience")).toContainText(experience[2].title.en);
+    await expect(page.locator("#about")).not.toContainText("Short about for paper.");
+    await expect(page.locator("#statement")).not.toContainText("Short statement for paper.");
   });
 });

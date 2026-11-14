@@ -505,6 +505,21 @@ collections:
                         name: de
                         widget: string
                         required: true
+                  - label: Short subtitle for PDF
+                    name: pdfSubtitle
+                    widget: object
+                    collapsed: true
+                    required: false
+                    hint: Optional. Used in the PDF CV instead of the subtitle. A language left empty prints the full subtitle.
+                    fields:
+                      - label: English
+                        name: en
+                        widget: string
+                        required: false
+                      - label: Deutsch
+                        name: de
+                        widget: string
+                        required: false
                   - label: Primary button
                     name: ctaPrimary
                     widget: object
@@ -659,6 +674,32 @@ collections:
                         editor_components: []
                         required: true
                         hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
+                  - label: Short text for PDF
+                    name: pdfText
+                    widget: object
+                    collapsed: true
+                    required: false
+                    hint: Optional. Used in the PDF CV instead of the text. A language left empty prints the full text.
+                    fields:
+                      - label: English
+                        name: en
+                        widget: markdown
+                        buttons: &a1
+                          - bold
+                          - italic
+                          - strikethrough
+                          - code
+                          - link
+                        editor_components: []
+                        required: false
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
+                      - label: Deutsch
+                        name: de
+                        widget: markdown
+                        buttons: *a1
+                        editor_components: []
+                        required: false
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
               - label: Stats
                 name: stats
                 widget: object
@@ -765,6 +806,12 @@ collections:
                         widget: number
                         value_type: float
                         required: false
+                      - label: Show in PDF
+                        name: inPdf
+                        widget: boolean
+                        default: true
+                        required: false
+                        hint: Off leaves this number out of the PDF CV only; the website still shows it.
                     required: true
               - label: Journey
                 name: journey
@@ -1190,6 +1237,40 @@ collections:
                         name: badge
                         widget: string
                         required: false
+                      - label: Show in PDF
+                        name: inPdf
+                        widget: boolean
+                        default: true
+                        required: false
+                        hint: Off leaves this entry out of the PDF CV only; the website still shows it.
+                      - label: Short description for PDF
+                        name: pdfDescription
+                        widget: object
+                        collapsed: true
+                        required: false
+                        hint: Optional. Used in the PDF CV instead of the description. A language left empty prints the full description.
+                        fields:
+                          - label: English
+                            name: en
+                            widget: markdown
+                            buttons: &a3
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
+                            required: false
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
+                          - label: Deutsch
+                            name: de
+                            widget: markdown
+                            buttons: *a3
+                            editor_components: []
+                            required: false
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                     required: true
               - label: Cards
                 name: cards
@@ -1462,6 +1543,12 @@ collections:
                             name: de
                             widget: string
                             required: true
+                      - label: Show in PDF
+                        name: inPdf
+                        widget: boolean
+                        default: true
+                        required: false
+                        hint: Off leaves this group out of the PDF CV only; the website still shows it.
                       - label: Items
                         name: items
                         widget: list
@@ -1496,6 +1583,12 @@ collections:
                                 widget: string
                                 required: true
                                 hint: Both languages or neither, for example C1 / C1 or Native / Muttersprache.
+                          - label: Show in PDF
+                            name: inPdf
+                            widget: boolean
+                            default: true
+                            required: false
+                            hint: Off leaves this skill out of the PDF CV only; the website still shows it.
                         required: true
                     required: true
               - label: Text
@@ -1584,6 +1677,34 @@ collections:
                           hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                     summary: "{{fields.item.en}}"
                     required: true
+                  - label: Short text for PDF
+                    name: pdfText
+                    widget: object
+                    collapsed: true
+                    required: false
+                    hint: Optional. Replaces all paragraphs in the PDF CV. A language left empty prints the full paragraphs.
+                    fields:
+                      - label: English
+                        name: en
+                        widget: markdown
+                        buttons: &a2
+                          - bold
+                          - italic
+                          - strikethrough
+                          - code
+                          - link
+                          - bulleted-list
+                          - numbered-list
+                        editor_components: []
+                        required: false
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
+                      - label: Deutsch
+                        name: de
+                        widget: markdown
+                        buttons: *a2
+                        editor_components: []
+                        required: false
+                        hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
               - label: Quotes
                 name: quotes
                 widget: object
@@ -1690,6 +1811,40 @@ collections:
                         name: photo
                         widget: imageref
                         required: false
+                      - label: Show in PDF
+                        name: inPdf
+                        widget: boolean
+                        default: true
+                        required: false
+                        hint: Off leaves this quote out of the PDF CV only; the website still shows it.
+                      - label: Short quote for PDF
+                        name: pdfQuote
+                        widget: object
+                        collapsed: true
+                        required: false
+                        hint: Optional. Used in the PDF CV instead of the quote. A language left empty prints the full quote.
+                        fields:
+                          - label: English
+                            name: en
+                            widget: markdown
+                            buttons: &a4
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
+                            required: false
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
+                          - label: Deutsch
+                            name: de
+                            widget: markdown
+                            buttons: *a4
+                            editor_components: []
+                            required: false
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                     required: true
             required: true
       - name: legal

@@ -1,0 +1,44 @@
+---
+import { pick } from "../../lib/localize";
+import { displayUrl } from "../../lib/urls";
+import { sectionUrl } from "../../lib/pdf";
+import type { Site } from "../../content/repository";
+import type { Section } from "../../content/schemas/registry";
+import type { Locale } from "../../i18n/locales";
+
+/**
+ * "More on the website: <site>/#<section>", printed under a section when some
+ * of its entries are switched off for the PDF. Nothing when all are printed.
+ */
+interface Props {
+  section: Section;
+  locale: Locale;
+  site: Site;
+  /** Entries in the PDF / entries on the website. */
+  shown: number;
+  total: number;
+}
+
+const { section, locale, site, shown, total } = Astro.props;
+const url = sectionUrl(site.siteUrl, locale, section.id);
+---
+
+{
+  shown < total && (
+    <p class="more" data-more-online>
+      {pick(site.labels.moreOnline, locale)}: <a href={url} data-bare-url>{displayUrl(url)}</a>
+    </p>
+  )
+}
+
+<style>
+  .more {
+    margin: 2mm 0 0;
+    font-size: 8.5pt;
+    color: var(--muted);
+  }
+  .more a {
+    font-family: var(--font-mono);
+    color: var(--accent-text);
+  }
+</style>

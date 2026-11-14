@@ -1,5 +1,7 @@
 ---
 import Frame from "./Frame.astro";
+import MoreOnline from "./MoreOnline.astro";
+import { pdfEntries } from "../../lib/pdf";
 import { pick } from "../../lib/localize";
 import type { Content } from "../../content/repository";
 import type { SectionOf } from "../../content/schemas/registry";
@@ -11,30 +13,39 @@ interface Props {
   content: Content;
 }
 
-const { section, locale } = Astro.props;
+const { section, locale, content } = Astro.props;
+// Groups and skills marked "Show in PDF"; a group left with no skills is not printed.
+const groups = pdfEntries(section.groups)
+  .map((group) => ({ ...group, items: pdfEntries(group.items) }))
+  .filter((group) => group.items.length > 0);
+const count = (gs: { items: unknown[] }[]) => gs.reduce((n, g) => n + g.items.length, 0);
+const total = count(section.groups.filter((g) => g.items.length > 0));
 ---
 
-<Frame section={section} locale={locale}>
-  <div class="groups">
-    {
-      section.groups
-        .filter((group) => group.items.length > 0)
-        .map((group) => (
-          <div class="group p-item">
-            <h3>{pick(group.title, locale)}</h3>
-            <ul class="p-chips">
-              {group.items.map((item) => (
-                <li class="p-chip">
-                  {pick(item.label, locale)}
-                  {item.level && <i>{pick(item.level, locale)}</i>}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-    }
-  </div>
-</Frame>
+{
+  groups.length > 0 && (
+    <Frame section={section} locale={locale}>
+      <div class="groups">
+        {
+          groups.map((group) => (
+            <div class="group p-item">
+              <h3>{pick(group.title, locale)}</h3>
+              <ul class="p-chips">
+                {group.items.map((item) => (
+                  <li class="p-chip">
+                    {pick(item.label, locale)}
+                    {item.level && <i>{pick(item.level, locale)}</i>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+      <MoreOnline section={section} locale={locale} site={content.site} shown={count(groups)} total={total} />
+    </Frame>
+  )
+}
 
 <style>
   .groups {

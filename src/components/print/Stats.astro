@@ -1,5 +1,6 @@
 ---
 import { anchorFor } from "../../lib/sections";
+import { pdfEntries } from "../../lib/pdf";
 import { pick } from "../../lib/localize";
 import { resolveStat } from "../../lib/stats";
 import type { Content } from "../../content/repository";
@@ -14,19 +15,24 @@ interface Props {
 
 const { section, locale, content } = Astro.props;
 const now = new Date();
+const items = pdfEntries(section.items);
 ---
 
-{/* One compact row of the site's numbers, resolved at build time. */}
-<section id={anchorFor(section.id)} data-section={section.type} class="p-stats p-item" style={`--cols: ${section.items.length}`}>
-  {
-    section.items.map((item) => (
-      <div class="stat">
-        <span class="n">{resolveStat(item, content.page, now)}</span>
-        <span class="l">{pick(item.label, locale)}</span>
-      </div>
-    ))
-  }
-</section>
+{/* One compact row of the site's numbers marked "Show in PDF", resolved at build time. */}
+{
+  items.length > 0 && (
+    <section id={anchorFor(section.id)} data-section={section.type} class="p-stats p-item" style={`--cols: ${items.length}`}>
+      {
+        items.map((item) => (
+          <div class="stat">
+            <span class="n">{resolveStat(item, content.page, now)}</span>
+            <span class="l">{pick(item.label, locale)}</span>
+          </div>
+        ))
+      }
+    </section>
+  )
+}
 
 <style>
   .p-stats {
