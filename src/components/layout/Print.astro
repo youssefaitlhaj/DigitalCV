@@ -35,7 +35,9 @@ const css = paletteCss(site.palette.accent, site.palette.background);
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content={site.name} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <style is:inline set:html={css}></style>
   </head>
   <body class="print">
