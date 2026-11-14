@@ -322,6 +322,10 @@ sections:
         tech:
           - Claude code
         confidential: false
+        inPdf: true
+        pdfDescription:
+          en: I created this app with Claude Code.
+          de: I created this app with Claude Code.
       - description:
           en: Expenses Manager. [https://expenger.vercel.app/](https://expenger.vercel.app/)
           de: Expenses Manager. [https://expenger.vercel.app/](https://expenger.vercel.app/)
@@ -334,6 +338,7 @@ sections:
         tech:
           - Claude code
         confidential: false
+        inPdf: true
   - type: tags
     id: skills
     title:
