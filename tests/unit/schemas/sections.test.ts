@@ -102,3 +102,31 @@ describe("pageSchema", () => {
     expect(pageSchema.safeParse(page).success).toBe(false);
   });
 });
+
+describe("project cards in the PDF", () => {
+  const cards = (item: Record<string, unknown>) => {
+    const page = minimalPage();
+    page.sections.push({
+      type: "cards",
+      id: "projects",
+      title: l("Projects", "Projekte"),
+      items: [{ name: l("P"), description: l("Long text"), role: l("Dev"), tech: [], ...item }],
+    });
+    const r = pageSchema.safeParse(page);
+    if (!r.success) throw new Error(r.error.message);
+    const section = r.data.sections.at(-1)!;
+    if (section.type !== "cards") throw new Error("not cards");
+    return section.items[0];
+  };
+
+  it("a project is in the PDF unless switched off", () => {
+    expect(cards({}).inPdf).toBe(true);
+    expect(cards({ inPdf: false }).inPdf).toBe(false);
+  });
+
+  it("the short PDF description is optional, per language", () => {
+    expect(cards({}).pdfDescription).toBeUndefined();
+    expect(cards({ pdfDescription: { en: "", de: "" } }).pdfDescription).toBeUndefined();
+    expect(cards({ pdfDescription: { en: "Short", de: "" } }).pdfDescription).toEqual({ en: "Short" });
+  });
+});

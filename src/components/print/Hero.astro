@@ -3,6 +3,7 @@ import Img from "../layout/Img.astro";
 import { anchorFor } from "../../lib/sections";
 import { pick } from "../../lib/localize";
 import { displayUrl } from "../../lib/urls";
+import { pathFor } from "../../i18n/locales";
 import type { Content } from "../../content/repository";
 import type { SectionOf } from "../../content/schemas/registry";
 import type { Locale } from "../../i18n/locales";
@@ -15,13 +16,16 @@ interface Props {
 
 const { section, locale, content } = Astro.props;
 const { site } = content;
+// The website in the PDF's own language: the German CV links to /de/.
+const website = new URL(pathFor(locale), site.siteUrl).href;
 const city = pick(site.location, locale).split(",")[0].trim().toLowerCase();
 ---
 
 {/*
-  The CV header: name, role, location, email and LinkedIn. Never a phone
-  number or a postal address. The email halves are joined by the print
-  layout's script; the LinkedIn text is the URL, so it is not printed twice.
+  The CV header: name, role, location, email, LinkedIn and the website. Never
+  a phone number or a postal address. The email halves are joined by the print
+  layout's script; the LinkedIn and website texts are their URLs, so they are
+  not printed twice.
 */}
 <header id={anchorFor(section.id)} data-section={section.type} class="p-hero p-item">
   <div class="txt">
@@ -35,6 +39,7 @@ const city = pick(site.location, locale).split(",")[0].trim().toLowerCase();
         <a href="#" data-email data-email-user={site.email.user} data-email-domain={site.email.domain}><span data-email-text></span></a>
       </li>
       <li><a href={site.linkedin} data-bare-url>{displayUrl(site.linkedin)}</a></li>
+      <li><a href={website} data-bare-url>{displayUrl(website)}</a></li>
     </ul>
   </div>
   {

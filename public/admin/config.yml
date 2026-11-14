@@ -402,6 +402,19 @@ collections:
                     name: de
                     widget: string
                     required: true
+              - label: "PDF: more on the website"
+                name: moreOnline
+                widget: object
+                required: true
+                fields:
+                  - label: English
+                    name: en
+                    widget: string
+                    required: true
+                  - label: Deutsch
+                    name: de
+                    widget: string
+                    required: true
             collapsed: true
             required: true
       - name: page
@@ -1342,6 +1355,47 @@ collections:
                         widget: boolean
                         default: false
                         required: false
+                      - label: Show in PDF
+                        name: inPdf
+                        widget: boolean
+                        default: true
+                        required: false
+                        hint: Off leaves this project out of the PDF CV only; the website still shows it, and the PDF links to the website for the rest.
+                      - label: Short description for PDF
+                        name: pdfDescription
+                        widget: object
+                        collapsed: true
+                        required: false
+                        hint: Optional. A shorter text used in the PDF CV instead of the description. A language left empty prints the full description.
+                        fields:
+                          - label: English
+                            name: en
+                            widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
+                            required: false
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
+                          - label: Deutsch
+                            name: de
+                            widget: markdown
+                            buttons:
+                              - bold
+                              - italic
+                              - strikethrough
+                              - code
+                              - link
+                              - bulleted-list
+                              - numbered-list
+                            editor_components: []
+                            required: false
+                            hint: "Markdown. Inline extras (type them in the editor's raw/Markdown mode): <u>underlined</u>; colour a phrase with a span: <span class=\"c-accent\">Accent</span>, <span class=\"c-muted\">Muted</span>, <span class=\"c-highlight\">Highlight</span>, <span class=\"c-positive\">Green</span>."
                     required: true
               - label: Tags
                 name: tags

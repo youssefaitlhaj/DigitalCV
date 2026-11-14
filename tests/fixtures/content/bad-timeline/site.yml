@@ -42,3 +42,4 @@ labels:
   codeLink: { en: Code, de: Code }
   liveLink: { en: Live, de: Live }
   confidential: { en: Confidential, de: Vertraulich }
+  moreOnline: { en: More on the website, de: Mehr auf der Website }

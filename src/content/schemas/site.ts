@@ -41,6 +41,7 @@ export const siteSchema = z.object({
     codeLink: localized(),
     liveLink: localized(),
     confidential: localized(),
+    moreOnline: localized(),
   }),
 });
 

@@ -3,6 +3,9 @@ import Frame from "./Frame.astro";
 import DateRange from "../layout/DateRange.astro";
 import RichText from "../layout/RichText.astro";
 import { pick } from "../../lib/localize";
+import { displayUrl } from "../../lib/urls";
+import { anchorFor } from "../../lib/sections";
+import { pathFor } from "../../i18n/locales";
 import type { Content } from "../../content/repository";
 import type { SectionOf } from "../../content/schemas/registry";
 import type { Locale } from "../../i18n/locales";
@@ -14,18 +17,29 @@ interface Props {
 }
 
 const { section, locale, content } = Astro.props;
-const { labels } = content.site;
+const { labels, siteUrl } = content.site;
 const now = new Date();
+const items = section.items.filter((item) => item.inPdf);
+/** The short PDF text where that language has one, otherwise the full description. */
+const printedDescription = ({ description, pdfDescription }: (typeof items)[number]) => ({
+  en: pdfDescription?.en ?? description.en,
+  de: pdfDescription?.de ?? description.de,
+});
+// Some projects are left out of the PDF: point to the section on the website.
+const moreUrl = items.length < section.items.length ? new URL(`${pathFor(locale)}#${anchorFor(section.id)}`, siteUrl).href : undefined;
 ---
 
 {/*
-  Project cards without screenshots (the CV stays compact). A confidential
-  card is description-only: no links and a `confidential` badge, as on the site.
+  Project cards without screenshots (the CV stays compact). Only the projects
+  marked "Show in PDF" are printed, each with its short PDF description when
+  that language has one; if any are left out, a line links to the section on
+  the website. A confidential card is description-only: no links and a
+  `confidential` badge, as on the site.
 */}
 <Frame section={section} locale={locale}>
   <ul class="p-list cards">
     {
-      section.items.map((item) => {
+      items.map((item) => {
         const links = item.confidential ? undefined : item.links;
         return (
           <li class="card p-item">
@@ -40,7 +54,7 @@ const now = new Date();
             <h3>{pick(item.name, locale)}</h3>
             <div class="role p-muted">{pick(item.role, locale)}</div>
             <div class="desc p-rich">
-              <RichText value={item.description} locale={locale} />
+              <RichText value={printedDescription(item)} locale={locale} />
             </div>
             {item.tech.length > 0 && (
               <ul class="p-chips tech">
@@ -60,6 +74,13 @@ const now = new Date();
       })
     }
   </ul>
+  {
+    moreUrl && (
+      <p class="more" data-more-online>
+        {pick(labels.moreOnline, locale)}: <a href={moreUrl} data-bare-url>{displayUrl(moreUrl)}</a>
+      </p>
+    )
+  }
 </Frame>
 
 <style>
@@ -96,6 +117,15 @@ const now = new Date();
   }
   .tech {
     margin-top: 2mm;
+  }
+  .more {
+    margin: 2.5mm 0 0;
+    font-size: 8.5pt;
+    color: var(--muted);
+  }
+  .more a {
+    font-family: var(--font-mono);
+    color: var(--accent-text);
   }
   .links {
     display: flex;

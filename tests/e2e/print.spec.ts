@@ -51,6 +51,22 @@ test.describe("print route", () => {
     await expect(header).toContainText("linkedin.com/in/youssefaitlhaj");
   });
 
+  test("header links to the website in the PDF's own language", async ({ page }) => {
+    const host = new URL(site.siteUrl).host;
+    for (const [path, href] of [
+      ["/cv/print", `${site.siteUrl}/`],
+      ["/de/cv/print", `${site.siteUrl}/de/`],
+    ]) {
+      await page.goto(path);
+      const link = page.locator(`[data-section="hero"] a[href="${href}"]`);
+      await expect(link).toHaveText(path.startsWith("/de") ? `${host}/de` : host);
+      // The text is the URL, so print does not repeat it after the link.
+      await page.emulateMedia({ media: "print" });
+      expect(await link.evaluate((a) => getComputedStyle(a, "::after").content)).toBe("none");
+      await page.emulateMedia({ media: "screen" });
+    }
+  });
+
   test("email halves only in built HTML, assembled at runtime", async ({ page, request }) => {
     for (const path of PRINT_PATHS) {
       const html = await (await request.get(path)).text();
@@ -134,5 +150,52 @@ test.describe("print route with pdf-excluded skills, hidden about, no portrait",
     await page.goto(fixture.url("/cv/print"));
     await expect(page.locator('[data-section="hero"]')).toBeVisible();
     await expect(page.locator('[data-section="hero"] img')).toHaveCount(0);
+  });
+});
+
+test.describe("projects in the PDF", () => {
+  const page_ = parse(readFileSync("src/content/data/page.yml", "utf8"));
+  const projects = page_.sections.find((x: { id: string }) => x.id === "projects");
+  const [first, second] = projects.items;
+  const fixture = useFixtureSite("print-projects", ({ page }) => {
+    const p = page.sections.find((x) => x.id === "projects")!;
+    p.items[0].inPdf = false;
+    p.items[1].pdfDescription = { en: "A short line for paper.", de: "" };
+  });
+  const cards = (page: Page) => page.locator('main [data-section="cards"]');
+
+  test("a project switched off for the PDF is left out, with a link to the rest", async ({ page }) => {
+    for (const [path, home] of [
+      ["/cv/print", `${site.siteUrl}/#projects`],
+      ["/de/cv/print", `${site.siteUrl}/de/#projects`],
+    ]) {
+      await page.goto(fixture.url(path));
+      await expect(cards(page)).not.toContainText(first.name.en);
+      await expect(cards(page)).toContainText(second.name.en);
+      const more = cards(page).locator(`a[href="${home}"]`);
+      await expect(more).toHaveText(home.replace("https://", ""));
+    }
+    // The website still shows every project.
+    await page.goto(fixture.url("/"));
+    await expect(page.locator('section[data-section="cards"]')).toContainText(first.name.en);
+  });
+
+  test("the short PDF description replaces the long one, per language", async ({ page }) => {
+    await page.goto(fixture.url("/cv/print"));
+    await expect(cards(page)).toContainText("A short line for paper.");
+    await expect(cards(page)).not.toContainText("Expenses Manager");
+    // No German short text: the German PDF keeps the full description.
+    await page.goto(fixture.url("/de/cv/print"));
+    await expect(cards(page)).not.toContainText("A short line for paper.");
+    await expect(cards(page)).toContainText("Expenses Manager");
+    // The website never shows the short text.
+    await page.goto(fixture.url("/"));
+    await expect(page.locator('section[data-section="cards"]')).not.toContainText("A short line for paper.");
+  });
+
+  test("with every project in the PDF there is no link line", async ({ page }) => {
+    await page.goto("/cv/print");
+    await expect(cards(page)).toContainText(first.name.en);
+    await expect(cards(page).locator("[data-more-online]")).toHaveCount(0);
   });
 });

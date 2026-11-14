@@ -111,7 +111,11 @@ function compare(path: string, schema: Zod, cms: Cms | undefined, problems: stri
     if (cms.widget !== "object") problems.push(`${path}: bilingual field must be an object widget`);
     const kids = cms.fields ?? [];
     if (kids.map((k) => k.name).sort().join() !== "de,en") problems.push(`${path}: must have exactly en and de`);
-    for (const k of kids) if (k.required !== true) problems.push(`${path}.${k.name}: must be required`);
+    // Each language is required, unless the schema makes it optional (e.g. the short PDF description).
+    for (const k of kids) {
+      const optional = k.name in inner.def.shape && unwrap(inner.def.shape[k.name]).optional;
+      if (optional ? k.required !== false : k.required !== true) problems.push(`${path}.${k.name}: must be ${optional ? "optional" : "required"}`);
+    }
     return;
   }
   if (isImageRef(inner)) {
