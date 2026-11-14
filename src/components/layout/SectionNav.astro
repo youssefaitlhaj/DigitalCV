@@ -43,6 +43,12 @@ const entries = menuEntries(page.sections, locale);
   )
 }
 
+<script>
+  import { initSectionBarScroll } from "../../scripts/section-bar-scroll";
+  const list = document.querySelector<HTMLElement>("[data-secnav-list]");
+  if (list) initSectionBarScroll(list);
+</script>
+
 <style is:global>
   /* Room under the footer so the floating bar never covers the last line or the contact buttons. */
   :root {
@@ -112,6 +118,15 @@ const entries = menuEntries(page.sections, locale);
   }
   .items::-webkit-scrollbar {
     display: none;
+  }
+  /* While a mouse drags the strip (section-bar-scroll.ts), no text is selected
+     and the links do not light up under the moving pointer. */
+  .items.dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+  .items.dragging a {
+    pointer-events: none;
   }
 
   ul {

@@ -137,6 +137,86 @@ test.describe("phone width", () => {
   });
 });
 
+test.describe("scrolling the bar with a mouse", () => {
+  test.use({ viewport: { width: 390, height: 700 } });
+
+  const list = (page: Page) => page.locator("[data-secnav-list]");
+  const scrollLeft = (page: Page) => list(page).evaluate((el) => el.scrollLeft);
+
+  /** Past the hero, so the bar is shown; the bar strip back at its start. */
+  async function showBar(page: Page) {
+    await page.goto("/");
+    await page.evaluate(() => window.scrollTo({ top: innerHeight * 2, behavior: "instant" }));
+    await expect(pill(page)).toBeVisible();
+    await list(page).evaluate((el) => (el.scrollLeft = 0));
+    await page.waitForTimeout(100);
+  }
+
+  async function centreOf(locator: Locator) {
+    const box = (await locator.boundingBox())!;
+    return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  }
+
+  test("the wheel over the bar scrolls it sideways, not the page", async ({ page }) => {
+    await showBar(page);
+    const pageY = await page.evaluate(() => scrollY);
+    const { x, y } = await centreOf(pill(page));
+    await page.mouse.move(x, y);
+    await page.mouse.wheel(0, 120);
+    await expect.poll(() => scrollLeft(page)).toBeGreaterThan(0);
+    expect(await page.evaluate(() => scrollY)).toBe(pageY);
+    // And back.
+    await page.mouse.wheel(0, -1000);
+    await expect.poll(() => scrollLeft(page)).toBe(0);
+    expect(await page.evaluate(() => scrollY)).toBe(pageY);
+  });
+
+  test("past the end of the bar the wheel scrolls the page again", async ({ page }) => {
+    await showBar(page);
+    await list(page).evaluate((el) => (el.scrollLeft = el.scrollWidth));
+    const pageY = await page.evaluate(() => scrollY);
+    const { x, y } = await centreOf(pill(page));
+    await page.mouse.move(x, y);
+    await page.mouse.wheel(0, 200);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(pageY);
+  });
+
+  test("dragging the bar scrolls it and does not follow the link under the mouse", async ({ page }) => {
+    await showBar(page);
+    const url = page.url();
+    const { x, y } = await centreOf(bar(page).getByRole("link", { name: "Experience" }));
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x - 60, y, { steps: 6 });
+    await page.mouse.move(x - 160, y, { steps: 6 });
+    await page.mouse.up();
+    expect(await scrollLeft(page)).toBeGreaterThan(100);
+    await page.waitForTimeout(300);
+    expect(page.url()).toBe(url);
+  });
+
+  test("a plain click on a link still goes to its section", async ({ page }) => {
+    await showBar(page);
+    await bar(page).getByRole("link", { name: "Skills" }).click();
+    await expect(page).toHaveURL(/#skills$/);
+  });
+});
+
+test.describe("desktop width, where every link fits", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test("the wheel over the bar scrolls the page as usual", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => window.scrollTo({ top: innerHeight * 2, behavior: "instant" }));
+    await expect(pill(page)).toBeVisible();
+    const pageY = await page.evaluate(() => scrollY);
+    const box = (await pill(page).boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.wheel(0, 200);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(pageY);
+  });
+});
+
 test("at the bottom the bar covers neither the footer nor the contact buttons", async ({ page }) => {
   for (const path of ["/", "/de/"]) {
     await page.goto(path);
