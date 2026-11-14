@@ -53,7 +53,7 @@ Only the single "Deploy" step of each workflow sees the token; install, build an
 
 ## 3. Site URL and Umami
 
-`siteUrl` in `src/content/data/site.yml` is set to your Vercel production domain, `https://digital-cv-sooty.vercel.app`. It drives the canonical and language links search engines see, and Umami only counts visits on that host (`data-domains`). If the production domain ever changes (for example when you attach youssefaitlhaj.com), update it:
+`siteUrl` in `src/content/data/site.yml` is set to the production domain, `https://youssef-aitlhaj.com` (bought at GoDaddy; its DNS records point to Vercel, and `digital-cv-sooty.vercel.app` still serves the same site). It drives the canonical and language links search engines see, the website link in the PDF CV, and Umami only counts visits on that host (`data-domains`). If the production domain ever changes, update it:
 
 1. In Vercel open the project, **Settings**, **Domains**, and note the production domain, for example `https://digital-cv.vercel.app`. Use this domain, not a long per-deployment URL such as `digital-cv-a1b2c3-….vercel.app` (those are protected and change with every deploy).
 2. Umami (https://cloud.umami.is): the website id is already in `site.yml` (`analytics.umamiWebsiteId: ece2ccaf-…`). In the website's **Settings**, set its domain to the production host from step 3.1, enable **Share URL** and copy the share link.
